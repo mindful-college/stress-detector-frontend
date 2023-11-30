@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function Analysis() {
+export default function MyDay() {
   return (
     <View>
-      <Text>Analysis screen</Text>
+      <Text>MyDay screen</Text>
     </View>
   );
 }
