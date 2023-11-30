@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Colors } from '../utils/colors';
+import { useUserContext } from '../context/UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface SigninProps {
-  navigation: any; // Type for navigation prop
-}
-
-const Signin: React.FC<SigninProps> = ({ navigation }) => {
+export default function Signin() {
   const [user, setUser] = useState({ email: '', password: '' });
+  const { dispatch } = useUserContext();
 
   const handleSignIn = () => {
-    // Implement your sign-in logic here
-    console.log('Signing in with:', user);
-    // Navigate to another screen after successful sign-in
-    navigation.navigate('Home');
+    const userObj = {
+      email: user.email,
+      token: 'token',
+      uuid: 'uuid',
+    };
+    AsyncStorage.setItem('user', JSON.stringify(userObj));
+    dispatch({ type: 'SET_USER', payload: userObj });
   };
 
   const handleEamil = (email) => {
@@ -44,7 +46,7 @@ const Signin: React.FC<SigninProps> = ({ navigation }) => {
       <Button title="Sign In" onPress={handleSignIn} />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -65,5 +67,3 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-
-export default Signin;
