@@ -13,7 +13,6 @@ export const UserContext = createContext<AppContextProps | null>(null);
 export const userReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case 'SET_USER':
-      console.log(action.payload);
       return { ...state, user: action.payload };
     case 'REMOVE_USER':
       return { ...state, user: null };
