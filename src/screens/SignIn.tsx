@@ -3,19 +3,44 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Colors } from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SING_IN_URL } from '../utils/api';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
+import { emailRegex } from '../utils/common';
 
 export default function Signin() {
   const [user, setUser] = useState({ email: '', password: '' });
   const { dispatch } = useUserContext();
 
-  const handleSignIn = () => {
-    const userObj = {
-      email: user.email,
-      token: 'token',
-      uuid: 'uuid',
-    };
-    AsyncStorage.setItem('user', JSON.stringify(userObj));
-    dispatch({ type: 'SET_USER', payload: userObj });
+  const handleSignIn = async () => {
+    if (!emailRegex.test(user.email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid email format',
+      });
+      return;
+    }
+    try {
+      const form = new FormData();
+      form.append('username', user.email);
+      form.append('password', user.password);
+      const { data } = await axios.post(SING_IN_URL, form);
+      const userObj = { email: user.email, access_token: data.access_token };
+      AsyncStorage.setItem('user', JSON.stringify(userObj));
+      dispatch({ type: 'SET_USER', payload: userObj });
+    } catch (e) {
+      if (e.response?.status === 401) {
+        Toast.show({
+          type: 'error',
+          text1: 'Incorrect email or password',
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Network Error',
+        });
+      }
+    }
   };
 
   const handleEamil = (email) => {
