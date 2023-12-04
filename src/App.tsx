@@ -10,6 +10,8 @@ import SignIn from './screens/SignIn';
 import { UserContext, initialUser, userReducer } from './context/UserContext';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView, StyleSheet } from 'react-native';
+import Signup from './screens/SignUp';
+import { Colors } from './utils/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,23 +33,30 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <UserContext.Provider value={contextValue}>
         <NavigationContainer>
-          <Tab.Navigator
-            initialRouteName="CheckIn"
-            screenOptions={() => ({
-              tabBarActiveTintColor: 'tomato',
-              tabBarInactiveTintColor: 'gray',
-            })}>
-            {!state.user ? (
+          {!state.user ? (
+            <Tab.Navigator
+              initialRouteName="SignIn"
+              screenOptions={() => ({
+                tabBarStyle: {
+                  display: 'none',
+                },
+              })}>
               <Tab.Screen name="SignIn" component={SignIn} />
-            ) : (
-              <>
-                <Tab.Screen name="CheckIn" component={CheckIn} />
-                <Tab.Screen name="Analysis" component={Analysis} />
-                <Tab.Screen name="Resource" component={Resource} />
-                <Tab.Screen name="MyDay" component={MyDay} />
-              </>
-            )}
-          </Tab.Navigator>
+              <Tab.Screen name="SignUp" component={Signup} />
+            </Tab.Navigator>
+          ) : (
+            <Tab.Navigator
+              initialRouteName="CheckIn"
+              screenOptions={() => ({
+                tabBarActiveTintColor: 'tomato',
+                tabBarInactiveTintColor: 'gray',
+              })}>
+              <Tab.Screen name="CheckIn" component={CheckIn} />
+              <Tab.Screen name="Analysis" component={Analysis} />
+              <Tab.Screen name="Resource" component={Resource} />
+              <Tab.Screen name="MyDay" component={MyDay} />
+            </Tab.Navigator>
+          )}
         </NavigationContainer>
       </UserContext.Provider>
       <Toast />
@@ -58,6 +67,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', // Set the background color of the safe area
+    backgroundColor: Colors.white,
   },
 });
