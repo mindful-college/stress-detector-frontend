@@ -64,10 +64,21 @@ export default function Signup({ navigation }) {
       return;
     }
     try {
-      console.log(user);
-      console.log(SING_UP_URL);
-      const status = await axios.post(SING_UP_URL, user);
-      console.log(status);
+      const { status } = await axios.post(SING_UP_URL, user);
+      if (status === 201) {
+        Toast.show({
+          type: 'success',
+          text1: 'Your account has been successfully created',
+        });
+        setUser({
+          email: '',
+          password: '',
+          password_check: '',
+          name: '',
+          uuid: '',
+        });
+        navigation.navigate('SignIn');
+      }
     } catch (e) {
       if (e.response?.status === 409) {
         Toast.show({
