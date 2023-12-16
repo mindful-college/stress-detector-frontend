@@ -15,6 +15,7 @@ import { emailRegex, passwordRegex } from '../utils/common';
 import axios from 'axios';
 import { SING_UP_URL } from '../utils/api';
 import DeviceInfo from 'react-native-device-info';
+import LoadingIndicator from '../coponents/LoadingIndicator';
 
 export default function Signup({ navigation }) {
   const [user, setUser] = useState({
@@ -24,6 +25,7 @@ export default function Signup({ navigation }) {
     name: '',
     uuid: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEamil = (email) => {
     setUser((prevUser) => ({ ...prevUser, email }));
@@ -64,6 +66,7 @@ export default function Signup({ navigation }) {
       return;
     }
     try {
+      setIsLoading(true);
       const { status } = await axios.post(SING_UP_URL, user);
       if (status === 201) {
         Toast.show({
@@ -91,6 +94,8 @@ export default function Signup({ navigation }) {
           text1: 'Network Error',
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,54 +117,57 @@ export default function Signup({ navigation }) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView style={styles.container}>
-        <InputWithLabel
-          label="Email"
-          placeholder="Email"
-          value={user.email}
-          onChangeText={handleEamil}
-        />
-        <InputWithLabel
-          label="Password"
-          placeholder="Must be at least 8 characters"
-          value={user.password}
-          onChangeText={handlePassword}
-          secureTextEntry={true}
-        />
-        <InputWithLabel
-          label="Password Check"
-          placeholder="Password Check"
-          value={user.password_check}
-          onChangeText={handlePasswordCheck}
-          secureTextEntry={true}
-        />
-        <InputWithLabel
-          label="Name"
-          placeholder="Name"
-          value={user.name}
-          onChangeText={handleName}
-        />
-        {checkIfAllFieldsNotEmpty() ? (
-          <CustomButton
-            color={Colors.white}
-            backgroundColor={Colors.primary}
-            title="Sign Up"
-            onPress={handleSignup}
+    <>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView style={styles.container}>
+          <InputWithLabel
+            label="Email"
+            placeholder="Email"
+            value={user.email}
+            onChangeText={handleEamil}
           />
-        ) : (
-          <CustomButton
-            color={Colors.black}
-            backgroundColor={Colors.grey}
-            title="Sign Up"
-            disabled={true}
+          <InputWithLabel
+            label="Password"
+            placeholder="Must be at least 8 characters"
+            value={user.password}
+            onChangeText={handlePassword}
+            secureTextEntry={true}
           />
-        )}
-        <View style={styles.linkWrapper}>
-          <CustomLink handleNavigate={goToSignIn} color={Colors.primary} text="Sign In" />
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+          <InputWithLabel
+            label="Password Check"
+            placeholder="Password Check"
+            value={user.password_check}
+            onChangeText={handlePasswordCheck}
+            secureTextEntry={true}
+          />
+          <InputWithLabel
+            label="Name"
+            placeholder="Name"
+            value={user.name}
+            onChangeText={handleName}
+          />
+          {checkIfAllFieldsNotEmpty() ? (
+            <CustomButton
+              color={Colors.white}
+              backgroundColor={Colors.primary}
+              title="Sign Up"
+              onPress={handleSignup}
+            />
+          ) : (
+            <CustomButton
+              color={Colors.black}
+              backgroundColor={Colors.grey}
+              title="Sign Up"
+              disabled={true}
+            />
+          )}
+          <View style={styles.linkWrapper}>
+            <CustomLink handleNavigate={goToSignIn} color={Colors.primary} text="Sign In" />
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+      <LoadingIndicator isLoading={isLoading} color={Colors.secondary} />
+    </>
   );
 }
 

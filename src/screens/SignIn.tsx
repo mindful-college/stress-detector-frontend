@@ -18,9 +18,11 @@ import Toast from 'react-native-toast-message';
 import { emailRegex, passwordRegex } from '../utils/common';
 import CustomButton from '../coponents/CustomButton';
 import CustomLink from '../coponents/CustomLink';
+import LoadingIndicator from '../coponents/LoadingIndicator';
 
 export default function Signin({ navigation }) {
   const [user, setUser] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useUserContext();
 
   const handleSignIn = async () => {
@@ -39,6 +41,7 @@ export default function Signin({ navigation }) {
       return;
     }
     try {
+      setIsLoading(true);
       const form = new FormData();
       form.append('username', user.email);
       form.append('password', user.password);
@@ -46,6 +49,7 @@ export default function Signin({ navigation }) {
       const userObj = { email: user.email, access_token: data.access_token };
       AsyncStorage.setItem('user', JSON.stringify(userObj));
       dispatch({ type: 'SET_USER', payload: userObj });
+      setUser({ email: '', password: '' });
     } catch (e) {
       if (e.response?.status === 401) {
         Toast.show({
@@ -58,6 +62,8 @@ export default function Signin({ navigation }) {
           text1: 'Network Error',
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,51 +84,58 @@ export default function Signin({ navigation }) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        <View style={styles.logo}>
-          <Text style={styles.logoText}>STRESS</Text>
-          <Text style={styles.logoText}>DETECTOR</Text>
-        </View>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={user.email}
-            onChangeText={handleEamil}
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={user.password}
-            onChangeText={handlePassword}
-            secureTextEntry
-          />
-          {checkIfAllFieldsNotEmpty() ? (
-            <CustomButton
-              color={Colors.white}
-              backgroundColor={Colors.primary}
-              title="Sign In"
-              onPress={handleSignIn}
-            />
-          ) : (
-            <CustomButton
-              color={Colors.black}
-              backgroundColor={Colors.grey}
-              title="Sign In"
-              disabled={true}
-            />
-          )}
-          <View style={styles.linkWrapper}>
-            <CustomLink handleNavigate={goToSignUp} color={Colors.primary} text="Sign Up" />
-            <CustomLink handleNavigate={goToSignUp} color={Colors.primary} text="Reset Password" />
+    <>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <View style={styles.logo}>
+            <Text style={styles.logoText}>STRESS</Text>
+            <Text style={styles.logoText}>DETECTOR</Text>
           </View>
-        </KeyboardAvoidingView>
-      </View>
-    </TouchableWithoutFeedback>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={user.email}
+              onChangeText={handleEamil}
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={user.password}
+              onChangeText={handlePassword}
+              secureTextEntry
+            />
+            {checkIfAllFieldsNotEmpty() ? (
+              <CustomButton
+                color={Colors.white}
+                backgroundColor={Colors.primary}
+                title="Sign In"
+                onPress={handleSignIn}
+              />
+            ) : (
+              <CustomButton
+                color={Colors.black}
+                backgroundColor={Colors.grey}
+                title="Sign In"
+                disabled={true}
+              />
+            )}
+            <View style={styles.linkWrapper}>
+              <CustomLink handleNavigate={goToSignUp} color={Colors.primary} text="Sign Up" />
+              <CustomLink
+                handleNavigate={goToSignUp}
+                color={Colors.primary}
+                text="Reset Password"
+              />
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
+      <LoadingIndicator isLoading={isLoading} color={Colors.secondary} />
+    </>
   );
 }
 
