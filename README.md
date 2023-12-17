@@ -1,8 +1,10 @@
-# Stress Detector - Frontend
+# stress-detector-frontend
+
+The frontend code for stress detector app
 
 ## Overview
 
-The React Native Stress Detector App is a mobile application designed to predict users' stress levels based on their data. This innovative app allows users to share static data, including sleep hours, step counts, and social media usage. Additionally, users can actively participate in daily check-ins using text, audio, and video features.
+The Stress Detector App is a mobile application designed to predict users' stress levels based on their data. This app allows users to share static data, including sleep hours, step counts, and social media usage. Additionally, users can actively participate in daily check-ins using text, audio, and video features. It also provides data visualization, giving users insights to manage their stress levels.
 
 ## Project Objectives
 
