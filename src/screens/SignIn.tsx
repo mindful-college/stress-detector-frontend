@@ -76,7 +76,7 @@ export default function Signin({ navigation }) {
   };
 
   const goToSignUp = () => {
-    navigation.navigate('SignUp');
+    navigation.navigate('SIGNUP');
   };
 
   const checkIfAllFieldsNotEmpty = () => {

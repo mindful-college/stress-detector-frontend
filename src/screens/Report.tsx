@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function CheckIn() {
+export default function Report() {
   return (
     <View>
-      <Text>CheckIn screen</Text>
+      <Text>Report screen</Text>
     </View>
   );
 }

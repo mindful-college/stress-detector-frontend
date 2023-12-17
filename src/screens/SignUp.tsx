@@ -80,7 +80,7 @@ export default function Signup({ navigation }) {
           name: '',
           uuid: '',
         });
-        navigation.navigate('SignIn');
+        navigation.navigate('SIGNIN');
       }
     } catch (e) {
       if (e.response?.status === 409) {
@@ -100,7 +100,7 @@ export default function Signup({ navigation }) {
   };
 
   const goToSignIn = () => {
-    navigation.navigate('SignIn');
+    navigation.navigate('SIGNIN');
   };
 
   const checkIfAllFieldsNotEmpty = () => {
