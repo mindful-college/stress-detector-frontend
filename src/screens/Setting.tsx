@@ -15,7 +15,7 @@ export default function Setting() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
       };
-      const { status } = await axios.post(SING_OUT_URL, { headers });
+      const { status } = await axios.post(SING_OUT_URL, {}, { headers });
       if (status === 200) {
         AsyncStorage.removeItem('user');
         dispatch({ type: 'REMOVE_USER' });
