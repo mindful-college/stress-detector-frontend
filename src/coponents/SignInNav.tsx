@@ -12,7 +12,7 @@ export default function SingInNav(){
             initialRouteName="SIGNIN"
             screenOptions={{
                 headerBackTitleVisible: false,
-                headerTintColor: Colors.black,
+                headerTintColor: '#000000',
             }}>
             <Stack.Screen name="SIGNIN" component={SignIn} />
             <Stack.Screen name="SIGNUP" component={Signup} />

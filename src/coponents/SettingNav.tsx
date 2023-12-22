@@ -13,7 +13,7 @@ export default function SettingNav(){
             initialRouteName="Setting"
             screenOptions={{
                 headerBackTitleVisible: false,
-                headerTintColor: Colors.black,
+                headerTintColor: Colors.header_black,
         }}>
             <Stack.Screen name="Setting" component={Setting} options={{title:"SETTING"}}/>
             <Stack.Screen name="CONTACTUS" component={Contactus}/>
