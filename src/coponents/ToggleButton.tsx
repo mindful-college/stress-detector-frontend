@@ -14,6 +14,7 @@ export default function ToggleButton(){
         ios_backgroundColor={Colors.grey}
         onValueChange={toggleSwitch}
         value={isEnabled}
+        style={styles.switch}
       />
     </View>
   );
@@ -21,8 +22,12 @@ export default function ToggleButton(){
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  switch: {
+    transform:[
+      {scaleX:0.8},
+      {scaleY:0.8}],
+  }
 });
