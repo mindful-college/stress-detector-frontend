@@ -1,18 +1,16 @@
 import React, { useEffect, useReducer } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import CheckIn from './screens/CheckIn';
-import Report from './screens/Report';
-import Setting from './screens/Setting';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SignIn from './screens/SignIn';
 import { UserContext, initialUser, userReducer } from './context/UserContext';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { SafeAreaView, StyleSheet, Text, Image } from 'react-native';
-import Signup from './screens/SignUp';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { Colors } from './utils/colors';
 
-const Tab = createBottomTabNavigator();
+import SignInNav from './coponents/SignInNav';
+import CheckInNav from './coponents/CheckInNav';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [state, dispatch] = useReducer(userReducer, initialUser);
@@ -28,65 +26,17 @@ export default function App() {
     checkToken();
   }, []);
 
-  const CustomTabBarLabel = ({ label, focused }) => (
-    <Text style={focused ? styles.activeText : styles.inactiveText}>{label}</Text>
-  );
-
-  const CustomTabBarIcon = ({ focused, name }) => {
-    if (name === 'CHECK-IN' && focused) {
-      return <Image style={styles.icon} source={require(`./images/checkin_active.png`)} />;
-    }
-    if (name === 'CHECK-IN' && !focused) {
-      return <Image style={styles.icon} source={require(`./images/checkin_inactive.png`)} />;
-    }
-    if (name === 'REPORT' && focused) {
-      return <Image style={styles.icon} source={require(`./images/report_active.png`)} />;
-    }
-    if (name === 'REPORT' && !focused) {
-      return <Image style={styles.icon} source={require(`./images/report_inactive.png`)} />;
-    }
-    if (name === 'SETTING' && focused) {
-      return <Image style={styles.icon} source={require(`./images/setting_active.png`)} />;
-    }
-    if (name === 'SETTING' && !focused) {
-      return <Image style={styles.icon} source={require(`./images/setting_inactive.png`)} />;
-    }
-    return;
-  };
-
   return (
     <UserContext.Provider value={contextValue}>
       <SafeAreaView style={styles.container}>
         <NavigationContainer>
-          {!state.user ? (
-            <Tab.Navigator
-              initialRouteName="SIGNIN"
-              screenOptions={() => ({
-                tabBarStyle: {
-                  display: 'none',
-                },
-              })}>
-              <Tab.Screen name="SIGNIN" component={SignIn} />
-              <Tab.Screen name="SIGNUP" component={Signup} />
-            </Tab.Navigator>
-          ) : (
-            <Tab.Navigator
-              initialRouteName="CHECK-IN"
-              screenOptions={({ route }) => ({
-                tabBarActiveTintColor: Colors.primary,
-                tabBarStyle: { height: 64 },
-                tabBarLabel: ({ focused }) => (
-                  <CustomTabBarLabel label={route.name} focused={focused} />
-                ),
-                tabBarIcon: ({ focused }) => (
-                  <CustomTabBarIcon focused={focused} name={route.name} />
-                ),
-              })}>
-              <Tab.Screen name="CHECK-IN" component={CheckIn} />
-              <Tab.Screen name="REPORT" component={Report} />
-              <Tab.Screen name="SETTING" component={Setting} />
-            </Tab.Navigator>
-          )}
+          <Stack.Navigator>
+            {!state.user ? (
+              <Stack.Screen name="SIGNINNAV" component={SignInNav} options={{headerShown:false}}/>
+            ) : (
+              <Stack.Screen name="MAIN" component={CheckInNav} options={{headerShown: false}}/>
+            )}
+          </Stack.Navigator>
         </NavigationContainer>
         <Toast />
       </SafeAreaView>
@@ -98,19 +48,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-  },
-  activeText: {
-    fontWeight: '500',
-    fontSize: 12,
-    color: Colors.primary,
-  },
-  inactiveText: {
-    fontWeight: '400',
-    fontSize: 12,
-    color: Colors.black,
-  },
-  icon: {
-    width: 30,
-    height: 30,
   },
 });
