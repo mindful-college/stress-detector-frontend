@@ -32,9 +32,9 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator>
             {!state.user ? (
-              <Stack.Screen name="SIGNIN" component={SignInNav} options={{headerShown:false}}/>
+              <Stack.Screen name="SIGNINNAV" component={SignInNav} options={{headerShown:false}}/>
             ) : (
-              <Stack.Screen name="CHECKIN" component={CheckInNav} options={{headerShown: false}}/>
+              <Stack.Screen name="MAIN" component={CheckInNav} options={{headerShown: false}}/>
             )}
           </Stack.Navigator>
         </NavigationContainer>

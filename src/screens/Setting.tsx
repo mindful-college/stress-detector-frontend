@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, View, StyleSheet, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
@@ -44,21 +44,35 @@ export default function Setting({navigation}) {
     navigation.navigate('TERMSOFUSE');
   };
 
-
   return (
-    <View>
+    <View style={styles.container}>
       <View>
-          <View>
-            <CustomLink handleNavigate={goToContact} color={Colors.primary} text="Contact" />
+          <View style={styles.container1}>
+            <Text>Contact Us</Text>
+            <CustomLink handleNavigate={goToContact} color={Colors.primary} text="send" />
           </View>
-          <View>
-            <CustomLink handleNavigate={goToPolicy} color={Colors.primary} text="Policy" />
+          <View style={styles.container1}>
+            <Text>Policy</Text>
+            <CustomLink handleNavigate={goToPolicy} color={Colors.primary} text="go" />
           </View>
-          <View>
-            <CustomLink handleNavigate={goToUse} color={Colors.primary} text="Use" />
+          <View style={styles.container1}>
+            <Text>Terms of Use</Text>
+            <CustomLink handleNavigate={goToUse} color={Colors.primary} text="go" />
           </View>
       </View>  
       <Button title="Sign Out" onPress={handleSignOut}/>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container1: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginHorizontal: '5%',
+    justifyContent: 'space-between',
+  },
+  container: {
+    flex: 1,
+  },
+});
