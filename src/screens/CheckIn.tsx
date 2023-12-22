@@ -59,7 +59,7 @@ export default function CheckIn() {
     }
   };
   const setNextChatbotMessage = () => {
-    const [nextMessage, nextStep] = getChatbotMessage(step, conversation.length, text);
+    const [nextMessage, nextStep] = getChatbotMessage(step, conversation.length, text.trim());
     setIsLoading(true);
     setTimeout(() => {
       setConversation((prev) => [...prev, nextMessage]);
@@ -69,22 +69,23 @@ export default function CheckIn() {
   };
 
   const appendReport = () => {
-    if (text.toLocaleLowerCase() === 'skip') return;
+    const trimedText = text.trim();
+    if (trimedText.toLocaleLowerCase() === 'skip') return;
 
     if (step === 'greeting' || step === 'followup' || step === 'text') {
       setReport((prev) => ({
         ...prev,
-        text: [...prev.text, text],
+        text: [...prev.text, trimedText],
       }));
       return;
     }
 
-    if (isNaN(Number(text))) return;
+    if (isNaN(Number(trimedText))) return;
 
     if (step === 'study_hours' || step === 'studyError') {
       setReport((prev) => ({
         ...prev,
-        study_hours: Number(text),
+        study_hours: Number(trimedText),
       }));
       return;
     }
@@ -92,7 +93,7 @@ export default function CheckIn() {
     if (step === 'work_hours' || step === 'workError') {
       setReport((prev) => ({
         ...prev,
-        work_hours: Number(text),
+        work_hours: Number(trimedText),
       }));
       return;
     }
