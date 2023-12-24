@@ -1,15 +1,18 @@
+import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
-import React from 'react';
-// import { Linking } from 'react-native';
+import { useUserContext } from '../context/UserContext';
 
+export default function Policy() {
+  const { dispatch } = useUserContext();
 
-export default function Policy(){
-    // useEffect(() => {
-    //     Linking.openSettings();
-    // })
-    return (
-        <View>
-            <Text>Policy</Text>
-        </View>
-    )
+  useEffect(() => {
+    dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: false }); // Hide the tab bar
+
+    return () => dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: true }); // Show on unmount
+  }, [dispatch]);
+  return (
+    <View>
+      <Text>Policy</Text>
+    </View>
+  );
 }

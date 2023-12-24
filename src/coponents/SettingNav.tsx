@@ -1,24 +1,25 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
 import Setting from '../screens/Setting';
-import Contactus from "../screens/ContactUs";
-import TermsOfUse from "../screens/TermsOfUse";
-import Policy from "../screens/Policy";
-import {Colors} from "../utils/colors";
+import Contactus from '../screens/ContactUs';
+import TermsOfUse from '../screens/TermsOfUse';
+import Policy from '../screens/Policy';
+import { Colors } from '../utils/colors';
+
 const Stack = createNativeStackNavigator();
 
-export default function SettingNav(){
-    return (
-        <Stack.Navigator 
-            initialRouteName="Setting"
-            screenOptions={{
-                headerBackTitleVisible: false,
-                headerTintColor: Colors.header_black,
-        }}>
-            <Stack.Screen name="Setting" component={Setting} options={{title:"SETTING"}}/>
-            <Stack.Screen name="CONTACTUS" component={Contactus}/>
-            <Stack.Screen name="TERMSOFUSE" component={TermsOfUse}/>
-            <Stack.Screen name="POLICY" component={Policy}/>
-        </Stack.Navigator>
-    );
+export default function SettingNav() {
+  return (
+    <Stack.Navigator
+      initialRouteName="Setting"
+      screenOptions={{
+        headerBackTitleVisible: false,
+        headerTintColor: Colors.header_black,
+      }}>
+      <Stack.Screen name="Setting" component={Setting} options={{ title: 'SETTING' }} />
+      <Stack.Screen name="CONTACTUS" component={Contactus} options={{ title: 'CONTACT US' }} />
+      <Stack.Screen name="TERMSOFUSE" component={TermsOfUse} options={{ title: 'Terms of Use' }} />
+      <Stack.Screen name="POLICY" component={Policy} options={{ title: 'Privacy Policy' }} />
+    </Stack.Navigator>
+  );
 }
