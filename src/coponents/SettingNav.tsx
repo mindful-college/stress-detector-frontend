@@ -10,12 +10,12 @@ const Stack = createNativeStackNavigator();
 export default function SettingNav(){
     return (
         <Stack.Navigator 
-            initialRouteName="Setting"
+            initialRouteName="SETTINGNAV"
             screenOptions={{
                 headerBackTitleVisible: false,
                 headerTintColor: Colors.header_black,
         }}>
-            <Stack.Screen name="Setting" component={Setting} options={{title:"SETTING"}}/>
+            <Stack.Screen name="SETTINGNAV" component={Setting} options={{title:"SETTING"}}/>
             <Stack.Screen name="CONTACTUS" component={Contactus}/>
             <Stack.Screen name="TERMSOFUSE" component={TermsOfUse}/>
             <Stack.Screen name="POLICY" component={Policy}/>

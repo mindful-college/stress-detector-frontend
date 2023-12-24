@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
 import CustomLink from '../coponents/CustomLink';
 import ToggleButton from '../coponents/ToggleButton';
-import CustomeButton from '../coponents/CustomButton';
+
 
 
 export default function Setting({navigation}) {
@@ -107,14 +107,14 @@ export default function Setting({navigation}) {
       <View>
         <Text style={styles.title}>Permission Setting</Text>
           {permission.map((item)=>(
-            <DrawItemWithToggle item={item}/>
+            <DrawItemWithToggle item={item} key={item}/>
           ))}
       </View>
 
       <View>
          <Text style={styles.title}/>
         {support.map((item)=>(
-            <DrawItemWithLink item={item}/>
+            <DrawItemWithLink item={item} key={item}/>
         ))}
       </View>
 
