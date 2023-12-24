@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
 import { useUserContext } from '../context/UserContext';
 import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -27,6 +35,7 @@ const Contactus: React.FC<{}> = () => {
   ];
 
   const [value, setValue] = useState('1');
+  const [comment, setComment] = useState('');
 
   const renderItem = (item) => {
     return (
@@ -45,8 +54,9 @@ const Contactus: React.FC<{}> = () => {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.selectContainer1}>
-        <Text style={styles.textForSelectSection}>What do you want to tell us?</Text>
+        <Text style={styles.text}>What do you want to tell us?</Text>
       </View>
+
       <View style={styles.selectContainer2}>
         <Dropdown
           style={styles.dropdown}
@@ -64,6 +74,29 @@ const Contactus: React.FC<{}> = () => {
           renderItem={renderItem}
         />
       </View>
+
+      <View style={styles.selectContainer3}>
+        <Text style={styles.text}>Content</Text>
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          value={comment}
+          onChangeText={setComment}
+          placeholder="Write here up to 500 characters..."
+          autoCorrect={false}
+          autoCapitalize="none"
+          multiline={true}
+          maxLength={500}
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>SUBMIT</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -79,13 +112,17 @@ const styles = StyleSheet.create({
   },
   selectContainer2: {
     paddingHorizontal: 5,
-    paddingTop: 5,
   },
-  textForSelectSection: {
-    fontSize: 15,
+  selectContainer3: {
+    paddingHorizontal: 20,
+    marginTop: 35,
+  },
+  text: {
+    fontSize: 14,
   },
   dropdown: {
-    margin: 15,
+    marginTop: 13,
+    marginHorizontal: 15,
     height: 40,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -102,17 +139,42 @@ const styles = StyleSheet.create({
   },
   textItem: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
   },
   placeholderStyle: {
-    fontSize: 15,
+    fontSize: 14,
   },
   selectedTextStyle: {
-    fontSize: 15,
+    fontSize: 14,
   },
   iconStyle: {
     width: 30,
     height: 30,
+  },
+  inputContainer: {
+    paddingHorizontal: 22,
+    marginTop: 13,
+  },
+  input: {
+    height: 300,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingTop: 10,
+    paddingHorizontal: 9,
+    borderColor: Colors.lightGrey,
+    fontSize: 14,
+  },
+  buttonContainer: { paddingHorizontal: 22, marginTop: 70 },
+  button: {
+    backgroundColor: Colors.primary,
+    padding: 10,
+    borderRadius: 10,
+  },
+  buttonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.white,
+    textAlign: 'center',
   },
 });
 
