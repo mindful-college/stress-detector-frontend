@@ -27,7 +27,8 @@ export default function Account(){
             if (res.status === 200) {
                 const updatedUserInfo = {
                     ...userInfo,
-                    username: res.data.username
+                    username: res.data.name,
+                    points: res.data.points
                 }
                 setUserInfo(updatedUserInfo)
             }
