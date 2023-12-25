@@ -3,7 +3,6 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput } from "react-nativ
 import {Colors} from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import { USER_INFO_URL } from "../utils/api";
-// import InputWithLabel from "./InputWithLabel";
 import axios from 'axios';
 
 export default function Account(){
