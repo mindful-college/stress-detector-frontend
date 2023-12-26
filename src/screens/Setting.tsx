@@ -7,24 +7,15 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
 import CustomLink from '../coponents/CustomLink';
-import ToggleButton from '../coponents/ToggleButton';
-import CustomeButton from '../coponents/CustomButton';
+// import ToggleButton from '../coponents/ToggleButton';
+import Permission from '../coponents/Permission';
+import Account from '../coponents/Account';
+
 
 export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
-  const [userInfo, setUserInfo] = useState({
-    username: 'Sample Name',
-    points: '1000',
-  });
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [permission, setPermission] = useState([
-    'Step Counts',
-    'Sleep Hours',
-    'Heart Rate',
-    'Social Media Usage',
-    'Notification',
-  ]);
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
+
 
   const handleSignOut = async () => {
     try {
@@ -47,21 +38,18 @@ export default function Setting({ navigation }) {
         text1: 'Network Error',
       });
     }
-  };
+  }
 
   const goToContact = () => {
     navigation.navigate('CONTACTUS');
-  };
+  }
   const goToPolicy = () => {
     navigation.navigate('POLICY');
-  };
+  }
   const goToUse = () => {
     navigation.navigate('TERMSOFUSE');
-  };
 
-  const handleEdit = () => {
-    setIsEnabled(!isEnabled);
-  };
+  }
 
   const checkSupportType = (name) => {
     if (name === 'Contact Us') {
@@ -74,13 +62,6 @@ export default function Setting({ navigation }) {
     return;
   };
 
-  const DrawItemWithToggle = (props) => (
-    <View style={styles.block}>
-      <Text style={styles.item}>{props.item}</Text>
-      <ToggleButton />
-    </View>
-  );
-
   const DrawItemWithLink = (props) => (
     <View style={styles.block}>
       <Text style={styles.item}>{props.item}</Text>
@@ -90,39 +71,14 @@ export default function Setting({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <View>
-        <Text style={styles.title}>Account</Text>
-        <View style={styles.block}>
-          {isEnabled ? (
-            <Text style={styles.item}>!!</Text>
-          ) : (
-            <Text style={styles.item}>{userInfo.username}</Text>
-          )}
 
-          <TouchableOpacity
-            style={styles.button}
-            // style={[styles.buttonText, { color }]}
-            onPress={handleEdit}>
-            <Text style={styles.buttonText}>{isEnabled ? 'Save' : 'Edit'}</Text>
-          </TouchableOpacity>
-          {/* <CustomeButton title="Edit" color={Colors.primary}/> */}
-        </View>
-        <View style={styles.block}>
-          <Text style={styles.item}>{userInfo.points} Points</Text>
-        </View>
-      </View>
-
+      <Account/>
+      <Permission/>
+      
       <View>
-        <Text style={styles.title}>Permission Setting</Text>
-        {permission.map((item) => (
-          <DrawItemWithToggle item={item} />
-        ))}
-      </View>
-
-      <View>
-        <Text style={styles.title} />
-        {support.map((item) => (
-          <DrawItemWithLink item={item} />
+         <Text style={styles.title}/>
+        {support.map((item)=>(
+            <DrawItemWithLink item={item} key={item}/>
         ))}
       </View>
 
@@ -147,7 +103,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor:Colors.grey,
-    width: '100%',
   },
   title: {
     fontSize: 20,

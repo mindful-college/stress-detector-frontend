@@ -8,10 +8,11 @@ import { Colors } from '../utils/colors';
 
 const Stack = createNativeStackNavigator();
 
+
 export default function SettingNav() {
   return (
     <Stack.Navigator
-      initialRouteName="Setting"
+      initialRouteName="SETTINGNAV"
       screenOptions={{
         headerBackTitleVisible: false,
         headerTintColor: Colors.header_black,
@@ -23,3 +24,4 @@ export default function SettingNav() {
     </Stack.Navigator>
   );
 }
+
