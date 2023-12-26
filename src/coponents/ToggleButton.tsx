@@ -9,7 +9,6 @@ export default function ToggleButton(props){
   const [isEnabled, setIsEnabled] = useState(props.isAllowed);
   const { state, dispatch } = useUserContext();
   const toggleSwitch = async() => {
-    setIsEnabled(!isEnabled);
     const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
@@ -17,6 +16,9 @@ export default function ToggleButton(props){
     const permission_type = props.item.toLowerCase().replaceAll(" ", "_")
     try {
         const res = await axios.put(`${PERMISSION_URL}?permission_type=${permission_type}&permission=${!isEnabled}`, {} ,{ headers });
+        if(res.status === 200){
+          setIsEnabled(!isEnabled);
+        }
     }catch(err){
         console.error(err)
     }

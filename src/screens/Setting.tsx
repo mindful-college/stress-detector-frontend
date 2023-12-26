@@ -7,7 +7,6 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
 import CustomLink from '../coponents/CustomLink';
-// import ToggleButton from '../coponents/ToggleButton';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
 
@@ -102,7 +101,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // backgroundColor:Colors.grey,
   },
   title: {
     fontSize: 20,
