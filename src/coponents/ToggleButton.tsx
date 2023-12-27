@@ -1,52 +1,90 @@
 import React, {useState,useEffect} from 'react';
-import {Alert, View, Switch, StyleSheet, Modal, Text, Pressable, Linking} from 'react-native';
+import {Alert, View, Switch, StyleSheet, Modal, Text, Pressable, Linking, AppState} from 'react-native';
 import { Colors } from '../utils/colors';
 import axios from 'axios';
 import { useUserContext } from '../context/UserContext';
 import {PERMISSION_URL} from '../utils/api'
-import {checkNotifications,requestNotifications} from 'react-native-permissions';
+import {checkNotifications} from 'react-native-permissions';
 
 export default function ToggleButton(props){
-  const [isEnabled, setIsEnabled] = useState(props.isAllowed);
+  //Bool for toggle button
+  const [isToggleEnabled, setIsToggleEnabled] = useState(props.isAllowed);
+  //Bool for modal screen
   const [modalVisible, setModalVisible] = useState(false);
+  //userinfo in Reducer
   const { state, dispatch } = useUserContext();
-  const [notiPermission,setNotiPermission] = useState(false);
+  //Bool for permission
+  const [permission,setPermission] = useState(false);
+
+  //Link to mobile setting page
   const toSetting = () => {
     Linking.openSettings();
+    setModalVisible(false);
   }
-  const checkNotificationPermission = props.item === 'Notification'? async () => {
-    await checkNotifications()
-    .then((status) => {
-        setNotiPermission(status["status"] === "granted")
-      })
-      .catch((error) => console.log('checkNotifications', error));
-  }:()=>{
-    //Health Permission
-    setNotiPermission(true)
-}
-  useEffect(()=>{
-    checkNotificationPermission();
-  })
-  const toggleSwitch = async() => {
-    checkNotificationPermission()
-    if(!notiPermission){
-      setModalVisible(true)
-    }else{
-      const headers = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${state.user?.access_token}`,
-      };
-      const permission_type = props.item.toLowerCase().replaceAll(" ", "_")
-      try {
-          const res = await axios.put(`${PERMISSION_URL}?permission_type=${permission_type}&permission=${!isEnabled}`, {} ,{ headers });
-          if(res.status === 200){
-            setIsEnabled(!isEnabled);
-          }
-      }catch(err){
-          console.error(err)
-      }
+
+  // Send API Request to update permission 
+  const updatePermission = async (newPermission) => {
+    // Header for API call
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${state.user?.access_token}`,
+    };
+    //Text justification for API call
+    const permission_type = props.item.toLowerCase().replaceAll(" ", "_")
+    try {
+        const res = await axios.put(`${PERMISSION_URL}?permission_type=${permission_type}&permission=${newPermission}`, {} ,{ headers });
+        // check response to set Permission
+        if(res.status === 200){
+          setIsToggleEnabled(newPermission);
+        }
+    //Handle error
+    }catch(err){
+        console.error(err);
     }
   }
+
+  // check Mobile setting permission 
+  const checkNotificationPermission = props.item === 'Notification'? 
+    async () => {
+      //get mobile setting notification permission
+      await checkNotifications()
+      .then((status) => {
+        //set mobile setting permission in permission
+        setPermission(status["status"] === "granted");
+        //Handle if it is denied
+        if(status["status"] !== "granted"){
+          //Turn off the switch button
+          setIsToggleEnabled(false);
+          //Set false in server data
+          updatePermission(false);
+        }
+      })
+      //error handle for getting mobile setting permission
+      .catch((error) => console.log('checkNotifications', error));
+    }: async ()=>{
+    // Implement Health Permission
+    setPermission(true)
+  }
+
+  useEffect(()=>{
+    //To set initial data
+    checkNotificationPermission();
+    //To handle permission after mobile setting changed
+    const listener = AppState.addEventListener('change', checkNotificationPermission);
+    return () =>{
+      listener.remove();
+    };
+  });
+
+  //To handle switch toggle button
+  const toggleSwitch = async() => {
+    if(!permission){
+      setModalVisible(true);
+    }else{
+      updatePermission(!isToggleEnabled);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Modal
@@ -69,7 +107,6 @@ export default function ToggleButton(props){
               <Pressable
                 style={[styles.buttonRight]}
                 onPress={() => {
-                  checkNotificationPermission()
                   setModalVisible(!modalVisible)
                 }}>
                 <Text style={styles.textStyle}>Close</Text>
@@ -83,7 +120,7 @@ export default function ToggleButton(props){
         thumbColor={Colors.white}
         ios_backgroundColor={Colors.grey}
         onValueChange={toggleSwitch}
-        value={isEnabled}
+        value={isToggleEnabled}
         style={styles.switch}
       />
     </View>
