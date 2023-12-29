@@ -18,24 +18,25 @@ const Contactus: React.FC<{}> = () => {
   const items = [
     {
       label: 'Question',
-      value: '1',
+      value: 'Question',
     },
     {
       label: 'Bug Report',
-      value: '2',
+      value: 'Bug Report',
     },
     {
       label: 'Suggestion',
-      value: '3',
+      value: 'Suggestion',
     },
     {
       label: 'Compliment',
-      value: '4',
+      value: 'Compliment',
     },
   ];
 
-  const [value, setValue] = useState('1');
+  const [value, setValue] = useState('Question');
   const [comment, setComment] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const renderItem = (item) => {
     return (
@@ -43,6 +44,11 @@ const Contactus: React.FC<{}> = () => {
         <Text style={styles.textItem}>{item.label}</Text>
       </View>
     );
+  };
+
+  const handleOnPress = () => {
+    console.log(value);
+    console.log(comment);
   };
 
   useEffect(() => {
@@ -93,7 +99,10 @@ const Contactus: React.FC<{}> = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[styles.button, !comment ? styles.disabledButton : null]}
+          onPress={handleOnPress}
+          disabled={!comment}>
           <Text style={styles.buttonText}>SUBMIT</Text>
         </TouchableOpacity>
       </View>
@@ -170,6 +179,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
+  disabledButton: { backgroundColor: Colors.grey, padding: 10, borderRadius: 10 },
   buttonText: {
     fontSize: 17,
     fontWeight: '600',

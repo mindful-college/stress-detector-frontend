@@ -11,11 +11,9 @@ import CustomLink from '../coponents/CustomLink';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
 
-
 export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
-
 
   const handleSignOut = async () => {
     try {
@@ -38,18 +36,17 @@ export default function Setting({ navigation }) {
         text1: 'Network Error',
       });
     }
-  }
+  };
 
   const goToContact = () => {
     navigation.navigate('CONTACTUS');
-  }
+  };
   const goToPolicy = () => {
     navigation.navigate('POLICY');
-  }
+  };
   const goToUse = () => {
     navigation.navigate('TERMSOFUSE');
-
-  }
+  };
 
   const checkSupportType = (name) => {
     if (name === 'Contact Us') {
@@ -71,14 +68,13 @@ export default function Setting({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
+      {/* <Account />
+      <Permission /> */}
 
-      <Account/>
-      <Permission/>
-      
       <View>
-         <Text style={styles.title}/>
-        {support.map((item)=>(
-            <DrawItemWithLink item={item} key={item}/>
+        <Text style={styles.title} />
+        {support.map((item) => (
+          <DrawItemWithLink item={item} key={item} />
         ))}
       </View>
 
