@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import { useUserContext } from '../context/UserContext';
 import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
-import { CONTACTUS_URL } from '../utils/api';
-import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import { submitContactUsForm } from '../utils/userService';
 
 const Contactus: React.FC<{}> = () => {
+  type FormData = {
+    email: string | undefined;
+    support_type: string;
+    message: string;
+  };
+
   const items = [
     {
       label: 'Question',
@@ -55,30 +52,8 @@ const Contactus: React.FC<{}> = () => {
     );
   };
 
-  const submitContactUsForm = async ({ email, support_type, message }) => {
-    try {
-      const response = await axios.post(
-        CONTACTUS_URL,
-        {
-          email,
-          support_type,
-          message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        },
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error submitting the form:', error);
-      throw error;
-    }
-  };
-
   const submitFormMutation = useMutation({
-    mutationFn: submitContactUsForm,
+    mutationFn: (formData: FormData) => submitContactUsForm(userToken, formData),
     onSuccess: () => {
       console.log('Form submitted successfully');
     },
@@ -88,13 +63,12 @@ const Contactus: React.FC<{}> = () => {
   });
 
   const handleOnPress = () => {
-    console.log(value);
-    console.log(comment);
-    submitFormMutation.mutate({
+    const formData: FormData = {
       email: userEmail,
       support_type: value,
       message: comment,
-    });
+    };
+    submitFormMutation.mutate(formData);
   };
 
   return (
