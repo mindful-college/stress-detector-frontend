@@ -11,10 +11,11 @@ import {
 import { useUserContext } from '../context/UserContext';
 import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
+import { CONTACTUS_URL } from '../utils/api';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
 
 const Contactus: React.FC<{}> = () => {
-  const { dispatch } = useUserContext();
-
   const items = [
     {
       label: 'Question',
@@ -34,9 +35,17 @@ const Contactus: React.FC<{}> = () => {
     },
   ];
 
+  const { state, dispatch } = useUserContext();
   const [value, setValue] = useState('Question');
   const [comment, setComment] = useState('');
-  const [isDisabled, setIsDisabled] = useState(false);
+  const userToken = state.user?.access_token;
+  const userEmail = state.user?.email;
+
+  useEffect(() => {
+    dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: false });
+
+    return () => dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: true });
+  }, [dispatch]);
 
   const renderItem = (item) => {
     return (
@@ -46,16 +55,47 @@ const Contactus: React.FC<{}> = () => {
     );
   };
 
+  const submitContactUsForm = async ({ email, support_type, message }) => {
+    try {
+      const response = await axios.post(
+        CONTACTUS_URL,
+        {
+          email,
+          support_type,
+          message,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting the form:', error);
+      throw error;
+    }
+  };
+
+  const submitFormMutation = useMutation({
+    mutationFn: submitContactUsForm,
+    onSuccess: () => {
+      console.log('Form submitted successfully');
+    },
+    onError: (error) => {
+      console.error('Error submitting form: ', error);
+    },
+  });
+
   const handleOnPress = () => {
     console.log(value);
     console.log(comment);
+    submitFormMutation.mutate({
+      email: userEmail,
+      support_type: value,
+      message: comment,
+    });
   };
-
-  useEffect(() => {
-    dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: false });
-
-    return () => dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: true });
-  }, [dispatch]);
 
   return (
     <SafeAreaView style={styles.safeContainer}>
