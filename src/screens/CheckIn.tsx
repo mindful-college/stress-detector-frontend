@@ -16,6 +16,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { ChatbotKey, Conversation, Report } from '../types/checkin';
 import LoadingDots from 'react-native-loading-dots';
 import { getChatbotMessage } from '../utils/checkin';
+import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
+import SadFaceSvg from '../svg/SadFaceSvg';
+import StraightFaceSvg from '../svg/StraightFaceSvg';
+import SmileyFaceSvg from '../svg/SmileyFaceSvg';
+import HappyFaceSvg from '../svg/HappyFaceSvg';
 
 export default function CheckIn() {
   const [text, setText] = useState('');
@@ -63,31 +68,31 @@ export default function CheckIn() {
         case 5:
           return (
             <View key={chat.id} style={styles.rightBox}>
-              <Image style={styles.emoji} source={require('../images/throw-up-face.png')} />
+              <ThrowUpFaceSvg width="36" height="36" strokeWidth="4" />
             </View>
           );
         case 4:
           return (
             <View key={chat.id} style={styles.rightBox}>
-              <Image style={styles.emoji} source={require('../images/sad-face.png')} />
+              <SadFaceSvg width="36" height="36" strokeWidth="4" />
             </View>
           );
         case 3:
           return (
             <View key={chat.id} style={styles.rightBox}>
-              <Image style={styles.emoji} source={require('../images/straight-face.png')} />
+              <StraightFaceSvg width="36" height="36" strokeWidth="4" />
             </View>
           );
         case 2:
           return (
             <View key={chat.id} style={styles.rightBox}>
-              <Image style={styles.emoji} source={require('../images/smiley-face.png')} />
+              <SmileyFaceSvg width="36" height="36" strokeWidth="4" />
             </View>
           );
         case 1:
           return (
             <View key={chat.id} style={styles.rightBox}>
-              <Image style={styles.emoji} source={require('../images/happy-face.png')} />
+              <HappyFaceSvg width="36" height="36" strokeWidth="4" />
             </View>
           );
       }
@@ -256,19 +261,21 @@ export default function CheckIn() {
         transparent={true}>
         <View style={[styles.modalContainer, { width: width }]}>
           <TouchableOpacity onPress={() => setStressLevel(5)}>
-            <Image style={styles.emoji} source={require('../images/throw-up-face.png')} />
+            <ThrowUpFaceSvg width="36" height="36" strokeWidth="4" />
+            <Text style={styles.emojiText}>BAD</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(4)}>
-            <Image style={styles.emoji} source={require('../images/sad-face.png')} />
+            <SadFaceSvg width="36" height="36" strokeWidth="4" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(3)}>
-            <Image style={styles.emoji} source={require('../images/straight-face.png')} />
+            <StraightFaceSvg width="36" height="36" strokeWidth="4" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(2)}>
-            <Image style={styles.emoji} source={require('../images/smiley-face.png')} />
+            <SmileyFaceSvg width="36" height="36" strokeWidth="4" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(1)}>
-            <Image style={styles.emoji} source={require('../images/happy-face.png')} />
+            <HappyFaceSvg width="36" height="36" strokeWidth="4" />
+            <Text style={styles.emojiText}>GOOD</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -335,4 +342,5 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
+  emojiText: { marginTop: 8, fontSize: 10, textAlign: 'center' },
 });
