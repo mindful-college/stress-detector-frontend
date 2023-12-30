@@ -23,6 +23,7 @@ import StraightFaceSvg from '../svg/StraightFaceSvg';
 import SmileyFaceSvg from '../svg/SmileyFaceSvg';
 import HappyFaceSvg from '../svg/HappyFaceSvg';
 import ChatBox from '../coponents/ChatBox';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 export default function CheckIn() {
   const [text, setText] = useState('');
@@ -39,6 +40,7 @@ export default function CheckIn() {
   });
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
+  const headerHeight = useHeaderHeight();
 
   const setNextChatbotMessage = () => {
     const [nextMessage, nextStep] = getChatbotMessage(step, conversation.length, text.trim());
@@ -153,45 +155,48 @@ export default function CheckIn() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
-      <ScrollView
-        ref={scrollViewRef}
-        onContentSizeChange={() => {
-          scrollViewRef?.current?.scrollToEnd({ animated: true });
-        }}
-        style={{ maxHeight: height - 60 }}>
-        {conversation.map((chat) => (
-          <View key={chat.id}>
-            <ChatBox chat={chat} />
-          </View>
-        ))}
-        {isLoading && (
-          <View style={{ width: 80, marginBottom: 16 }}>
-            <LoadingDots bounceHeight={10} size={12} />
-          </View>
-        )}
-      </ScrollView>
-      <View style={styles.inputWrapper}>
-        <TextInput
-          style={styles.input}
-          placeholder="Write here..."
-          value={text}
-          onChangeText={setText}
-          multiline={true}
-        />
-        {text !== '' ? (
-          <TouchableOpacity style={styles.icon} onPress={sendMessage}>
-            <Image
-              style={{ width: 24, height: 24 }}
-              source={require('../images/send-active.png')}
-            />
-          </TouchableOpacity>
-        ) : (
-          <Image style={styles.icon} source={require('../images/voice.png')} />
-        )}
-      </View>
+    <>
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={headerHeight + 50}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <ScrollView
+          ref={scrollViewRef}
+          onContentSizeChange={() => {
+            scrollViewRef?.current?.scrollToEnd({ animated: true });
+          }}
+          style={{ maxHeight: height - 60 }}>
+          {conversation.map((chat) => (
+            <View key={chat.id}>
+              <ChatBox chat={chat} />
+            </View>
+          ))}
+          {isLoading && (
+            <View style={{ width: 80, marginBottom: 16 }}>
+              <LoadingDots bounceHeight={10} size={12} />
+            </View>
+          )}
+        </ScrollView>
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.input}
+            placeholder="Write here..."
+            value={text}
+            onChangeText={setText}
+            multiline={true}
+          />
+          {text !== '' ? (
+            <TouchableOpacity style={styles.icon} onPress={sendMessage}>
+              <Image
+                style={{ width: 24, height: 24 }}
+                source={require('../images/send-active.png')}
+              />
+            </TouchableOpacity>
+          ) : (
+            <Image style={styles.icon} source={require('../images/voice.png')} />
+          )}
+        </View>
+      </KeyboardAvoidingView>
       <Modal
         style={{ flex: 1 }}
         visible={step === 'stress_level'}
@@ -217,7 +222,7 @@ export default function CheckIn() {
           </TouchableOpacity>
         </View>
       </Modal>
-    </KeyboardAvoidingView>
+    </>
   );
 }
 
@@ -230,7 +235,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   inputWrapper: {
-    marginTop: 20,
+    marginVertical: 20,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
