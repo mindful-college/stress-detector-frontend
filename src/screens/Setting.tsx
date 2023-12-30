@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Button, View, StyleSheet, Text, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
-import CustomLink from '../coponents/CustomLink';
-// import ToggleButton from '../coponents/ToggleButton';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
+import ContactUsModal from '../coponents/ContactUsModal';
+import CustomButton from '../coponents/CustomButton';
 
-export default function Setting({ navigation }) {
+const HelpSupportLists = ({ item, checkSupportType }) => (
+  <View style={styles.block}>
+    <Text style={styles.item}>{item}</Text>
+    {checkSupportType(item)}
+  </View>
+);
+
+export default function Setting() {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
+  const [isContactModalVisible, setContactModalVisible] = useState(false);
+  const [isTermsOfUseModalVisible, setTermsOfUseModalVisible] = useState(false);
+  const [isPrivacyPolicyModalVisible, setPrivacyPolicyModalVisible] = useState(false);
+  const userToken = state.user?.access_token;
+  const userEmail = state.user?.email;
 
   const handleSignOut = async () => {
     try {
@@ -38,43 +50,78 @@ export default function Setting({ navigation }) {
     }
   };
 
-  const goToContact = () => {
-    navigation.navigate('CONTACTUS');
+  const handleOpenModal = (modalType) => {
+    if (modalType === 'Contact Us') {
+      setContactModalVisible(true);
+    } else if (modalType === 'Terms of Use') {
+      setTermsOfUseModalVisible(true);
+    } else if (modalType === 'Privacy Policy') {
+      setPrivacyPolicyModalVisible(true);
+    }
   };
-  const goToPolicy = () => {
-    navigation.navigate('POLICY');
-  };
-  const goToUse = () => {
-    navigation.navigate('TERMSOFUSE');
+
+  const handleCloseModal = (modalType) => {
+    if (modalType === 'Contact Us') {
+      setContactModalVisible(false);
+    } else if (modalType === 'Terms of Use') {
+      setTermsOfUseModalVisible(false);
+    } else if (modalType === 'Privacy Policy') {
+      setPrivacyPolicyModalVisible(false);
+    }
   };
 
   const checkSupportType = (name) => {
     if (name === 'Contact Us') {
-      return <CustomLink handleNavigate={goToContact} color={Colors.primary} text="send" />;
+      return (
+        <>
+          <ContactUsModal
+            isVisible={isContactModalVisible}
+            onClose={() => handleCloseModal('Contact Us')}
+            userToken={userToken}
+            userEmail={userEmail}
+          />
+          <CustomButton
+            title="SEND"
+            onPress={() => handleOpenModal('Contact Us')}
+            textStyle={styles.buttonTextForModal}
+            style={styles.touchableOpacityForModal}
+            color={Colors.primary}
+          />
+        </>
+      );
     } else if (name === 'Terms of Use') {
-      return <CustomLink handleNavigate={goToUse} color={Colors.primary} text="go" />;
+      return (
+        <CustomButton
+          title="GO"
+          onPress={handleOpenModal}
+          textStyle={styles.buttonTextForModal}
+          style={styles.touchableOpacityForModal}
+          color={Colors.primary}
+        />
+      );
     } else if (name === 'Privacy Policy') {
-      return <CustomLink handleNavigate={goToPolicy} color={Colors.primary} text="go" />;
+      return (
+        <CustomButton
+          title="GO"
+          onPress={handleOpenModal}
+          textStyle={styles.buttonTextForModal}
+          style={styles.touchableOpacityForModal}
+          color={Colors.primary}
+        />
+      );
     }
     return;
   };
 
-  const DrawItemWithLink = (props) => (
-    <View style={styles.block}>
-      <Text style={styles.item}>{props.item}</Text>
-      {checkSupportType(props.item)}
-    </View>
-  );
-
   return (
     <ScrollView style={styles.container}>
-      {/* <Account />
-      <Permission /> */}
+      <Account />
+      <Permission />
 
       <View>
         <Text style={styles.title} />
         {support.map((item) => (
-          <DrawItemWithLink item={item} key={item} />
+          <HelpSupportLists item={item} key={item} checkSupportType={checkSupportType} />
         ))}
       </View>
 
@@ -111,6 +158,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.black,
     marginVertical: 5,
+    marginLeft: 2,
   },
   button: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
@@ -120,5 +168,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     color: Colors.primary,
+  },
+  touchableOpacityForModal: {
+    padding: 0,
+    marginVertical: 0,
+  },
+  buttonTextForModal: {
+    fontWeight: '500',
   },
 });

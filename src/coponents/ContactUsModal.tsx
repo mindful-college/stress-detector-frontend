@@ -1,12 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
-import { useUserContext } from '../context/UserContext';
+import React, { useState } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+} from 'react-native';
 import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useMutation } from '@tanstack/react-query';
 import { submitContactUsForm } from '../utils/userService';
+import ModalHeader from './ModalHeader';
 
-const Contactus: React.FC<{}> = () => {
+type ContactUsModalProps = {
+  isVisible: boolean;
+  onClose: () => void;
+  userToken: string;
+  userEmail: string;
+};
+
+const ContactUsModal: React.FC<ContactUsModalProps> = ({
+  isVisible,
+  onClose,
+  userToken,
+  userEmail,
+}) => {
   type FormData = {
     email: string | undefined;
     support_type: string;
@@ -32,17 +52,8 @@ const Contactus: React.FC<{}> = () => {
     },
   ];
 
-  const { state, dispatch } = useUserContext();
   const [value, setValue] = useState('Question');
   const [comment, setComment] = useState('');
-  const userToken = state.user?.access_token;
-  const userEmail = state.user?.email;
-
-  useEffect(() => {
-    dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: false });
-
-    return () => dispatch({ type: 'SET_TAB_BAR_VISIBILITY', payload: true });
-  }, [dispatch]);
 
   const renderItem = (item) => {
     return (
@@ -56,6 +67,7 @@ const Contactus: React.FC<{}> = () => {
     mutationFn: (formData: FormData) => submitContactUsForm(userToken, formData),
     onSuccess: () => {
       console.log('Form submitted successfully');
+      onClose();
     },
     onError: (error) => {
       console.error('Error submitting form: ', error);
@@ -69,58 +81,64 @@ const Contactus: React.FC<{}> = () => {
       message: comment,
     };
     submitFormMutation.mutate(formData);
+    setComment('');
+    setValue('Question');
   };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.selectContainer1}>
-        <Text style={styles.text}>What do you want to tell us?</Text>
-      </View>
+    <Modal animationType="slide" transparent={false} visible={isVisible} onRequestClose={onClose}>
+      <SafeAreaView style={styles.safeContainer}>
+        <ModalHeader title="CONTACT US" onClose={onClose} />
 
-      <View style={styles.selectContainer2}>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          iconStyle={styles.iconStyle}
-          data={items}
-          labelField="label"
-          valueField="value"
-          placeholder="Select item"
-          value={value}
-          onChange={(item) => {
-            setValue(item.value);
-          }}
-          renderItem={renderItem}
-        />
-      </View>
+        <View style={styles.selectContainer1}>
+          <Text style={styles.text}>What do you want to tell us?</Text>
+        </View>
 
-      <View style={styles.selectContainer3}>
-        <Text style={styles.text}>Content</Text>
-      </View>
+        <View style={styles.selectContainer2}>
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            iconStyle={styles.iconStyle}
+            data={items}
+            labelField="label"
+            valueField="value"
+            placeholder="Select item"
+            value={value}
+            onChange={(item) => {
+              setValue(item.value);
+            }}
+            renderItem={renderItem}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={comment}
-          onChangeText={setComment}
-          placeholder="Write here up to 500 characters..."
-          autoCorrect={false}
-          autoCapitalize="none"
-          multiline={true}
-          maxLength={500}
-        />
-      </View>
+        <View style={styles.selectContainer3}>
+          <Text style={styles.text}>Content</Text>
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, !comment ? styles.disabledButton : null]}
-          onPress={handleOnPress}
-          disabled={!comment}>
-          <Text style={styles.buttonText}>SUBMIT</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={comment}
+            onChangeText={setComment}
+            placeholder="Write here up to 500 characters..."
+            autoCorrect={false}
+            autoCapitalize="none"
+            multiline={true}
+            maxLength={500}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, !comment ? styles.disabledButton : null]}
+            onPress={handleOnPress}
+            disabled={!comment}>
+            <Text style={styles.buttonText}>SUBMIT</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </Modal>
   );
 };
 
@@ -202,4 +220,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Contactus;
+export default ContactUsModal;
