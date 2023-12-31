@@ -12,6 +12,7 @@ import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useMutation } from '@tanstack/react-query';
 import { submitContactUsForm } from '../utils/userService';
+import Toast from 'react-native-toast-message';
 import ModalHeader from './ModalHeader';
 
 type ContactUsModalProps = {
@@ -83,6 +84,10 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
     submitFormMutation.mutate(formData);
     setComment('');
     setValue('Question');
+    Toast.show({
+      type: 'success',
+      text1: 'Message successfully sent to the admin.',
+    });
   };
 
   return (
