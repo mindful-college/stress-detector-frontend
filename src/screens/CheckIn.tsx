@@ -24,10 +24,12 @@ import SmileyFaceSvg from '../svg/SmileyFaceSvg';
 import HappyFaceSvg from '../svg/HappyFaceSvg';
 import ChatBox from '../coponents/ChatBox';
 import { useHeaderHeight } from '@react-navigation/elements';
+import AudioRecording from '../coponents/AudioRecording';
 
 export default function CheckIn() {
   const [text, setText] = useState('');
   const [voice, setVoice] = useState(null);
+  const [isVoiceClicked, setIsVoiceClicked] = useState(false);
   const [conversation, setConversation] = useState<Conversation[]>([]);
   const [step, setStep] = useState<ChatbotKey>('init');
   const [isLoading, setIsLoading] = useState(false);
@@ -120,6 +122,7 @@ export default function CheckIn() {
 
   useEffect(() => {
     setNextChatbotMessage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -193,8 +196,11 @@ export default function CheckIn() {
               />
             </TouchableOpacity>
           ) : (
-            <Image style={styles.icon} source={require('../images/voice.png')} />
+            <TouchableOpacity style={styles.icon} onPress={() => setIsVoiceClicked(true)}>
+              <Image style={{ width: 20, height: 24 }} source={require('../images/voice.png')} />
+            </TouchableOpacity>
           )}
+          {isVoiceClicked && <AudioRecording setVoice={setVoice} />}
         </View>
       </KeyboardAvoidingView>
       <Modal
