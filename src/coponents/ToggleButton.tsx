@@ -4,7 +4,11 @@ import { Colors } from '../utils/colors';
 import axios from 'axios';
 import { useUserContext } from '../context/UserContext';
 import {PERMISSION_URL} from '../utils/api'
-import {checkNotifications} from 'react-native-permissions';
+import {checkNotifications, openSettings, requestNotifications} from 'react-native-permissions';
+import AppleHealthKit, { HealthValue, HealthKitPermissions } from 'react-native-health';
+
+
+
 
 export default function ToggleButton(props){
   //Bool for toggle button
@@ -13,12 +17,57 @@ export default function ToggleButton(props){
   const [modalVisible, setModalVisible] = useState(false);
   //userinfo in Reducer
   const { state, dispatch } = useUserContext();
-  //Bool for permission
+  //Bool fordevice setting permission
   const [permission,setPermission] = useState(false);
+
+  // To update health data access
+  // const permissions = {
+  //   "Heart Rate": {permissions: {
+  //     read: [AppleHealthKit.Constants.Permissions.HeartRate ],
+  //     write: [],
+  //     }}as HealthKitPermissions,
+    
+  //   "Step Count": {permissions: {
+  //     read: [AppleHealthKit.Constants.Permissions.StepCount ],
+  //     write: [],
+  //   }}as HealthKitPermissions,
+  
+  //   "Sleep Hours": {permissions: {
+  //     read: [AppleHealthKit.Constants.Permissions.SleepAnalysis ],
+  //     write: [],
+  //     }}as HealthKitPermissions
+  // } 
+
+  // AppleHealthKit.initHealthKit(permissions[props.item], (error: string) => {
+  //   /* Called after we receive a response from the system */
+  
+  //   if (error) {
+  //     console.log(error)
+  //     setIsToggleEnabled(false);
+  //     updatePermission(false);
+  //     setPermission(false);
+  //   }
+
+  //   const options = {
+  //     startDate: new Date(2020, 1, 1).toISOString(),
+  //   }
+  
+  //   AppleHealthKit.getHeartRateSamples(
+  //     options,
+  //     (callbackError: string, results: HealthValue[]) => {
+  //       console.log(callbackError)
+  //       console.log(results)
+  //       /* Samples are now collected from HealthKit */
+  //     },
+  //   )
+  // })
 
   //Link to mobile setting page
   const toSetting = () => {
-    Linking.openSettings();
+    requestNotifications(['alert', 'sound']).then(({status, settings}) => {
+    });
+    openSettings().catch(() => console.warn('cannot open settings'));
+    // Linking.openSettings();
     setModalVisible(false);
   }
 
@@ -62,9 +111,10 @@ export default function ToggleButton(props){
       //error handle for getting mobile setting permission
       .catch((error) => console.log('checkNotifications', error));
     }: async ()=>{
-    // Implement Health Permission
-    setPermission(true)
-  }
+      // Implement Health Permission
+      
+      setPermission(true);
+    }
 
   useEffect(()=>{
     //To set initial data
@@ -172,12 +222,6 @@ const styles = StyleSheet.create({
     borderRighttColor: Colors.grey,
     borderRightWidth: 0.3,
   },  
-  // buttonOpen: {
-  //   // backgroundColor: '#F194FF',
-  // },
-  // buttonClose: {
-  //   backgroundColor: '#2196F3',
-  // },
   textStyle: {
     color: Colors.primary,
     textAlign: 'center',
