@@ -14,7 +14,7 @@ export default function SingInNav(){
                 headerBackTitleVisible: false,
                 headerTintColor: Colors.header_black,
             }}>
-            <Stack.Screen name="SIGNIN" component={SignIn} />
+            <Stack.Screen name="SIGNIN" component={SignIn} options={ {headerShown: false}}/>
             <Stack.Screen name="SIGNUP" component={Signup} />
         </Stack.Navigator>
     )
