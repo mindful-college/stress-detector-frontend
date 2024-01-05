@@ -7,13 +7,13 @@ export const QUESTIONS = {
   voice: "It's always wonderful to hear your voice! If you're not up for it, type 'skip'.",
   followup:
     "Thanks for sharing! Anything else you'd like to tell me? If not, type 'skip'. If you want to restart on any step, you can type 'restart'",
-  study_hours:
+  studyHours:
     "How much time did you spend on your studies today? Share the hours (e.g., 1, 1.5, 2). If you're skipping, type 'skip'.",
   studyError: 'Please enter only numbers within the range of 0 to 24.',
-  work_hours:
+  workHours:
     "Tell me about your workday! Share the hours (e.g., 1, 1.5, 2). If you're skipping, type 'skip'.",
   workError: 'Please enter only numbers within the range of 0 to 24.',
-  stress_level: "We're almost there! Choose your stress level from the options, please.",
+  stressLevel: "We're almost there! Choose your stress level from the options, please.",
   closing: 'Thanks a lot for your check-in! See you next time!',
   restart: 'Reset previous conversations... Please reshare your feeling',
 };
@@ -22,7 +22,6 @@ export const getChatbotMessage = (
   step: ChatbotKey,
   idx: number,
   prevText,
-  voice = null,
 ): [Conversation, ChatbotKey] => {
   let nextStep = step;
   if (prevText.toLowerCase() === 'restart') {
@@ -44,7 +43,7 @@ export const getChatbotMessage = (
 
     case 'restart':
     case 'greeting':
-      nextStep = voice ? 'text' : 'voice';
+      nextStep = prevText === '' ? 'text' : 'voice';
       break;
 
     case 'text':
@@ -53,30 +52,30 @@ export const getChatbotMessage = (
       break;
 
     case 'followup':
-      nextStep = 'study_hours';
+      nextStep = 'studyHours';
       break;
 
-    case 'study_hours':
+    case 'studyHours':
     case 'studyError':
       const studyHours = Number(prevText);
       nextStep =
         prevText.toLowerCase() === 'skip' ||
         (!Number.isNaN(studyHours) && studyHours >= 0 && studyHours <= 24)
-          ? 'work_hours'
+          ? 'workHours'
           : 'studyError';
       break;
 
-    case 'work_hours':
+    case 'workHours':
     case 'workError':
       const workHours = Number(prevText);
       nextStep =
         prevText.toLowerCase() === 'skip' ||
         (!Number.isNaN(workHours) && workHours >= 0 && workHours <= 24)
-          ? 'stress_level'
+          ? 'stressLevel'
           : 'workError';
       break;
 
-    case 'stress_level':
+    case 'stressLevel':
       nextStep = 'closing';
       break;
 

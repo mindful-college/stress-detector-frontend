@@ -11,13 +11,13 @@ import { Colors } from '../utils/colors';
 import RNFetchBlob from 'rn-fetch-blob';
 
 type AudioRecordingProps = {
-  setVoice: any;
+  handleAudio: (file: any) => void;
   isVoiceClicked: boolean;
   setIsVoiceClicked: any;
 };
 
 export default function AudioRecording({
-  setVoice,
+  handleAudio,
   isVoiceClicked,
   setIsVoiceClicked,
 }: AudioRecordingProps) {
@@ -40,7 +40,6 @@ export default function AudioRecording({
     };
     const file = await audioRecorderPlayer.startRecorder(path, audioSet);
     setAudioFile(file);
-    console.log(file);
     audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
       setRecordStep(1);
       setRecordTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
@@ -86,7 +85,7 @@ export default function AudioRecording({
   const sendAudio = async () => {
     const filename = audioFile.replace('file:', '');
     const audioBlob = await RNFetchBlob.fs.readFile(filename, 'base64');
-    setVoice(audioBlob);
+    handleAudio(audioBlob);
     closeAudio();
   };
 

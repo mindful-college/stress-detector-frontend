@@ -25,21 +25,31 @@ import HappyFaceSvg from '../svg/HappyFaceSvg';
 import ChatBox from '../coponents/ChatBox';
 import { useHeaderHeight } from '@react-navigation/elements';
 import AudioRecording from '../coponents/AudioRecording';
+import axios from 'axios';
+import { CHECK_IN_URL } from '../utils/api';
+import Toast from 'react-native-toast-message';
+import { useUserContext } from '../context/UserContext';
+
+const DEFAULT_REPORT = {
+  text: [],
+  voice: [],
+  study_hours: null,
+  work_hours: null,
+  step_count: null,
+  sleep_hours: null,
+  heart_rate: null,
+  social_media_usage: null,
+  stress_level: null,
+};
 
 export default function CheckIn() {
+  const { state } = useUserContext();
   const [text, setText] = useState('');
-  const [voice, setVoice] = useState(null);
   const [isVoiceClicked, setIsVoiceClicked] = useState(false);
   const [conversation, setConversation] = useState<Conversation[]>([]);
   const [step, setStep] = useState<ChatbotKey>('init');
   const [isLoading, setIsLoading] = useState(false);
-  const [report, setReport] = useState<Report>({
-    text: [],
-    voice: [],
-    study_hours: null,
-    work_hours: null,
-    stress_level: null,
-  });
+  const [report, setReport] = useState<Report>(DEFAULT_REPORT);
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = useHeaderHeight();
@@ -59,39 +69,25 @@ export default function CheckIn() {
     if (trimedText.toLocaleLowerCase() === 'skip') return;
 
     if (step === 'restart') {
-      setReport({
-        text: [],
-        voice: [],
-        study_hours: null,
-        work_hours: null,
-        stress_level: null,
-      });
-    }
-
-    if (voice) {
-      setReport((prev) => ({
-        ...prev,
-        voice: [...prev.voice, voice],
-      }));
-      return;
+      setReport(DEFAULT_REPORT);
     }
 
     if (
-      step === 'study_hours' ||
+      step === 'studyHours' ||
       step === 'studyError' ||
-      step === 'work_hours' ||
+      step === 'workHours' ||
       step === 'workError'
     ) {
       if (isNaN(Number(trimedText))) return;
 
-      if (step === 'study_hours' || step === 'studyError') {
+      if (step === 'studyHours' || step === 'studyError') {
         setReport((prev) => ({
           ...prev,
           study_hours: Number(trimedText),
         }));
       }
 
-      if (step === 'work_hours' || step === 'workError') {
+      if (step === 'workHours' || step === 'workError') {
         setReport((prev) => ({
           ...prev,
           work_hours: Number(trimedText),
@@ -126,34 +122,68 @@ export default function CheckIn() {
   }, []);
 
   useEffect(() => {
-    if (step === 'stress_level') {
+    if (step === 'stressLevel') {
       Keyboard.dismiss();
     }
   }, [step]);
 
-  const setStressLevel = (stress: number) => {
-    // todo : call api
-    console.log(report);
-    const finalReport = {
+  // TODO : get data from phone
+  const getRandomNumber = () => {
+    const myArray = [null, 0, 1, 2, 3, 4, 5];
+    const randomIndex = Math.floor(Math.random() * myArray.length);
+    return myArray[randomIndex];
+  };
+
+  const setStressLevel = async (stress: number) => {
+    const finalReport: Report = {
       ...report,
+      step_count: getRandomNumber(),
+      sleep_hours: getRandomNumber(),
+      heart_rate: getRandomNumber(),
+      social_media_usage: getRandomNumber(),
       stress_level: stress,
     };
-    console.log(finalReport);
+
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${state.user?.access_token}`,
+      };
+      const { status } = await axios.post(CHECK_IN_URL, finalReport, { headers });
+      if (status === 200) {
+        setConversation((prev) => [
+          ...prev,
+          {
+            id: 'myMessage' + conversation.length,
+            isChatbot: false,
+            showIcon: stress,
+          },
+        ]);
+        setReport(DEFAULT_REPORT);
+        setNextChatbotMessage();
+      }
+    } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: 'Please restart the conversation.',
+      });
+      setStep('init');
+    }
+  };
+
+  const handleAudio = (file) => {
+    setReport((prev) => ({
+      ...prev,
+      voice: [...prev.voice, file],
+    }));
     setConversation((prev) => [
       ...prev,
       {
         id: 'myMessage' + conversation.length,
         isChatbot: false,
-        showIcon: stress,
+        text: 'sent voice file',
       },
     ]);
-    setReport({
-      text: [],
-      voice: [],
-      study_hours: null,
-      work_hours: null,
-      stress_level: null,
-    });
     setNextChatbotMessage();
   };
 
@@ -201,7 +231,7 @@ export default function CheckIn() {
             </TouchableOpacity>
           )}
           <AudioRecording
-            setVoice={setVoice}
+            handleAudio={handleAudio}
             isVoiceClicked={isVoiceClicked}
             setIsVoiceClicked={setIsVoiceClicked}
           />
@@ -209,7 +239,7 @@ export default function CheckIn() {
       </KeyboardAvoidingView>
       <Modal
         style={{ flex: 1 }}
-        visible={step === 'stress_level'}
+        visible={step === 'stressLevel'}
         animationType="slide"
         transparent={true}>
         <View style={[styles.modalContainer, { width: width }]}>
@@ -279,5 +309,9 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
-  emojiText: { marginTop: 8, fontSize: 10, textAlign: 'center' },
+  emojiText: {
+    marginTop: 8,
+    fontSize: 10,
+    textAlign: 'center',
+  },
 });
