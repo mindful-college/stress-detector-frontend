@@ -1,61 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
-  OutputFormatAndroidType,
 } from 'react-native-audio-recorder-player';
 import type { AudioSet, PlayBackType, RecordBackType } from 'react-native-audio-recorder-player';
-// import RNFetchBlob from 'rn-fetch-blob';
-import CustomButton from './CustomButton';
+import { Colors } from '../utils/colors';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type AudioRecordingProps = {
   setVoice: any;
+  isVoiceClicked: boolean;
+  setIsVoiceClicked: any;
 };
 
-export default function AudioRecording({ setVoice }: AudioRecordingProps) {
-  const screenWidth = Dimensions.get('screen').width;
-  const [recordSecs, setRecordSecs] = useState(0);
+export default function AudioRecording({
+  setVoice,
+  isVoiceClicked,
+  setIsVoiceClicked,
+}: AudioRecordingProps) {
+  const { width } = Dimensions.get('window');
+  const [recordStep, setRecordStep] = useState(0);
   const [recordTime, setRecordTime] = useState('00:00:00');
-  const [currentPositionSec, setCurrentPositionSec] = useState(0);
-  const [currentDurationSec, setCurrentDurationSec] = useState(0);
-  const [playTime, setPlayTime] = useState('00:00:00');
-  const [duration, setDuration] = useState('00:00:00');
-  const [path, setPath] = useState<string | undefined>(undefined);
-  // const dirs = RNFetchBlob.fs.dirs;
+  const [isRecordPlaying, setIsRecordPlaying] = useState(false);
+  const [audioFile, setAudioFile] = useState('');
   const audioRecorderPlayer = new AudioRecorderPlayer();
   audioRecorderPlayer.setSubscriptionDuration(0.1);
-
-  useEffect(() => {
-    setPath(
-      Platform.select({
-        ios: undefined,
-        android: undefined,
-      }),
-    );
-  }, []);
-
-  const onStatusPress = (e: any): void => {
-    const touchX = e.nativeEvent.locationX;
-    console.log(`touchX: ${touchX}`);
-
-    const playWidth = (currentPositionSec / currentDurationSec) * (screenWidth - 56);
-    console.log(`currentPlayWidth: ${playWidth}`);
-
-    const currentPosition = Math.round(currentPositionSec);
-
-    if (playWidth && playWidth < touchX) {
-      const addSecs = Math.round(currentPosition + 1000);
-      audioRecorderPlayer.seekToPlayer(addSecs);
-      console.log(`addSecs: ${addSecs}`);
-    } else {
-      const subSecs = Math.round(currentPosition - 1000);
-      audioRecorderPlayer.seekToPlayer(subSecs);
-      console.log(`subSecs: ${subSecs}`);
-    }
-  };
+  const path = `checkin${new Date().getTime()}.m4a`;
 
   const onStartRecord = async (): Promise<void> => {
     const audioSet: AudioSet = {
@@ -64,112 +37,163 @@ export default function AudioRecording({ setVoice }: AudioRecordingProps) {
       AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
       AVNumberOfChannelsKeyIOS: 2,
       AVFormatIDKeyIOS: AVEncodingOption.aac,
-      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
     };
-
-    console.log('audioSet', audioSet);
-
-    const uri = await audioRecorderPlayer.startRecorder(path, audioSet);
-
+    const file = await audioRecorderPlayer.startRecorder(path, audioSet);
+    setAudioFile(file);
+    console.log(file);
     audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
-      // console.log('record-back', e);
-      console.log(recordSecs);
-      setRecordSecs(e.currentPosition);
+      setRecordStep(1);
       setRecordTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
     });
-    console.log(`uri: ${uri}`);
   };
 
   const onPauseRecord = async (): Promise<void> => {
     try {
-      const r = await audioRecorderPlayer.pauseRecorder();
-      console.log(r);
+      await audioRecorderPlayer.pauseRecorder();
+      setRecordStep(2);
     } catch (err) {
       console.log('pauseRecord', err);
     }
   };
 
-  const onResumeRecord = async (): Promise<void> => {
-    await audioRecorderPlayer.resumeRecorder();
-  };
-
   const onStopRecord = async (): Promise<void> => {
-    const result = await audioRecorderPlayer.stopRecorder();
+    await audioRecorderPlayer.stopRecorder();
     audioRecorderPlayer.removeRecordBackListener();
-    setRecordSecs(0);
-    console.log(result);
+    setRecordStep(0);
   };
 
   const onStartPlay = async (): Promise<void> => {
-    console.log('onStartPlay', path);
-
     try {
-      const msg = await audioRecorderPlayer.startPlayer(path);
-      const volume = await audioRecorderPlayer.setVolume(1.0);
-      console.log(`path: ${msg}`, `volume: ${volume}`);
-
+      await audioRecorderPlayer.startPlayer(path);
+      await audioRecorderPlayer.setVolume(1.0);
       audioRecorderPlayer.addPlayBackListener((e: PlayBackType) => {
-        console.log('playBackListener', e);
-        setCurrentDurationSec(e.duration);
-        setCurrentPositionSec(e.currentPosition);
-        setPlayTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
-        setDuration(audioRecorderPlayer.mmssss(Math.floor(e.duration)));
+        if (e.currentPosition === e.duration) {
+          audioRecorderPlayer.stopPlayer();
+        }
+        setIsRecordPlaying(true);
       });
     } catch (err) {
       console.log('startPlayer error', err);
     }
   };
 
-  const onPausePlay = async (): Promise<void> => {
-    await audioRecorderPlayer.pausePlayer();
-  };
-
-  const onResumePlay = async (): Promise<void> => {
-    await audioRecorderPlayer.resumePlayer();
-  };
-
   const onStopPlay = async (): Promise<void> => {
-    console.log('onStopPlay');
     audioRecorderPlayer.stopPlayer();
     audioRecorderPlayer.removePlayBackListener();
+    setIsRecordPlaying(false);
+  };
+
+  const sendAudio = async () => {
+    const filename = audioFile.replace('file:', '');
+    const audioBlob = await RNFetchBlob.fs.readFile(filename, 'base64');
+    setVoice(audioBlob);
+    closeAudio();
+  };
+
+  const resetRecording = async () => {
+    await onStopRecord();
+    await onStartRecord();
+  };
+
+  const closeAudio = async () => {
+    await onPauseRecord();
+    await onStopRecord();
+    setRecordStep(0);
+    setIsVoiceClicked(false);
   };
 
   return (
-    <SafeAreaView>
-      <Text>Audio Recorder Player</Text>
-      <Text>{recordTime}</Text>
-      <View>
-        <View>
-          <CustomButton
-            color="blue"
-            backgroundColor="gray"
-            title="Record"
-            onPress={onStartRecord}
-          />
-          <CustomButton color="blue" backgroundColor="gray" onPress={onPauseRecord} title="Pause" />
-          <CustomButton
-            color="blue"
-            backgroundColor="gray"
-            onPress={onResumeRecord}
-            title="Resume"
-          />
-          <CustomButton color="blue" backgroundColor="gray" onPress={onStopRecord} title="stop" />
+    <Modal style={styles.modal} visible={isVoiceClicked} animationType="slide" transparent={true}>
+      <View style={[styles.modalContainer, { width: width }]}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={closeAudio}>
+            <Image source={require('../images/close.png')} />
+          </TouchableOpacity>
         </View>
+        {recordStep === 0 && (
+          <TouchableOpacity style={styles.audioWrapper} onPress={onStartRecord}>
+            <Image style={styles.audioIcon} source={require('../images/audio-blue.png')} />
+          </TouchableOpacity>
+        )}
+        {recordStep === 1 && (
+          <>
+            <TouchableOpacity style={styles.audioWrapper} onPress={onPauseRecord}>
+              <Image style={styles.audioIcon} source={require('../images/pause-blue.png')} />
+            </TouchableOpacity>
+            <Text style={styles.recordText}>{recordTime}</Text>
+          </>
+        )}
+        {recordStep === 2 && (
+          <View style={styles.recordIconsContainer}>
+            <TouchableOpacity style={styles.audioWrapper} onPress={resetRecording}>
+              <Image style={styles.smallIcon} source={require('../images/re_recording.png')} />
+            </TouchableOpacity>
+            {isRecordPlaying ? (
+              <TouchableOpacity style={styles.audioWrapper} onPress={onStopPlay}>
+                <Image style={styles.smallIcon} source={require('../images/pause.png')} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.audioWrapper} onPress={onStartPlay}>
+                <Image style={styles.smallIcon} source={require('../images/play.png')} />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.audioWrapper} onPress={sendAudio}>
+              <Image style={styles.smallIcon} source={require('../images/send-active.png')} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-      <View>
-        <TouchableOpacity onPress={onStatusPress}>
-          <Text>On Status PRess</Text>
-        </TouchableOpacity>
-        <Text>
-          {playTime} / {duration}
-        </Text>
-        <View>
-          <CustomButton color="blue" backgroundColor="gray" title="Play" onPress={onStartPlay} />
-          <CustomButton color="blue" backgroundColor="gray" title="Pause" onPress={onPausePlay} />
-          <CustomButton color="blue" backgroundColor="gray" title="Resume" onPress={onResumePlay} />
-          <CustomButton color="blue" backgroundColor="gray" title="stop" onPress={onStopPlay} />
-        </View>
-      </View>
-    </SafeAreaView>
+    </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  modal: {
+    flex: 1,
+  },
+  modalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    height: 300,
+    backgroundColor: Colors.white,
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+    borderColor: Colors.grey,
+    borderTopWidth: 2,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  recordText: {
+    fontSize: 20,
+    color: Colors.black,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginTop: 10,
+  },
+  audioWrapper: {
+    marginTop: 40,
+    alignSelf: 'center',
+    backgroundColor: Colors.lightGrey,
+  },
+  audioIcon: {
+    width: 100,
+    height: 100,
+  },
+  smallIcon: {
+    width: 60,
+    height: 60,
+  },
+  playIcon: {
+    width: 20,
+    height: 20,
+  },
+  recordIconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 40,
+    marginTop: 20,
+  },
+});

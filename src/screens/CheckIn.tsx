@@ -200,7 +200,11 @@ export default function CheckIn() {
               <Image style={{ width: 20, height: 24 }} source={require('../images/voice.png')} />
             </TouchableOpacity>
           )}
-          {isVoiceClicked && <AudioRecording setVoice={setVoice} />}
+          <AudioRecording
+            setVoice={setVoice}
+            isVoiceClicked={isVoiceClicked}
+            setIsVoiceClicked={setIsVoiceClicked}
+          />
         </View>
       </KeyboardAvoidingView>
       <Modal
