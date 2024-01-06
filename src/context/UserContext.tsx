@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
 import { User } from '../types/user';
 
-type AppState = { user: User | null };
-type AppAction = { type: 'SET_USER'; payload: User } | { type: 'REMOVE_USER' };
+type AppState = { user: User | null; isTabBarVisible: boolean };
+type AppAction =
+  | { type: 'SET_USER'; payload: User }
+  | { type: 'REMOVE_USER' }
+  | { type: 'SET_TAB_BAR_VISIBILITY'; payload: boolean };
 type AppContextProps = {
   state: AppState;
   dispatch: Dispatch<AppAction>;
@@ -16,12 +19,14 @@ export const userReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, user: action.payload };
     case 'REMOVE_USER':
       return { ...state, user: null };
+    case 'SET_TAB_BAR_VISIBILITY':
+      return { ...state, isTabBarVisible: action.payload };
     default:
       return state;
   }
 };
 
-export const initialUser = { user: null };
+export const initialUser = { user: null, isTabBarVisible: true };
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialUser);
