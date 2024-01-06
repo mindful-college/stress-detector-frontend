@@ -11,7 +11,7 @@ export default function Account(){
         points: ""
     });
 
-    const [user, setUser] = useState()
+    const [user, setUser] = useState("")
     const { state, dispatch } = useUserContext();
     useEffect(() => {
         const headers = {
@@ -48,11 +48,15 @@ export default function Account(){
       };
 
     const handleEdit = () => {
-        setIsEnabled(!isEnabled)
+        setIsEnabled((isEnabled)=>(!isEnabled))
+        setUser("")
     }
 
-    const handleSave = async (e) => {
-        e.preventDefault();
+    const handleSave = async () => {
+        if(userInfo.username === user){
+          handleEdit();
+          return;
+        }
         const headers = {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${state.user?.access_token}`,
@@ -60,9 +64,7 @@ export default function Account(){
 
        
         try {
-            console.log(user)
             const res = await axios.post(USER_INFO_URL+`?new_name=${user}`, {}, { headers });
-            console.log(res)
             if (res.status === 200) {
                 const updatedUserInfo = {
                     ...userInfo,
@@ -70,10 +72,10 @@ export default function Account(){
                 }
                 setUserInfo(updatedUserInfo)
             }
-            setIsEnabled(!isEnabled)
+            handleEdit();
         } catch (error) {
             // Handle errors if the request fails
-            setIsEnabled(!isEnabled)
+            handleEdit();
             console.error(error);
         }
  
@@ -85,7 +87,7 @@ export default function Account(){
             <View style={styles.block}>
                 {isEnabled?<TextInput
                         style={styles.item}
-                        placeholder={"name"}
+                        placeholder={userInfo.username}
                         value={user}
                         placeholderTextColor={Colors.grey}
                         onChangeText={handleName}
@@ -93,7 +95,9 @@ export default function Account(){
                    ( <Text style={styles.item}>{userInfo.username}</Text>)}
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={isEnabled?handleSave:handleEdit}>
+                    onPress={isEnabled?handleSave:handleEdit}
+                    disabled={isEnabled?(user.length<=0):false}
+                  >
                     <Text style={styles.buttonText}>{isEnabled? "Save":"Edit"}</Text>
                 </TouchableOpacity>
             </View>
@@ -120,7 +124,6 @@ const styles = StyleSheet.create({
     },
     container: {
       flex: 1,
-      // backgroundColor:Colors.grey,
     },
     title:{
       fontSize:20,
