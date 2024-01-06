@@ -8,16 +8,19 @@ import {checkNotifications, openSettings, requestNotifications} from 'react-nati
 import AppleHealthKit, { HealthValue, HealthKitPermissions } from 'react-native-health';
 
 
+type toggleButtonProps = {
+  item: string;
+  isAllowed: boolean;
+};
 
-
-export default function ToggleButton(props){
+export default function ToggleButton({item,isAllowed}:toggleButtonProps){
   //Bool for toggle button
-  const [isToggleEnabled, setIsToggleEnabled] = useState(props.isAllowed);
+  const [isToggleEnabled, setIsToggleEnabled] = useState(isAllowed);
   //Bool for modal screen
   const [modalVisible, setModalVisible] = useState(false);
   //userinfo in Reducer
   const { state, dispatch } = useUserContext();
-  //Bool fordevice setting permission
+  //Bool for device setting permission
   const [permission,setPermission] = useState(false);
 
   // To update health data access
@@ -79,7 +82,7 @@ export default function ToggleButton(props){
       Authorization: `Bearer ${state.user?.access_token}`,
     };
     //Text justification for API call
-    const permission_type = props.item.toLowerCase().replaceAll(" ", "_")
+    const permission_type = item.toLowerCase().replace(" ", "_")
     try {
         const res = await axios.put(`${PERMISSION_URL}?permission_type=${permission_type}&permission=${newPermission}`, {} ,{ headers });
         // check response to set Permission
@@ -93,7 +96,7 @@ export default function ToggleButton(props){
   }
 
   // check Mobile setting permission 
-  const checkNotificationPermission = props.item === 'Notification'? 
+  const checkNotificationPermission = item === 'Notification'? 
     async () => {
       //get mobile setting notification permission
       await checkNotifications()
