@@ -71,7 +71,7 @@ export default function App() {
             </Tab.Navigator>
           ) : (
             <Tab.Navigator
-              initialRouteName="CHECK-IN"
+              initialRouteName="REPORT"
               screenOptions={({ route }) => ({
                 tabBarActiveTintColor: Colors.primary,
                 tabBarStyle: { height: 64 },
@@ -82,8 +82,8 @@ export default function App() {
                   <CustomTabBarIcon focused={focused} name={route.name} />
                 ),
               })}>
-              <Tab.Screen name="CHECK-IN" component={CheckIn} />
               <Tab.Screen name="REPORT" component={Report} />
+              <Tab.Screen name="CHECK-IN" component={CheckIn} />
               <Tab.Screen name="SETTING" component={Setting} />
             </Tab.Navigator>
           )}
