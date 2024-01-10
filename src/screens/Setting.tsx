@@ -39,6 +39,10 @@ export default function Setting({ navigation }) {
     }
   }
 
+  const handleDelete = async () =>{
+    // Need to implement
+  }
+
   const goToContact = () => {
     navigation.navigate('CONTACTUS');
   }
@@ -82,6 +86,7 @@ export default function Setting({ navigation }) {
       </View>
 
       <Button title="Sign Out" onPress={handleSignOut} />
+      <Button title="Delete Accountt" onPress={handleDelete} />
     </ScrollView>
   );
 }
