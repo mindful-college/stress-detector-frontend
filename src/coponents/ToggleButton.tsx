@@ -5,13 +5,21 @@ import axios from 'axios';
 import { useUserContext } from '../context/UserContext';
 import {PERMISSION_URL} from '../utils/api'
 import {checkNotifications, openSettings, requestNotifications} from 'react-native-permissions';
-import AppleHealthKit, { HealthValue, HealthKitPermissions } from 'react-native-health';
+import AppleHealthKit, { HealthValue, HealthKitPermissions, HealthInputOptions } from 'react-native-health';
+import Toast from 'react-native-toast-message';
 
 
 type toggleButtonProps = {
   item: string;
   isAllowed: boolean;
 };
+
+// Permission for health data access
+const permissions = {
+  permissions: {
+    read: [AppleHealthKit.Constants.Permissions.HeartRate, AppleHealthKit.Constants.Permissions.StepCount, AppleHealthKit.Constants.Permissions.StepCount],
+    write: [],
+}}as HealthKitPermissions
 
 export default function ToggleButton({item,isAllowed}:toggleButtonProps){
   //Bool for toggle button
@@ -23,47 +31,8 @@ export default function ToggleButton({item,isAllowed}:toggleButtonProps){
   //Bool for device setting permission
   const [permission,setPermission] = useState(false);
 
-  // To update health data access
-  // const permissions = {
-  //   "Heart Rate": {permissions: {
-  //     read: [AppleHealthKit.Constants.Permissions.HeartRate ],
-  //     write: [],
-  //     }}as HealthKitPermissions,
-    
-  //   "Step Count": {permissions: {
-  //     read: [AppleHealthKit.Constants.Permissions.StepCount ],
-  //     write: [],
-  //   }}as HealthKitPermissions,
   
-  //   "Sleep Hours": {permissions: {
-  //     read: [AppleHealthKit.Constants.Permissions.SleepAnalysis ],
-  //     write: [],
-  //     }}as HealthKitPermissions
-  // } 
 
-  // AppleHealthKit.initHealthKit(permissions[props.item], (error: string) => {
-  //   /* Called after we receive a response from the system */
-  
-  //   if (error) {
-  //     console.log(error)
-  //     setIsToggleEnabled(false);
-  //     updatePermission(false);
-  //     setPermission(false);
-  //   }
-
-  //   const options = {
-  //     startDate: new Date(2020, 1, 1).toISOString(),
-  //   }
-  
-  //   AppleHealthKit.getHeartRateSamples(
-  //     options,
-  //     (callbackError: string, results: HealthValue[]) => {
-  //       console.log(callbackError)
-  //       console.log(results)
-  //       /* Samples are now collected from HealthKit */
-  //     },
-  //   )
-  // })
 
   //Link to mobile setting page
   const toSetting = () => {
@@ -115,8 +84,17 @@ export default function ToggleButton({item,isAllowed}:toggleButtonProps){
       .catch((error) => console.log('checkNotifications', error));
     }: async ()=>{
       // Implement Health Permission
+      AppleHealthKit.initHealthKit(permissions, (error: string) => {
+        /* Called after we receive a response from the system */
       
-      setPermission(true);
+        if (error) {
+          setIsToggleEnabled(false);
+          updatePermission(false);
+          setPermission(false);
+          return;
+        }
+        setPermission(true);
+      })
     }
 
   useEffect(()=>{
@@ -127,13 +105,21 @@ export default function ToggleButton({item,isAllowed}:toggleButtonProps){
     return () =>{
       listener.remove();
     };
-  });
+  },[permission]);
 
   //To handle switch toggle button
   const toggleSwitch = async() => {
     if(!permission){
+      Toast.show({
+        type: 'error',
+        text1: `Cannot change the permission for ${item}`,
+      });
       setModalVisible(true);
     }else{
+      Toast.show({
+        type: 'success',
+        text1: 'Permission has been successfully changed',
+      });
       updatePermission(!isToggleEnabled);
     }
   }

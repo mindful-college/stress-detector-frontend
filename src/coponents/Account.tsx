@@ -4,6 +4,7 @@ import {Colors} from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import { USER_INFO_URL } from "../utils/api";
 import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 export default function Account(){
     const [userInfo, setUserInfo] = useState({
@@ -71,10 +72,23 @@ export default function Account(){
                     username: res.data.new_name,
                 }
                 setUserInfo(updatedUserInfo)
+                Toast.show({
+                  type: 'success',
+                  text1: 'Your name has been successfully changed',
+                });
+            }else{
+              Toast.show({
+                type: 'error',
+                text1: `Network error`,
+              });
             }
             handleEdit();
         } catch (error) {
             // Handle errors if the request fails
+            Toast.show({
+              type: 'error',
+              text1: `Network error`,
+            });
             handleEdit();
             console.error(error);
         }
