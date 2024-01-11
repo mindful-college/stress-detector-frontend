@@ -11,7 +11,12 @@ import Account from '../coponents/Account';
 import ContactUsModal from '../coponents/ContactUsModal';
 import CustomButton from '../coponents/CustomButton';
 
-const HelpSupportLists = ({ item, checkSupportType }) => (
+type SupportListProps = {
+  item: string;
+  checkSupportType: (item: string) => JSX.Element | null;
+};
+
+const HelpSupportLists: React.FC<SupportListProps> = ({ item, checkSupportType }) => (
   <View style={styles.block}>
     <Text style={styles.item}>{item}</Text>
     {checkSupportType(item)}
@@ -50,23 +55,31 @@ export default function Setting() {
     }
   };
 
-  const handleOpenModal = (modalType) => {
-    if (modalType === 'Contact Us') {
-      setContactModalVisible(true);
-    } else if (modalType === 'Terms of Use') {
-      setTermsOfUseModalVisible(true);
-    } else if (modalType === 'Privacy Policy') {
-      setPrivacyPolicyModalVisible(true);
+  const handleOpenModal = (modalType: string) => {
+    switch (modalType) {
+      case 'Contact Us':
+        setContactModalVisible(true);
+        break;
+      case 'Terms of Use':
+        setTermsOfUseModalVisible(true);
+        break;
+      case 'Privacy Policy':
+        setPrivacyPolicyModalVisible(true);
+        break;
     }
   };
 
-  const handleCloseModal = (modalType) => {
-    if (modalType === 'Contact Us') {
-      setContactModalVisible(false);
-    } else if (modalType === 'Terms of Use') {
-      setTermsOfUseModalVisible(false);
-    } else if (modalType === 'Privacy Policy') {
-      setPrivacyPolicyModalVisible(false);
+  const handleCloseModal = (modalType: string) => {
+    switch (modalType) {
+      case 'Contact Us':
+        setContactModalVisible(false);
+        break;
+      case 'Terms of Use':
+        setTermsOfUseModalVisible(false);
+        break;
+      case 'Privacy Policy':
+        setPrivacyPolicyModalVisible(false);
+        break;
     }
   };
 

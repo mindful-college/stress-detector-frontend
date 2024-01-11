@@ -36,19 +36,19 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
 
   const items = [
     {
-      label: 'Question',
+      // label: '1',
       value: 'Question',
     },
     {
-      label: 'Bug Report',
+      // label: 'Bug Report',
       value: 'Bug Report',
     },
     {
-      label: 'Suggestion',
+      // label: 'Suggestion',
       value: 'Suggestion',
     },
     {
-      label: 'Compliment',
+      // label: 'Compliment',
       value: 'Compliment',
     },
   ];
@@ -59,7 +59,7 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
   const renderItem = (item) => {
     return (
       <View style={styles.item}>
-        <Text style={styles.textItem}>{item.label}</Text>
+        <Text style={styles.textItem}>{item.value}</Text>
       </View>
     );
   };
@@ -106,7 +106,7 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
             selectedTextStyle={styles.selectedTextStyle}
             iconStyle={styles.iconStyle}
             data={items}
-            labelField="label"
+            labelField="value"
             valueField="value"
             placeholder="Select item"
             value={value}
