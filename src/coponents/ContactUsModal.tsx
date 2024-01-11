@@ -5,6 +5,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
   TextInput,
   Modal,
 } from 'react-native';
@@ -92,57 +94,61 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
 
   return (
     <Modal animationType="slide" transparent={false} visible={isVisible} onRequestClose={onClose}>
-      <SafeAreaView style={styles.safeContainer}>
-        <ModalHeader title="CONTACT US" onClose={onClose} />
+      <ModalHeader title="CONTACT US" onClose={onClose} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={30}>
+        <SafeAreaView style={styles.safeContainer}>
+          <View style={styles.selectContainer1}>
+            <Text style={styles.text}>What do you want to tell us?</Text>
+          </View>
 
-        <View style={styles.selectContainer1}>
-          <Text style={styles.text}>What do you want to tell us?</Text>
-        </View>
+          <View style={styles.selectContainer2}>
+            <Dropdown
+              style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              iconStyle={styles.iconStyle}
+              data={items}
+              labelField="value"
+              valueField="value"
+              placeholder="Select item"
+              value={value}
+              onChange={(item) => {
+                setValue(item.value);
+              }}
+              renderItem={renderItem}
+            />
+          </View>
 
-        <View style={styles.selectContainer2}>
-          <Dropdown
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={items}
-            labelField="value"
-            valueField="value"
-            placeholder="Select item"
-            value={value}
-            onChange={(item) => {
-              setValue(item.value);
-            }}
-            renderItem={renderItem}
-          />
-        </View>
+          <View style={styles.selectContainer3}>
+            <Text style={styles.text}>Content</Text>
+          </View>
 
-        <View style={styles.selectContainer3}>
-          <Text style={styles.text}>Content</Text>
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={comment}
+              onChangeText={setComment}
+              placeholder="Write here up to 500 characters..."
+              autoCorrect={false}
+              autoCapitalize="none"
+              multiline={true}
+              maxLength={500}
+            />
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={comment}
-            onChangeText={setComment}
-            placeholder="Write here up to 500 characters..."
-            autoCorrect={false}
-            autoCapitalize="none"
-            multiline={true}
-            maxLength={500}
-          />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, !comment ? styles.disabledButton : null]}
-            onPress={handleOnPress}
-            disabled={!comment}>
-            <Text style={styles.buttonText}>SUBMIT</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, !comment ? styles.disabledButton : null]}
+          onPress={handleOnPress}
+          disabled={!comment}>
+          <Text style={styles.buttonText}>SUBMIT</Text>
+        </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
@@ -151,6 +157,7 @@ const styles = StyleSheet.create({
   safeContainer: {
     backgroundColor: Colors.white,
     flex: 1,
+    justifyContent: 'flex-end',
   },
   selectContainer1: {
     paddingHorizontal: 20,
@@ -165,6 +172,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   dropdown: {
     marginTop: 13,
@@ -206,11 +216,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingTop: 10,
+    paddingBottom: 8,
     paddingHorizontal: 9,
     borderColor: Colors.lightGrey,
     fontSize: 14,
   },
-  buttonContainer: { paddingHorizontal: 22, marginTop: 70 },
+  buttonContainer: { paddingHorizontal: 22, marginTop: 70, marginBottom: 35 },
   button: {
     backgroundColor: Colors.primary,
     padding: 10,

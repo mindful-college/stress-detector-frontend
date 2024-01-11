@@ -20,10 +20,11 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onClose }) => {
 
 const styles = StyleSheet.create({
   header: {
+    zIndex: 1,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 17,
-    paddingBottom: 17,
+    paddingTop: 20,
+    paddingBottom: 14,
     backgroundColor: Colors.white,
     borderBottomWidth: 2,
     borderBottomColor: Colors.lightGrey,
@@ -31,12 +32,13 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 17,
     fontWeight: '500',
+    marginTop: 10,
     color: Colors.header_black,
   },
   icon: {
     position: 'absolute',
     left: 12,
-    top: 8,
+    top: 15,
   },
 });
 
