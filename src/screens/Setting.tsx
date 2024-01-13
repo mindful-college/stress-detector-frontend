@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
@@ -9,12 +9,12 @@ import { Colors } from '../utils/colors';
 import CustomLink from '../coponents/CustomLink';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
-
+import DeleteAccountModal from '../coponents/DeleteAccountModal';
 
 export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
-
+  const [isDeleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -37,22 +37,25 @@ export default function Setting({ navigation }) {
         text1: 'Network Error',
       });
     }
-  }
+  };
 
-  const handleDelete = async () =>{
-    // Need to implement
-  }
+  const handleOpenModal = () => {
+    setDeleteAccountModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setDeleteAccountModalVisible(false);
+  };
 
   const goToContact = () => {
     navigation.navigate('CONTACTUS');
-  }
+  };
   const goToPolicy = () => {
     navigation.navigate('POLICY');
-  }
+  };
   const goToUse = () => {
     navigation.navigate('TERMSOFUSE');
-
-  }
+  };
 
   const checkSupportType = (name) => {
     if (name === 'Contact Us') {
@@ -74,19 +77,19 @@ export default function Setting({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
+      {/* <Account />
+      <Permission /> */}
 
-      <Account/>
-      <Permission/>
-      
       <View>
-         <Text style={styles.title}/>
-        {support.map((item)=>(
-            <DrawItemWithLink item={item} key={item}/>
+        <Text style={styles.title} />
+        {support.map((item) => (
+          <DrawItemWithLink item={item} key={item} />
         ))}
       </View>
 
+      <DeleteAccountModal isVisible={isDeleteAccountModalVisible} onClose={handleCloseModal} />
       <Button title="Sign Out" onPress={handleSignOut} />
-      <Button title="Delete Accountt" onPress={handleDelete} />
+      <Button title="Delete Account" onPress={handleOpenModal} />
     </ScrollView>
   );
 }
