@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
@@ -9,12 +9,12 @@ import { Colors } from '../utils/colors';
 import CustomLink from '../coponents/CustomLink';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
-import DeleteAccountModal from '../coponents/DeleteAccountModal';
+import { useMutation } from '@tanstack/react-query';
+import { DELETE_ACCOUNT_URL } from '../utils/api';
 
 export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
-  const [isDeleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
   const userToken = state.user?.access_token;
   const userEmail = state.user?.email;
 
@@ -41,12 +41,61 @@ export default function Setting({ navigation }) {
     }
   };
 
-  const handleOpenModal = () => {
-    setDeleteAccountModalVisible(true);
+  const deleteAccount = async () => {
+    try {
+      const response = await axios.delete(DELETE_ACCOUNT_URL, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting the user information:', error);
+      throw error;
+    }
   };
 
-  const handleCloseModal = () => {
-    setDeleteAccountModalVisible(false);
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => {
+      console.log('Account deleted successfully');
+
+      AsyncStorage.removeItem('user');
+      dispatch({ type: 'REMOVE_USER' });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Your account has been deleted.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting account: ', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to delete the account.',
+      });
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate();
+  };
+
+  const handleDeleteAccountWithConfirmation = () => {
+    Alert.alert(
+      'Confirm Account Deletion', // Title
+      'Are you sure you want to delete your account? This action cannot be undone.', // Message
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancellation of account deletion'),
+          style: 'cancel',
+        },
+        { text: 'Delete', onPress: () => handleDeleteAccount() },
+      ],
+      { cancelable: false },
+    );
   };
 
   const goToContact = () => {
@@ -89,13 +138,8 @@ export default function Setting({ navigation }) {
         ))}
       </View>
 
-      <DeleteAccountModal
-        isVisible={isDeleteAccountModalVisible}
-        onClose={handleCloseModal}
-        userToken={userToken}
-      />
       <Button title="Sign Out" onPress={handleSignOut} />
-      <Button title="Delete Account" onPress={handleOpenModal} />
+      <Button title="Delete Account" onPress={handleDeleteAccountWithConfirmation} />
     </ScrollView>
   );
 }
