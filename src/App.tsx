@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { Colors } from './utils/colors';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import SignInNav from './coponents/SignInNav';
 import CheckInNav from './coponents/CheckInNav';
@@ -15,6 +16,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [state, dispatch] = useReducer(userReducer, initialUser);
   const contextValue = { state, dispatch };
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     const checkToken = async () => {
@@ -29,19 +31,21 @@ export default function App() {
   return (
     <UserContext.Provider value={contextValue}>
       <SafeAreaView style={styles.container}>
-        <NavigationContainer>
-          <Stack.Navigator>
-            {!state.user ? (
-              <Stack.Screen
-                name="SIGNINNAV"
-                component={SignInNav}
-                options={{ headerShown: false }}
-              />
-            ) : (
-              <Stack.Screen name="MAIN" component={CheckInNav} options={{ headerShown: false }} />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
+        <QueryClientProvider client={queryClient}>
+          <NavigationContainer>
+            <Stack.Navigator>
+              {!state.user ? (
+                <Stack.Screen
+                  name="SIGNINNAV"
+                  component={SignInNav}
+                  options={{ headerShown: false }}
+                />
+              ) : (
+                <Stack.Screen name="MAIN" component={CheckInNav} options={{ headerShown: false }} />
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </QueryClientProvider>
         <Toast />
       </SafeAreaView>
     </UserContext.Provider>

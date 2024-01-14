@@ -15,6 +15,8 @@ export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
   const [isDeleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
+  const userToken = state.user?.access_token;
+  const userEmail = state.user?.email;
 
   const handleSignOut = async () => {
     try {
@@ -77,8 +79,8 @@ export default function Setting({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      {/* <Account />
-      <Permission /> */}
+      <Account />
+      <Permission />
 
       <View>
         <Text style={styles.title} />
@@ -87,7 +89,11 @@ export default function Setting({ navigation }) {
         ))}
       </View>
 
-      <DeleteAccountModal isVisible={isDeleteAccountModalVisible} onClose={handleCloseModal} />
+      <DeleteAccountModal
+        isVisible={isDeleteAccountModalVisible}
+        onClose={handleCloseModal}
+        userToken={userToken}
+      />
       <Button title="Sign Out" onPress={handleSignOut} />
       <Button title="Delete Account" onPress={handleOpenModal} />
     </ScrollView>
