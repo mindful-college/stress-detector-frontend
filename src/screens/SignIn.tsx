@@ -88,8 +88,11 @@ export default function Signin({ navigation }) {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.container}>
           <View style={styles.logo}>
-            <Text style={styles.logoText}>STRESS</Text>
-            <Text style={styles.logoText}>DETECTOR</Text>
+            <Text style={styles.logoText}>MINDFUL COLLEGE</Text>
+            <Text style={styles.subText}>Stress Detector</Text>
+            <View style={styles.badgeWrapper}>
+              <Text style={styles.badgeText}>BETA</Text>
+            </View>
           </View>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -182,5 +185,23 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: Colors.white,
     fontWeight: '600',
+  },
+  subText: {
+    fontSize: 24,
+    color: Colors.white,
+    fontWeight: '600',
+    marginTop: 20,
+  },
+  badgeWrapper: {
+    borderWidth: 1,
+    borderColor: Colors.white,
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginTop: 10,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: Colors.white,
   },
 });

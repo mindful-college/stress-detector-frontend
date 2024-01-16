@@ -3,8 +3,8 @@ import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-
 
 type CustomButtonProps = {
   title: string;
-  color?: string;
-  backgroundColor?: string;
+  color: string;
+  backgroundColor: string;
   onPress?: () => void;
   disabled?: boolean;
   style?: ViewStyle;
