@@ -46,6 +46,7 @@
 		7DFE61FA27C983635BDA27B8 /* Pods-stressDetector-stressDetectorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.release.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = stressDetector/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		895D3EC12B4BDD6200D960EB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../../../Downloads/Images.xcassets; sourceTree = "<group>"; };
+		895D3EC32B4FBA3900D960EB /* stressDetector.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = stressDetector.entitlements; path = stressDetector/stressDetector.entitlements; sourceTree = "<group>"; };
 		897F24482B45608D00950010 /* RNAudioRecorderPlayer.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; name = RNAudioRecorderPlayer.xcworkspace; path = "../node_modules/react-native-audio-recorder-player/ios/RNAudioRecorderPlayer.xcworkspace"; sourceTree = "<group>"; };
 		898BF2BA2B45062C00498987 /* stressDetector-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "stressDetector-Bridging-Header.h"; sourceTree = "<group>"; };
 		898BF2BC2B45062C00498987 /* emptyFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = emptyFile.swift; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 		13B07FAE1A68108700A75B9A /* stressDetector */ = {
 			isa = PBXGroup;
 			children = (
+				895D3EC32B4FBA3900D960EB /* stressDetector.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -501,6 +503,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = stressDetector/stressDetector.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -590,6 +593,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = stressDetector/stressDetector.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
