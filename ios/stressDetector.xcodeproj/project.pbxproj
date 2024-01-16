@@ -39,6 +39,12 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = stressDetector/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = stressDetector/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = stressDetector/main.m; sourceTree = "<group>"; };
+		19F6CBCC0A4E27FBF8BF4A61 /* libPods-stressDetector-stressDetectorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector-stressDetectorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B4392A12AC88292D35C810B /* Pods-stressDetector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.debug.xcconfig"; sourceTree = "<group>"; };
+		5709B34CF0A7D63546082F79 /* Pods-stressDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.release.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.release.xcconfig"; sourceTree = "<group>"; };
+		5B7EB9410499542E8C5724F5 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5DCACB8F33CDC322A6C60F78 /* libPods-stressDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		667CFABD2B3C0B44004C9E11 /* stressDetector.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = stressDetector.entitlements; path = stressDetector/stressDetector.entitlements; sourceTree = "<group>"; };
 		4270A7C4E399405E3E5F9D7D /* Pods-stressDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.release.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.release.xcconfig"; sourceTree = "<group>"; };
 		4525061251E547A2F1EB8F91 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4F9E32E2F7EC468B7524AF57 /* Pods-stressDetector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.debug.xcconfig"; sourceTree = "<group>"; };
@@ -744,6 +750,11 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
 				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -813,6 +824,11 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
 				);
 				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
