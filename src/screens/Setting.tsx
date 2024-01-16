@@ -1,29 +1,18 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, ScrollView } from 'react-native';
+import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
+import CustomLink from '../coponents/CustomLink';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
-import ContactUsModal from '../coponents/ContactUsModal';
-import CustomButton from '../coponents/CustomButton';
+import { useMutation } from '@tanstack/react-query';
+import { DELETE_ACCOUNT_URL } from '../utils/api';
 
-type SupportListProps = {
-  item: string;
-  checkSupportType: (item: string) => JSX.Element | null;
-};
-
-const HelpSupportLists: React.FC<SupportListProps> = ({ item, checkSupportType }) => (
-  <View style={styles.block}>
-    <Text style={styles.item}>{item}</Text>
-    {checkSupportType(item)}
-  </View>
-);
-
-export default function Setting() {
+export default function Setting({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
   const [isContactModalVisible, setContactModalVisible] = useState(false);
@@ -55,32 +44,71 @@ export default function Setting() {
     }
   };
 
-  const handleOpenModal = (modalType: string) => {
-    switch (modalType) {
-      case 'Contact Us':
-        setContactModalVisible(true);
-        break;
-      case 'Terms of Use':
-        setTermsOfUseModalVisible(true);
-        break;
-      case 'Privacy Policy':
-        setPrivacyPolicyModalVisible(true);
-        break;
+  const deleteAccount = async () => {
+    try {
+      const response = await axios.delete(DELETE_ACCOUNT_URL, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting the user information:', error);
+      throw error;
     }
   };
 
-  const handleCloseModal = (modalType: string) => {
-    switch (modalType) {
-      case 'Contact Us':
-        setContactModalVisible(false);
-        break;
-      case 'Terms of Use':
-        setTermsOfUseModalVisible(false);
-        break;
-      case 'Privacy Policy':
-        setPrivacyPolicyModalVisible(false);
-        break;
-    }
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => {
+      console.log('Account deleted successfully');
+
+      AsyncStorage.removeItem('user');
+      dispatch({ type: 'REMOVE_USER' });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Your account has been deleted.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting account: ', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to delete the account.',
+      });
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate();
+  };
+
+  const handleDeleteAccountWithConfirmation = () => {
+    Alert.alert(
+      'Confirm Account Deletion', // Title
+      'Are you sure you want to delete your account? This action cannot be undone.', // Message
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancellation of account deletion'),
+          style: 'cancel',
+        },
+        { text: 'Delete', onPress: () => handleDeleteAccount() },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const goToContact = () => {
+    navigation.navigate('CONTACTUS');
+  };
+  const goToPolicy = () => {
+    navigation.navigate('POLICY');
+  };
+  const goToUse = () => {
+    navigation.navigate('TERMSOFUSE');
   };
 
   const checkSupportType = (name) => {
@@ -134,11 +162,12 @@ export default function Setting() {
       <View>
         <Text style={styles.title} />
         {support.map((item) => (
-          <HelpSupportLists item={item} key={item} checkSupportType={checkSupportType} />
+          <DrawItemWithLink item={item} key={item} />
         ))}
       </View>
 
       <Button title="Sign Out" onPress={handleSignOut} />
+      <Button title="Delete Account" onPress={handleDeleteAccountWithConfirmation} />
     </ScrollView>
   );
 }
@@ -158,7 +187,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // backgroundColor:Colors.grey,
   },
   title: {
     fontSize: 20,

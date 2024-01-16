@@ -4,6 +4,7 @@ import { Colors } from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import { USER_INFO_URL } from '../utils/api';
 import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 export default function Account() {
   const [userInfo, setUserInfo] = useState({
@@ -11,7 +12,7 @@ export default function Account() {
     points: '',
   });
 
-  const [user, setUser] = useState();
+  const [user, setUser] = useState('');
   const { state, dispatch } = useUserContext();
   useEffect(() => {
     const headers = {
@@ -48,11 +49,15 @@ export default function Account() {
   };
 
   const handleEdit = () => {
-    setIsEnabled(!isEnabled);
+    setIsEnabled((isEnabled) => !isEnabled);
+    setUser('');
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
+    if (userInfo.username === user) {
+      handleEdit();
+      return;
+    }
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${state.user?.access_token}`,
@@ -118,7 +123,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // backgroundColor:Colors.grey,
   },
   title: {
     fontSize: 20,

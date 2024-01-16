@@ -9,4 +9,5 @@ export const SING_OUT_URL = `${DEFAULT_URL}/v1/signout`;
 export const USER_INFO_URL = `${DEFAULT_URL}/v1/userinfo`;
 export const PERMISSION_URL = `${DEFAULT_URL}/settings/permissions`;
 export const CONTACTUS_URL = `${DEFAULT_URL}/settings/contact-us`;
+export const DELETE_ACCOUNT_URL = `${DEFAULT_URL}/v1/delete_user`;
 export const CHECK_IN_URL = `${DEFAULT_URL}/v1/checkin`;
