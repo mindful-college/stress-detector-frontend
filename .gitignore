@@ -67,3 +67,7 @@ yarn-error.log
 
 .env
 .env.production
+
+ios/Podfile.lock
+package-lock.json
+yarn.lock
