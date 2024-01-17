@@ -1,20 +1,36 @@
-import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Button, View, StyleSheet, Text, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
 import { SING_OUT_URL } from '../utils/api';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../utils/colors';
-import CustomLink from '../coponents/CustomLink';
 import Permission from '../coponents/Permission';
 import Account from '../coponents/Account';
 import { useMutation } from '@tanstack/react-query';
-import { DELETE_ACCOUNT_URL } from '../utils/api';
+import ContactUsModal from '../coponents/ContactUsModal';
+import CustomButton from '../coponents/CustomButton';
+import { deleteAccount } from '../utils/userService';
 
-export default function Setting({ navigation }) {
+type SupportListProps = {
+  item: string;
+  checkSupportType: (item: string) => JSX.Element | null;
+};
+
+const HelpSupportLists: React.FC<SupportListProps> = ({ item, checkSupportType }) => (
+  <View style={styles.block}>
+    <Text style={styles.item}>{item}</Text>
+    {checkSupportType(item)}
+  </View>
+);
+
+export default function Setting() {
   const { state, dispatch } = useUserContext();
   const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
+  const [isContactModalVisible, setContactModalVisible] = useState(false);
+  const [isTermsOfUseModalVisible, setTermsOfUseModalVisible] = useState(false);
+  const [isPrivacyPolicyModalVisible, setPrivacyPolicyModalVisible] = useState(false);
   const userToken = state.user?.access_token;
   const userEmail = state.user?.email;
 
@@ -41,23 +57,36 @@ export default function Setting({ navigation }) {
     }
   };
 
-  const deleteAccount = async () => {
-    try {
-      const response = await axios.delete(DELETE_ACCOUNT_URL, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+  const handleOpenModal = (modalType: string) => {
+    switch (modalType) {
+      case 'Contact Us':
+        setContactModalVisible(true);
+        break;
+      case 'Terms of Use':
+        setTermsOfUseModalVisible(true);
+        break;
+      case 'Privacy Policy':
+        setPrivacyPolicyModalVisible(true);
+        break;
+    }
+  };
 
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting the user information:', error);
-      throw error;
+  const handleCloseModal = (modalType: string) => {
+    switch (modalType) {
+      case 'Contact Us':
+        setContactModalVisible(false);
+        break;
+      case 'Terms of Use':
+        setTermsOfUseModalVisible(false);
+        break;
+      case 'Privacy Policy':
+        setPrivacyPolicyModalVisible(false);
+        break;
     }
   };
 
   const deleteAccountMutation = useMutation({
-    mutationFn: deleteAccount,
+    mutationFn: () => deleteAccount(userToken),
     onSuccess: () => {
       console.log('Account deleted successfully');
 
@@ -98,33 +127,48 @@ export default function Setting({ navigation }) {
     );
   };
 
-  const goToContact = () => {
-    navigation.navigate('CONTACTUS');
-  };
-  const goToPolicy = () => {
-    navigation.navigate('POLICY');
-  };
-  const goToUse = () => {
-    navigation.navigate('TERMSOFUSE');
-  };
-
-  const checkSupportType = (name) => {
+  const checkSupportType = (name: string): JSX.Element | null => {
     if (name === 'Contact Us') {
-      return <CustomLink handleNavigate={goToContact} color={Colors.primary} text="send" />;
+      return (
+        <>
+          <ContactUsModal
+            isVisible={isContactModalVisible}
+            onClose={() => handleCloseModal(name)}
+            userToken={userToken}
+            userEmail={userEmail}
+          />
+          <CustomButton
+            title="SEND"
+            onPress={() => handleOpenModal(name)}
+            textStyle={styles.buttonTextForModal}
+            style={styles.touchableOpacityForModal}
+            color={Colors.primary}
+          />
+        </>
+      );
     } else if (name === 'Terms of Use') {
-      return <CustomLink handleNavigate={goToUse} color={Colors.primary} text="go" />;
+      return (
+        <CustomButton
+          title="GO"
+          onPress={() => handleOpenModal(name)}
+          textStyle={styles.buttonTextForModal}
+          style={styles.touchableOpacityForModal}
+          color={Colors.primary}
+        />
+      );
     } else if (name === 'Privacy Policy') {
-      return <CustomLink handleNavigate={goToPolicy} color={Colors.primary} text="go" />;
+      return (
+        <CustomButton
+          title="GO"
+          onPress={() => handleOpenModal(name)}
+          textStyle={styles.buttonTextForModal}
+          style={styles.touchableOpacityForModal}
+          color={Colors.primary}
+        />
+      );
     }
-    return;
+    return null;
   };
-
-  const DrawItemWithLink = (props) => (
-    <View style={styles.block}>
-      <Text style={styles.item}>{props.item}</Text>
-      {checkSupportType(props.item)}
-    </View>
-  );
 
   return (
     <ScrollView style={styles.container}>
@@ -134,7 +178,7 @@ export default function Setting({ navigation }) {
       <View>
         <Text style={styles.title} />
         {support.map((item) => (
-          <DrawItemWithLink item={item} key={item} />
+          <HelpSupportLists item={item} key={item} checkSupportType={checkSupportType} />
         ))}
       </View>
 
@@ -159,6 +203,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    // backgroundColor:Colors.grey,
   },
   title: {
     fontSize: 20,
@@ -171,6 +216,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.black,
     marginVertical: 5,
+    marginLeft: 2,
   },
   button: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
@@ -180,5 +226,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     color: Colors.primary,
+  },
+  touchableOpacityForModal: {
+    padding: 0,
+    marginVertical: 0,
+  },
+  buttonTextForModal: {
+    fontWeight: '500',
   },
 });

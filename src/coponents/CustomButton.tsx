@@ -1,12 +1,14 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
 type CustomButtonProps = {
   title: string;
-  color: string;
-  backgroundColor: string;
+  color?: string;
+  backgroundColor?: string;
   onPress?: () => void;
   disabled?: boolean;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 };
 
 const CustomButton = ({
@@ -15,13 +17,15 @@ const CustomButton = ({
   backgroundColor,
   onPress,
   disabled = false,
+  style,
+  textStyle,
 }: CustomButtonProps) => {
   return (
     <TouchableOpacity
       disabled={disabled}
-      style={[styles.button, { backgroundColor: backgroundColor }]}
+      style={[styles.button, { backgroundColor }, style]}
       onPress={onPress}>
-      <Text style={[styles.buttonText, { color: color }]}>{title}</Text>
+      <Text style={[styles.buttonText, { color }, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 };
