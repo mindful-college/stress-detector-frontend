@@ -1,11 +1,15 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Colors } from '../utils/colors';
 
 import CalendarStrip from 'react-native-calendar-strip';
+import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 
 export default function Report() {
+  const [selectedDate, setSelectedDate] = useState(moment());
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const datesBlacklistFunc = (date) => {
     return date.isAfter(moment(), 'day');
   };
@@ -13,11 +17,11 @@ export default function Report() {
   return (
     <View style={styles.container}>
       <CalendarStrip
-        scrollable
         style={styles.calendarContainer}
         calendarColor={Colors.white}
         calendarHeaderStyle={styles.calendarHeader}
-        calendarHeaderFormat={'MMMM'}
+        calendarHeaderFormat={'MMMM YYYY'}
+        onHeaderSelected={() => setIsModalVisible(true)}
         dateNumberStyle={styles.dateNumber}
         dateNameStyle={styles.dateName}
         iconContainer={{ flex: 0.1 }}
@@ -25,23 +29,52 @@ export default function Report() {
         highlightDateContainerStyle={styles.highlightDateContainer}
         highlightDateNameStyle={styles.highlightDateName}
         datesBlacklist={datesBlacklistFunc}
+        selectedDate={selectedDate}
+        startingDate={selectedDate}
+        onDateSelected={setSelectedDate}
       />
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}>
+        <TouchableOpacity
+          style={styles.calendarModalContainer}
+          onPress={() => setIsModalVisible(false)}>
+          <Calendar
+            initialDate={moment().toString()}
+            theme={{
+              textMonthFontWeight: '600',
+              textMonthFontSize: 15,
+            }}
+            style={styles.calendarInModal}
+            onDayPress={(day) => {
+              setSelectedDate(moment(day.dateString));
+              setIsModalVisible(false);
+            }}
+          />
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.white },
+
+  // Calendar
   calendarContainer: {
-    height: 90,
-    paddingTop: 10,
+    display: 'flex',
+    textAlign: 'center',
+    height: 100,
+    paddingTop: 13,
     paddingBottom: 5,
     borderBottomWidth: 2,
     borderBottomColor: Colors.grey,
   },
   calendarHeader: { color: 'black', fontSize: 15, fontWeight: '500', textTransform: 'uppercase' },
   dateNumber: { color: 'black', fontSize: 17, fontWeight: '400' },
-  dateName: { color: 'black' },
+  dateName: { color: 'black', fontWeight: '500' },
   highlightDateContainer: {
     display: 'flex',
     textAlign: 'center',
@@ -58,5 +91,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     color: 'white',
     fontSize: 8,
+    fontWeight: '700',
+  },
+
+  // Calendar in Modal
+  calendarModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  calendarInModal: {
+    height: 360,
+    borderRadius: 10,
   },
 });

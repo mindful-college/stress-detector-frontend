@@ -9,6 +9,7 @@ import {
   Platform,
   TextInput,
   Modal,
+  Dimensions,
 } from 'react-native';
 import { Colors } from '../utils/colors';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -98,7 +99,7 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={30}>
+        keyboardVerticalOffset={10}>
         <SafeAreaView style={styles.safeContainer}>
           <View style={styles.selectContainer1}>
             <Text style={styles.text}>What do you want to tell us?</Text>
@@ -153,6 +154,9 @@ const ContactUsModal: React.FC<ContactUsModalProps> = ({
   );
 };
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   safeContainer: {
     backgroundColor: Colors.white,
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   },
   selectContainer3: {
     paddingHorizontal: 20,
-    marginTop: 35,
+    marginTop: windowWidth >= 430 ? 80 : windowWidth < 376 ? (windowHeight > 800 ? 70 : 35) : 80,
   },
   text: {
     fontSize: 14,
@@ -210,9 +214,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     paddingHorizontal: 22,
     marginTop: 13,
+    marginBottom: windowWidth < 376 ? 0 : 35,
   },
   input: {
-    height: 300,
+    height: windowWidth >= 430 ? 400 : windowWidth < 376 ? (windowHeight > 800 ? 360 : 300) : 330,
     borderWidth: 1,
     borderRadius: 10,
     paddingTop: 10,
@@ -221,7 +226,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGrey,
     fontSize: 14,
   },
-  buttonContainer: { paddingHorizontal: 22, marginTop: 70, marginBottom: 35 },
+  buttonContainer: {
+    paddingHorizontal: 22,
+    marginTop: 70,
+    marginBottom: windowWidth >= 430 ? 65 : windowWidth < 376 ? 35 : 55,
+  },
   button: {
     backgroundColor: Colors.primary,
     padding: 10,
