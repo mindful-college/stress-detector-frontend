@@ -10,39 +10,43 @@ export default function Permission() {
     'Step Count',
     'Sleep Hours',
     'Heart Rate',
+    'Social Media Usage',
     'Notification',
   ]);
-  const [enabled, setEnabled] = useState({});
   const { state, dispatch } = useUserContext();
-  useEffect(() => {
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${state.user?.access_token}`,
-    };
 
-    const permission = async () => {
-      try {
-        const res = await axios.get(PERMISSION_URL, { headers });
+  
 
-        if (res.status === 200) {
-          setEnabled(res.data);
-        }
-      } catch (error) {
-        // Handle errors if the request fails
-        console.error(error);
+  const getPermission = async () => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${state.user?.access_token}`,
+      };
+
+      const res = await axios.get(PERMISSION_URL, { headers });
+
+      if (res.status === 200) {
+        dispatch({ type: 'SET_PERMISSION', payload: res.data })
       }
-    };
+    } catch (error) {
+      // Handle errors if the request fails
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     // Call the account function here to trigger the API request
-    permission();
+    getPermission();
   }, [state.user?.access_token]);
 
   const DrawItemWithToggle = (props) => (
     <View style={styles.block}>
       <Text style={styles.item}>{props.item}</Text>
-      <ToggleButton item={props.item} isAllowed={enabled[props.item]} />
+      <ToggleButton item={props.item} />
     </View>
   );
+  
   return (
     <View>
       <Text style={styles.title}>Permission Setting</Text>
