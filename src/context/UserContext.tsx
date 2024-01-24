@@ -1,8 +1,17 @@
 import React, { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
-import { User } from '../types/user';
+import { User, AverageReportData, Permission } from '../types/user';
 
-type AppState = { user: User | null };
-type AppAction = { type: 'SET_USER'; payload: User } | { type: 'REMOVE_USER' };
+type AppState = {
+  user: User | null;
+  averageReportData: AverageReportData | null;
+  permission: Permission | null;
+};
+
+type AppAction =
+  | { type: 'SET_USER'; payload: User }
+  | { type: 'SET_AVERAGE_REPORT_DATA'; payload: AverageReportData }
+  | { type: 'SET_PERMISSION'; payload: Permission }
+  | { type: 'REMOVE_USER' };
 type AppContextProps = {
   state: AppState;
   dispatch: Dispatch<AppAction>;
@@ -14,6 +23,10 @@ export const userReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case 'SET_USER':
       return { ...state, user: action.payload };
+    case 'SET_AVERAGE_REPORT_DATA':
+      return { ...state, averageReportData: action.payload };
+    case 'SET_PERMISSION':
+      return { ...state, permission: action.payload };
     case 'REMOVE_USER':
       return { ...state, user: null };
     default:
@@ -21,7 +34,11 @@ export const userReducer = (state: AppState, action: AppAction): AppState => {
   }
 };
 
-export const initialUser = { user: null };
+export const initialUser = {
+  user: null,
+  averageReportData: null,
+  permission: null,
+};
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialUser);

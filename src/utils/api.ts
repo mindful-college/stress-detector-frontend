@@ -11,3 +11,4 @@ export const PERMISSION_URL = `${DEFAULT_URL}/settings/permissions`;
 export const CONTACTUS_URL = `${DEFAULT_URL}/settings/contact-us`;
 export const DELETE_ACCOUNT_URL = `${DEFAULT_URL}/v1/delete_user`;
 export const CHECK_IN_URL = `${DEFAULT_URL}/v1/checkin`;
+export const GET_REPORT_DATA_URL = `${DEFAULT_URL}/report/stresslvl`;

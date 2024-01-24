@@ -14,7 +14,6 @@ import Toast from 'react-native-toast-message';
 
 type toggleButtonProps = {
   item: string;
-  isAllowed: boolean;
 };
 
 // Permission for health data access
@@ -23,24 +22,62 @@ const permissions = {
     read: [
       AppleHealthKit.Constants.Permissions.HeartRate,
       AppleHealthKit.Constants.Permissions.StepCount,
-      AppleHealthKit.Constants.Permissions.StepCount,
+      AppleHealthKit.Constants.Permissions.SleepAnalysis,
     ],
     write: [],
   },
 } as HealthKitPermissions;
 
-export default function ToggleButton({ item, isAllowed }: toggleButtonProps) {
-  //Bool for toggle button
-  const [isToggleEnabled, setIsToggleEnabled] = useState(isAllowed);
+export default function ToggleButton({ item }: toggleButtonProps) {
   //userinfo in Reducer
   const { state, dispatch } = useUserContext();
+  //Bool for toggle button
+  const [isToggleEnabled, setIsToggleEnabled] = useState(false);
   //Bool for device setting permission
   const [permission, setPermission] = useState(false);
+
+  const getToggleEnabled = () => {
+    switch (item) {
+      case 'Step Count':
+        setIsToggleEnabled(state.permission?.stepCounts || false);
+        break;
+      case 'Sleep Hours':
+        setIsToggleEnabled(state.permission?.sleepHours || false);
+        break;
+      case 'Heart Rate':
+        setIsToggleEnabled(state.permission?.heartRate || false);
+        break;
+      case 'Social Media Usage':
+        setIsToggleEnabled(state.permission?.socialMediaUsage || false);
+        break;
+      case 'Notification':
+        setIsToggleEnabled(state.permission?.notification || false);
+        break;
+      default:
+        break;
+    }
+    return;
+  };
 
   //Link to mobile setting page
   const toSetting = () => {
     requestNotifications(['alert', 'sound']).then(({ status, settings }) => {});
     openSettings().catch(() => console.warn('cannot open settings'));
+  };
+
+  const showModal = () => {
+    Alert.alert(
+      'Notifications blocked', // Title
+      'Turn on Notifications to Allow "Stress Detect" to send alerts.', // Message
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'Setting', onPress: () => toSetting() },
+      ],
+      { cancelable: false },
+    );
   };
 
   // Send API Request to update permission
@@ -51,16 +88,28 @@ export default function ToggleButton({ item, isAllowed }: toggleButtonProps) {
       Authorization: `Bearer ${state.user?.access_token}`,
     };
     //Text justification for API call
-    const permission_type = item.toLowerCase().replace(' ', '_');
+    const get_permission_type = () => {
+      let permission_type = item.toLowerCase();
+      let permission_type_split = permission_type.split(' ');
+      let permission_type_result = '';
+      for (let i = 0; i < permission_type_split.length; i++) {
+        if (i !== 0) {
+          permission_type_result += '_';
+        }
+        permission_type_result += permission_type_split[i];
+      }
+      return permission_type_result;
+    };
     try {
       const res = await axios.put(
-        `${PERMISSION_URL}?permission_type=${permission_type}&permission=${newPermission}`,
+        `${PERMISSION_URL}?permission_type=${get_permission_type()}&permission=${newPermission}`,
         {},
         { headers },
       );
       // check response to set Permission
       if (res.status === 200) {
-        setIsToggleEnabled(newPermission);
+        //update reducer
+        dispatch({ type: 'SET_PERMISSION', payload: res.data });
       }
       //Handle error
     } catch (err) {
@@ -80,9 +129,11 @@ export default function ToggleButton({ item, isAllowed }: toggleButtonProps) {
               //Handle if it is denied
               if (status['status'] !== 'granted') {
                 //Turn off the switch button
-                setIsToggleEnabled(false);
+                // setIsToggleEnabled(false);
                 //Set false in server data
-                updatePermission(false);
+                if (state.permission?.notification === true) {
+                  updatePermission(false);
+                }
               }
             })
             //error handle for getting mobile setting permission
@@ -104,8 +155,14 @@ export default function ToggleButton({ item, isAllowed }: toggleButtonProps) {
         };
 
   useEffect(() => {
+    getToggleEnabled();
+  });
+
+  useEffect(() => {
     //To set initial data
     checkNotificationPermission();
+  }, [permission]);
+  useEffect(() => {
     //To handle permission after mobile setting changed
     const listener = AppState.addEventListener('change', checkNotificationPermission);
     return () => {
@@ -116,25 +173,16 @@ export default function ToggleButton({ item, isAllowed }: toggleButtonProps) {
   //To handle switch toggle button
   const toggleSwitch = async () => {
     if (!permission) {
+      //error toast message
       Toast.show({
         type: 'error',
         text1: `Cannot change the permission for ${item}`,
       });
 
       // Alert Modal
-      Alert.alert(
-        'Notifications blocked', // Title
-        'Turn on Notifications to Allow "Stress Detect" to send alerts.', // Message
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          { text: 'Setting', onPress: () => toSetting() },
-        ],
-        { cancelable: false },
-      );
+      showModal();
     } else {
+      //success toast message
       Toast.show({
         type: 'success',
         text1: 'Permission has been successfully changed',

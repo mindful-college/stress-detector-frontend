@@ -1,17 +1,61 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../utils/colors';
-
+import { useFocusEffect } from '@react-navigation/native';
 import CalendarStrip from 'react-native-calendar-strip';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { GET_REPORT_DATA_URL } from '../utils/api';
+import { useUserContext } from '../context/UserContext';
+import FaceSvg from '../coponents/FaceSvg';
 
 export default function Report() {
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [stressLevel, setStressLevel] = useState(0);
+  const [summaryText, setSummaryText] = useState([]);
+  const [summaryVoice, setSummaryVoice] = useState([]);
+
+  const { state, dispatch } = useUserContext();
+  const userToken = state.user?.access_token;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      //
+      const dateString = selectedDate.format(); // Convert moment object to string (ISO 8601 format)
+
+      const getReportData = async () => {
+        try {
+          const response = await axios.get(`${GET_REPORT_DATA_URL}?date_str=${dateString}`, {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          });
+          console.log(response.data);
+          setStressLevel(response.data.stress_level); // update stress_level
+          //
+        } catch (error) {
+          console.error('Error getting report data from Database', error);
+        }
+      };
+
+      if (userToken && selectedDate) {
+        getReportData();
+      }
+    }, [selectedDate, userToken]),
+  );
+
+  //
 
   const datesBlacklistFunc = (date) => {
     return date.isAfter(moment(), 'day');
+  };
+
+  const handleDateSelection = async (selectedMoment) => {
+    setSelectedDate(selectedMoment);
+    setIsModalVisible(false);
   };
 
   return (
@@ -31,7 +75,7 @@ export default function Report() {
         datesBlacklist={datesBlacklistFunc}
         selectedDate={selectedDate}
         startingDate={selectedDate}
-        onDateSelected={setSelectedDate}
+        onDateSelected={(date) => handleDateSelection(date)}
       />
       <Modal
         animationType="fade"
@@ -48,13 +92,15 @@ export default function Report() {
               textMonthFontSize: 15,
             }}
             style={styles.calendarInModal}
-            onDayPress={(day) => {
-              setSelectedDate(moment(day.dateString));
-              setIsModalVisible(false);
-            }}
+            onDayPress={(day) => handleDateSelection(moment(day.dateString))}
           />
         </TouchableOpacity>
       </Modal>
+      <ScrollView>
+        <View style={styles.stressLevelSvgContainer}>
+          <FaceSvg stressLevel={stressLevel} />
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -104,5 +150,12 @@ const styles = StyleSheet.create({
   calendarInModal: {
     height: 360,
     borderRadius: 10,
+  },
+
+  // stressLevelSvg
+  stressLevelSvgContainer: {
+    alignItems: 'center',
+    marginTop: 25,
+    marginBottom: 35,
   },
 });
