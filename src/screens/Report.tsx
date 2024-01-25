@@ -10,13 +10,14 @@ import axios from 'axios';
 import { GET_REPORT_DATA_URL } from '../utils/api';
 import { useUserContext } from '../context/UserContext';
 import FaceSvg from '../coponents/FaceSvg';
+import CheckInSummary from '../coponents/CheckInSummary';
 
 export default function Report() {
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [stressLevel, setStressLevel] = useState(0);
-  const [summaryText, setSummaryText] = useState([]);
-  const [summaryVoice, setSummaryVoice] = useState([]);
+  const [checkInSummary, setCheckInSummary] = useState({ text: [], voice: [] });
+  const [hasReportData, setHasReportData] = useState(false);
 
   const { state, dispatch } = useUserContext();
   const userToken = state.user?.access_token;
@@ -34,10 +35,19 @@ export default function Report() {
             },
           });
           console.log(response.data);
-          setStressLevel(response.data.stress_level); // update stress_level
+          // console.log(response.data.summary.text);
+          if (response.data.message) {
+            setHasReportData(false);
+          } else {
+            setHasReportData(true);
+            setStressLevel(response.data.stress_level);
+            setCheckInSummary(response.data.summary);
+          }
+
           //
         } catch (error) {
           console.error('Error getting report data from Database', error);
+          setHasReportData(false);
         }
       };
 
@@ -97,9 +107,18 @@ export default function Report() {
         </TouchableOpacity>
       </Modal>
       <ScrollView>
-        <View style={styles.stressLevelSvgContainer}>
-          <FaceSvg stressLevel={stressLevel} />
-        </View>
+        {hasReportData ? (
+          <>
+            <View style={styles.stressLevelSvgContainer}>
+              <FaceSvg stressLevel={stressLevel} />
+            </View>
+            <View style={styles.checkInSummaryContainer}>
+              <CheckInSummary checkInSummary={checkInSummary} />
+            </View>
+          </>
+        ) : (
+          <Text style={styles.noReportText}>There is no report for this date</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -120,7 +139,7 @@ const styles = StyleSheet.create({
   },
   calendarHeader: { color: 'black', fontSize: 15, fontWeight: '500', textTransform: 'uppercase' },
   dateNumber: { color: 'black', fontSize: 17, fontWeight: '400' },
-  dateName: { color: 'black', fontWeight: '500' },
+  dateName: { color: 'black', fontWeight: '600' },
   highlightDateContainer: {
     display: 'flex',
     textAlign: 'center',
@@ -136,8 +155,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     backgroundColor: Colors.primary,
     color: 'white',
-    fontSize: 8,
-    fontWeight: '700',
+    fontSize: 9,
+    fontWeight: '900',
   },
 
   // Calendar in Modal
@@ -152,10 +171,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
+  // date with no report
+  noReportText: {
+    marginTop: 100,
+    textAlign: 'center',
+    fontSize: 20,
+  },
+
   // stressLevelSvg
   stressLevelSvgContainer: {
     alignItems: 'center',
     marginTop: 25,
-    marginBottom: 35,
+  },
+
+  // checkInSummary
+  checkInSummaryContainer: {
+    marginTop: 40,
+    paddingHorizontal: 30,
   },
 });
