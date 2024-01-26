@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  useWindowDimensions,
   SafeAreaView,
 } from 'react-native';
 import { Colors } from '../utils/colors';
@@ -17,10 +16,6 @@ type ModalHeaderProps = {
 };
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onClose }) => {
-  const { height, width } = useWindowDimensions();
-  console.log(width);
-  console.log(height);
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -34,7 +29,6 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onClose }) => {
 };
 
 const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   safeArea: {

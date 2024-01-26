@@ -1,22 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Text, View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../utils/colors';
 import { useFocusEffect } from '@react-navigation/native';
 import CalendarStrip from 'react-native-calendar-strip';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
-import { useQuery } from '@tanstack/react-query';
+
 import axios from 'axios';
-import { GET_REPORT_DATA_URL } from '../utils/api';
+import { GET_REPORT_DATA_URL, GET_CHECKIN_DATA_URL } from '../utils/api';
 import { useUserContext } from '../context/UserContext';
 import FaceSvg from '../coponents/FaceSvg';
 import CheckInSummary from '../coponents/CheckInSummary';
+import CheckInInfo from '../coponents/CheckInInfo';
 
 export default function Report() {
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [stressLevel, setStressLevel] = useState(0);
   const [checkInSummary, setCheckInSummary] = useState({ text: [], voice: [] });
+  const [checkInInfo, setCheckInInfo] = useState({
+    date: new Date(),
+    email: '',
+    heart_rate: 0,
+    sleep_hours: 0,
+    social_media_usage: 0,
+    step_count: 0,
+    stress_level: 0,
+    study_hours: 0,
+    work_hours: 0,
+  });
   const [hasReportData, setHasReportData] = useState(false);
 
   const { state, dispatch } = useUserContext();
@@ -34,8 +46,7 @@ export default function Report() {
               Authorization: `Bearer ${userToken}`,
             },
           });
-          console.log(response.data);
-          // console.log(response.data.summary.text);
+
           if (response.data.message) {
             setHasReportData(false);
           } else {
@@ -51,8 +62,24 @@ export default function Report() {
         }
       };
 
+      const getCheckinData = async () => {
+        try {
+          const response = await axios.get(`${GET_CHECKIN_DATA_URL}?date_str=${dateString}`, {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          });
+          console.log(response.data);
+
+          setCheckInInfo(response.data);
+        } catch (error) {
+          console.error('Error getting check in data from Database', error);
+        }
+      };
+
       if (userToken && selectedDate) {
         getReportData();
+        getCheckinData();
       }
     }, [selectedDate, userToken]),
   );
@@ -114,6 +141,9 @@ export default function Report() {
             </View>
             <View style={styles.checkInSummaryContainer}>
               <CheckInSummary checkInSummary={checkInSummary} />
+            </View>
+            <View style={styles.checkInInfoContainer}>
+              <CheckInInfo checkInInfo={checkInInfo} />
             </View>
           </>
         ) : (
@@ -182,11 +212,19 @@ const styles = StyleSheet.create({
   stressLevelSvgContainer: {
     alignItems: 'center',
     marginTop: 25,
+    borderWidth: 2,
   },
 
   // checkInSummary
   checkInSummaryContainer: {
     marginTop: 40,
     paddingHorizontal: 30,
+    borderWidth: 2,
+  },
+
+  // checkInInfo
+  checkInInfoContainer: {
+    marginTop: 40,
+    marginBottom: 30,
   },
 });
