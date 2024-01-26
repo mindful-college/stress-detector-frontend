@@ -212,14 +212,12 @@ const styles = StyleSheet.create({
   stressLevelSvgContainer: {
     alignItems: 'center',
     marginTop: 25,
-    borderWidth: 2,
   },
 
   // checkInSummary
   checkInSummaryContainer: {
     marginTop: 40,
     paddingHorizontal: 30,
-    borderWidth: 2,
   },
 
   // checkInInfo
