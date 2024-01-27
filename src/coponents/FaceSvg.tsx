@@ -9,10 +9,15 @@ import StraightFaceSvg from '../svg/StraightFaceSvg';
 import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
 
 type FaceSvgProps = {
-  stressLevel: number;
+  reportData: {
+    email: string;
+    date: Date;
+    summary: { text: string[]; voice: string[] };
+    stress_level: number;
+  };
 };
 
-const FaceSvg: React.FC<FaceSvgProps> = ({ stressLevel }) => {
+const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
   //
   const stressLevelMap = {
     1: 'Very Low',
@@ -42,9 +47,9 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ stressLevel }) => {
   const [stressLevelWord, setStressLevelWord] = useState('');
   //
   useEffect(() => {
-    setStressLevelWord(stressLevelMap[stressLevel]);
+    setStressLevelWord(stressLevelMap[reportData.stress_level]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stressLevel]);
+  }, [reportData.stress_level]);
 
   const handleFaceSVG = (level: number) => {
     switch (level) {
@@ -65,7 +70,7 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ stressLevel }) => {
 
   return (
     <>
-      <View style={styles.facesvg}>{handleFaceSVG(stressLevel)}</View>
+      <View style={styles.facesvg}>{handleFaceSVG(reportData.stress_level)}</View>
       <View>
         {stressLevelWord && (
           <Text style={styles.stressLevelText}>

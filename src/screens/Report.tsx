@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Text, View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../utils/colors';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,10 +14,16 @@ import CheckInSummary from '../coponents/CheckInSummary';
 import CheckInInfo from '../coponents/CheckInInfo';
 
 export default function Report() {
+  const scrollViewRef = useRef();
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [stressLevel, setStressLevel] = useState(0);
-  const [checkInSummary, setCheckInSummary] = useState({ text: [], voice: [] });
+  const [reportData, setReportData] = useState({
+    email: '',
+    date: new Date(),
+    summary: { text: [], voice: [] },
+    stress_level: 0,
+  });
+
   const [checkInInfo, setCheckInInfo] = useState({
     date: new Date(),
     email: '',
@@ -33,6 +39,10 @@ export default function Report() {
 
   const { state, dispatch } = useUserContext();
   const userToken = state.user?.access_token;
+
+  const resetScrollViewPosition = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -51,8 +61,7 @@ export default function Report() {
             setHasReportData(false);
           } else {
             setHasReportData(true);
-            setStressLevel(response.data.stress_level);
-            setCheckInSummary(response.data.summary);
+            setReportData(response.data);
           }
 
           //
@@ -69,7 +78,6 @@ export default function Report() {
               Authorization: `Bearer ${userToken}`,
             },
           });
-          console.log(response.data);
 
           setCheckInInfo(response.data);
         } catch (error) {
@@ -77,10 +85,13 @@ export default function Report() {
         }
       };
 
-      if (userToken && selectedDate) {
+      if (selectedDate) {
         getReportData();
         getCheckinData();
       }
+      // console.log(data);
+
+      resetScrollViewPosition();
     }, [selectedDate, userToken]),
   );
 
@@ -133,14 +144,14 @@ export default function Report() {
           />
         </TouchableOpacity>
       </Modal>
-      <ScrollView>
+      <ScrollView ref={scrollViewRef}>
         {hasReportData ? (
           <>
             <View style={styles.stressLevelSvgContainer}>
-              <FaceSvg stressLevel={stressLevel} />
+              <FaceSvg reportData={reportData} />
             </View>
             <View style={styles.checkInSummaryContainer}>
-              <CheckInSummary checkInSummary={checkInSummary} />
+              <CheckInSummary reportData={reportData} />
             </View>
             <View style={styles.checkInInfoContainer}>
               <CheckInInfo checkInInfo={checkInInfo} />

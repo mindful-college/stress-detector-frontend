@@ -1,5 +1,6 @@
-import React from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { useUserContext } from '../context/UserContext';
 import { Colors } from '../utils/colors';
 import StudyHours from '../svg/study.svg';
 import SocialMediaUsage from '../svg/social_media.svg';
@@ -23,6 +24,57 @@ type CheckInInfoProps = {
 };
 
 const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
+  const { state } = useUserContext();
+
+  const getDataType = (dataType: string) => {
+    switch (dataType) {
+      case 'stepCounts':
+        return 'step_count';
+      case 'sleepHours':
+        return 'sleep_hours';
+      case 'studyHours':
+        return 'study_hours';
+      case 'workHours':
+        return 'work_hours';
+      case 'heartRate':
+        return 'heart_rate';
+      case 'socialMediaUsage':
+        return 'social_media_usage';
+      default:
+        return null;
+    }
+  };
+
+  const calculateMarginOfError = (type: string) => {
+    if (!state.averageReportData) {
+      return <Text>Unavailable</Text>;
+    }
+
+    const typeForCheckIn = getDataType(type);
+
+    if (!typeForCheckIn) {
+      return <Text>Unavailable</Text>;
+    }
+
+    const averageData = state.averageReportData[type];
+    const checkInData = checkInInfo[typeForCheckIn];
+
+    const minBoundary = Math.round(averageData * 0.9);
+    const maxBoundary = Math.round(averageData * 1.1);
+
+    if (checkInData < minBoundary) {
+      return <Text style={styles.lowStyle}>Low</Text>;
+    } else if (checkInData >= maxBoundary) {
+      return <Text style={styles.highStyle}>High</Text>;
+    } else {
+      return <Text style={styles.normalStyle}>Normal</Text>;
+    }
+  };
+
+  if (!state.averageReportData) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <View style={styles.checkInInfoInnerBox}>
       <View style={styles.box1}>
@@ -33,7 +85,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.study_hours}</Text>}
+          {checkInInfo?.study_hours !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.study_hours} hrs</Text>
+              <View>{calculateMarginOfError('studyHours')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
       {''}
@@ -45,7 +104,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.work_hours}</Text>}
+          {checkInInfo?.work_hours !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.work_hours} hrs</Text>
+              <View>{calculateMarginOfError('workHours')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
       {''}
@@ -57,7 +123,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.sleep_hours}</Text>}
+          {checkInInfo?.sleep_hours !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.sleep_hours} hrs</Text>
+              <View>{calculateMarginOfError('sleepHours')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
       {''}
@@ -69,7 +142,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.step_count}</Text>}
+          {checkInInfo?.step_count !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.step_count}</Text>
+              <View>{calculateMarginOfError('stepCounts')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
       {''}
@@ -81,7 +161,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.heart_rate}</Text>}
+          {checkInInfo?.heart_rate !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.heart_rate} bpm</Text>
+              <View>{calculateMarginOfError('heartRate')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
       {''}
@@ -93,7 +180,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           </View>
         </View>
         <View style={styles.boxLowerSection}>
-          {checkInInfo && <Text>{checkInInfo.social_media_usage}</Text>}
+          {checkInInfo?.social_media_usage !== null ? (
+            <View style={styles.bottomSectionBox}>
+              <Text style={styles.lowerText}>{checkInInfo.social_media_usage} hrs</Text>
+              <View>{calculateMarginOfError('socialMediaUsage')}</View>
+            </View>
+          ) : (
+            <Text style={styles.lowerText}>N/A</Text>
+          )}
         </View>
       </View>
     </View>
@@ -189,5 +283,51 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontWeight: '500',
     color: Colors.black,
+  },
+  boxLowerSection: {
+    marginTop: 17,
+    marginLeft: 5,
+  },
+  lowerText: {
+    fontSize: 20,
+  },
+  bottomSectionBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+  },
+  lowStyle: {
+    fontSize: 11,
+    borderWidth: 1,
+    paddingVertical: 1,
+    paddingHorizontal: 3,
+    borderRadius: 4,
+    color: 'limegreen',
+    borderColor: 'limegreen',
+    fontWeight: '700',
+    marginTop: 5,
+  },
+  highStyle: {
+    fontSize: 11,
+    borderWidth: 1,
+    paddingVertical: 1,
+    paddingHorizontal: 3,
+    borderRadius: 4,
+    color: 'hotpink',
+    borderColor: 'hotpink',
+    fontWeight: '700',
+    marginTop: 5,
+  },
+  normalStyle: {
+    fontSize: 11,
+    borderWidth: 1,
+    paddingVertical: 1,
+    paddingHorizontal: 3,
+    borderRadius: 4,
+    color: Colors.black,
+    borderColor: Colors.black,
+    fontWeight: '700',
+    marginTop: 5,
   },
 });
