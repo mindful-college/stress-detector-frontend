@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Colors } from '../utils/colors';
+import { moderateScale, verticalScale } from '../themes/metrics';
 
 type CheckInSummaryProps = {
   reportData: {
@@ -44,13 +45,16 @@ export default CheckInSummary;
 const styles = StyleSheet.create({
   checkInHeader: {
     color: Colors.black,
-    fontSize: 19,
+    fontSize: moderateScale(19),
     fontWeight: '500',
   },
   textContainer: {
-    marginTop: 5,
+    marginTop: verticalScale(5),
   },
-  text: { fontSize: 15, lineHeight: 24 },
+  text: {
+    fontSize: moderateScale(15),
+    lineHeight: verticalScale(24),
+  },
   keyWords: {
     color: Colors.primary,
     fontWeight: '600',

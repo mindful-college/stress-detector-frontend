@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Colors } from '../utils/colors';
+import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
 type CheckInInfoProps = {
   checkInInfo: number;
@@ -43,31 +44,35 @@ const CheckInBox: React.FC<CheckInInfoProps> = ({
 
 export default CheckInBox;
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   // box inside
   boxUpperSection: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: 25,
+    marginTop: verticalScale(25),
   },
   upperSectionText: {
-    fontSize: 13,
-    paddingTop: 2,
-    marginLeft: 5,
+    fontSize: moderateScale(13),
+    paddingTop: verticalScale(2),
+    marginLeft: horizontalScale(5),
     fontWeight: '500',
     color: Colors.black,
   },
   boxLowerSection: {
-    marginTop: 17,
-    marginLeft: 5,
+    marginTop: verticalScale(17),
+    marginLeft: horizontalScale(5),
   },
   lowerText: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
+    marginBottom: verticalScale(25),
   },
   bottomSectionBox: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight: 10,
+    paddingRight: horizontalScale(10),
   },
 });

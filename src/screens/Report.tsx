@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import CalendarStrip from 'react-native-calendar-strip';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
 import axios from 'axios';
 import { GET_REPORT_DATA_URL, GET_CHECKIN_DATA_URL } from '../utils/api';
@@ -172,31 +173,36 @@ const styles = StyleSheet.create({
   calendarContainer: {
     display: 'flex',
     textAlign: 'center',
-    height: 100,
-    paddingTop: 13,
-    paddingBottom: 5,
+    height: verticalScale(100),
+    paddingTop: verticalScale(13),
+    paddingBottom: verticalScale(5),
     borderBottomWidth: 2,
     borderBottomColor: Colors.grey,
   },
-  calendarHeader: { color: 'black', fontSize: 15, fontWeight: '500', textTransform: 'uppercase' },
-  dateNumber: { color: 'black', fontSize: 17, fontWeight: '400' },
+  calendarHeader: {
+    color: 'black',
+    fontSize: moderateScale(15),
+    fontWeight: '500',
+    textTransform: 'uppercase',
+  },
+  dateNumber: { color: 'black', fontSize: moderateScale(17), fontWeight: '400' },
   dateName: { color: 'black', fontWeight: '600' },
   highlightDateContainer: {
     display: 'flex',
     textAlign: 'center',
     backgroundColor: Colors.primary,
-    borderRadius: 100,
+    borderRadius: moderateScale(100),
   },
   highlightDateNumber: {
     backgroundColor: Colors.primary,
     color: 'white',
-    fontSize: 17,
+    fontSize: moderateScale(17),
   },
   highlightDateName: {
-    marginTop: 2,
+    marginTop: verticalScale(2),
     backgroundColor: Colors.primary,
     color: 'white',
-    fontSize: 9,
+    fontSize: moderateScale(9),
     fontWeight: '900',
   },
 
@@ -208,32 +214,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   calendarInModal: {
-    height: 360,
+    height: verticalScale(360),
     borderRadius: 10,
   },
 
   // date with no report
   noReportText: {
-    marginTop: 100,
+    marginTop: verticalScale(100),
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: moderateScale(20),
   },
 
   // stressLevelSvg
   stressLevelSvgContainer: {
     alignItems: 'center',
-    marginTop: 25,
+    marginTop: verticalScale(25),
   },
 
   // checkInSummary
   checkInSummaryContainer: {
-    marginTop: 40,
-    paddingHorizontal: 30,
+    marginTop: verticalScale(40),
+    paddingHorizontal: horizontalScale(30),
   },
 
   // checkInInfo
   checkInInfoContainer: {
-    marginTop: 40,
-    marginBottom: 30,
+    marginTop: verticalScale(40),
+    marginBottom: verticalScale(30),
   },
 });

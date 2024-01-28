@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Colors } from '../utils/colors';
+import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
 import HappyFaceSvg from '../svg/HappyFaceSvg';
 import SadComponentSvg from '../svg/SadFaceSvg';
@@ -54,15 +55,50 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
   const handleFaceSVG = (level: number) => {
     switch (level) {
       case 1:
-        return <HappyFaceSvg width="100" height="100" strokeWidth="2" color="#000000" />;
+        return (
+          <HappyFaceSvg
+            width={String(horizontalScale(130))}
+            height={String(verticalScale(130))}
+            strokeWidth="1.5"
+            color="#000000"
+          />
+        );
       case 2:
-        return <SmileyFaceSvg width="100" height="100" strokeWidth="2" color="#000000" />;
+        return (
+          <SmileyFaceSvg
+            width={String(horizontalScale(130))}
+            height={String(verticalScale(130))}
+            strokeWidth="1.5"
+            color="#000000"
+          />
+        );
       case 3:
-        return <StraightFaceSvg width="100" height="100" strokeWidth="2" color="#000000" />;
+        return (
+          <StraightFaceSvg
+            width={String(horizontalScale(130))}
+            height={String(verticalScale(130))}
+            strokeWidth="1.5"
+            color="#000000"
+          />
+        );
       case 4:
-        return <SadComponentSvg width="100" height="100" strokeWidth="2" color="#000000" />;
+        return (
+          <SadComponentSvg
+            width={String(horizontalScale(130))}
+            height={String(verticalScale(130))}
+            strokeWidth="1.5"
+            color="#000000"
+          />
+        );
       case 5:
-        return <ThrowUpFaceSvg width="100" height="100" strokeWidth="2" color="#000000" />;
+        return (
+          <ThrowUpFaceSvg
+            width={String(horizontalScale(130))}
+            height={String(verticalScale(130))}
+            strokeWidth="1.5"
+            color="#000000"
+          />
+        );
       default:
         return null;
     }
@@ -86,17 +122,41 @@ export default FaceSvg;
 
 const styles = StyleSheet.create({
   facesvg: {
-    marginBottom: 40,
+    marginBottom: verticalScale(40),
   },
   stressLevelText: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: Colors.black,
     fontWeight: '500',
   },
-  veryLow: { color: 'limegreen', fontWeight: '600', fontSize: 18 },
-  low: { color: 'gold', fontWeight: '600', fontSize: 18 },
-  moderate: { color: 'darkorange', fontWeight: '600', fontSize: 18 },
-  high: { color: 'coral', fontWeight: '600', fontSize: 18 },
-  veryHigh: { color: 'crimson', fontWeight: '600', fontSize: 18 },
-  default: { color: Colors.black, fontWeight: '600', fontSize: 18 },
+  veryLow: {
+    color: 'limegreen',
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
+  low: {
+    color: 'gold',
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
+  moderate: {
+    color: 'darkorange',
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
+  high: {
+    color: 'coral',
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
+  veryHigh: {
+    color: 'crimson',
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
+  default: {
+    color: Colors.black,
+    fontWeight: '600',
+    fontSize: moderateScale(18),
+  },
 });

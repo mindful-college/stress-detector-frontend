@@ -17,6 +17,7 @@ import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import ModalHeader from './ModalHeader';
 import { submitContactUsForm } from '../utils/userService';
+import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
 type ContactUsModalProps = {
   isVisible: boolean;
@@ -164,81 +165,86 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   selectContainer1: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: horizontalScale(20),
+    paddingTop: verticalScale(20),
   },
   selectContainer2: {
-    paddingHorizontal: 5,
+    paddingHorizontal: horizontalScale(5),
   },
   selectContainer3: {
-    paddingHorizontal: 20,
-    marginTop: windowWidth >= 430 ? 80 : windowWidth < 376 ? (windowHeight > 800 ? 70 : 35) : 80,
+    paddingHorizontal: horizontalScale(20),
+    // marginTop: windowWidth >= 430 ? 80 : windowWidth < 376 ? (windowHeight > 800 ? 70 : 35) : 80,
+    marginTop: verticalScale(80),
   },
   text: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   keyboardAvoidingView: {
     flex: 1,
   },
   dropdown: {
-    marginTop: 13,
-    marginHorizontal: 15,
-    height: 40,
+    marginTop: verticalScale(13),
+    marginHorizontal: horizontalScale(15),
+    height: verticalScale(45),
     backgroundColor: 'white',
     borderRadius: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: horizontalScale(12),
     borderWidth: 1,
     borderColor: Colors.lightGrey,
     elevation: 2,
   },
   item: {
-    padding: 12,
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: horizontalScale(12),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   textItem: {
     flex: 1,
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   placeholderStyle: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   selectedTextStyle: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   iconStyle: {
-    width: 30,
-    height: 30,
+    width: horizontalScale(30),
+    height: verticalScale(30),
   },
   inputContainer: {
-    paddingHorizontal: 22,
-    marginTop: 13,
-    marginBottom: windowWidth < 376 ? 0 : 35,
+    paddingHorizontal: horizontalScale(22),
+    marginTop: verticalScale(13),
+    marginBottom: verticalScale(17),
   },
   input: {
-    height: windowWidth >= 430 ? 400 : windowWidth < 376 ? (windowHeight > 800 ? 360 : 300) : 330,
+    // height: windowWidth >= 430 ? 400 : windowWidth < 376 ? (windowHeight > 800 ? 360 : 300) : 330,
+    height: verticalScale(320),
     borderWidth: 1,
     borderRadius: 10,
-    paddingTop: 10,
-    paddingBottom: 8,
-    paddingHorizontal: 9,
+    paddingTop: verticalScale(10),
+    paddingBottom: verticalScale(8),
+    paddingHorizontal: horizontalScale(9),
     borderColor: Colors.lightGrey,
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   buttonContainer: {
-    paddingHorizontal: 22,
-    marginTop: 70,
-    marginBottom: windowWidth >= 430 ? 65 : windowWidth < 376 ? 35 : 55,
+    paddingHorizontal: horizontalScale(22),
+    marginTop: verticalScale(70),
+    // marginBottom: windowWidth >= 430 ? 65 : windowWidth < 376 ? 35 : 55,
+    marginBottom: verticalScale(50),
   },
   button: {
     backgroundColor: Colors.primary,
-    padding: 10,
+    paddingHorizontal: horizontalScale(10),
+    paddingVertical: verticalScale(10),
     borderRadius: 10,
   },
   disabledButton: { backgroundColor: Colors.grey, padding: 10, borderRadius: 10 },
   buttonText: {
-    fontSize: 17,
+    fontSize: moderateScale(17),
     fontWeight: '600',
     color: Colors.white,
     textAlign: 'center',
