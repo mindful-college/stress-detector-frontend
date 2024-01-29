@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { Colors } from '../utils/colors';
 import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
@@ -44,8 +44,8 @@ const CheckInBox: React.FC<CheckInInfoProps> = ({
 
 export default CheckInBox;
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+// const windowWidth = Dimensions.get('window').width;
+// const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   // box inside

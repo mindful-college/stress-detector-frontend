@@ -13,11 +13,19 @@ import { useUserContext } from '../context/UserContext';
 import FaceSvg from '../coponents/FaceSvg';
 import CheckInSummary from '../coponents/CheckInSummary';
 import CheckInInfo from '../coponents/CheckInInfo';
+import LoadingIndicator from '../coponents/LoadingIndicator';
 
 export default function Report() {
-  const scrollViewRef = useRef();
+  const scrollViewRef = useRef<ScrollView>(null);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [hasReportData, setHasReportData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isReportPage, setIsReportPage] = useState(true);
+
+  const { state } = useUserContext();
+
+  const userToken = state.user?.access_token;
   const [reportData, setReportData] = useState({
     email: '',
     date: new Date(),
@@ -36,10 +44,6 @@ export default function Report() {
     study_hours: 0,
     work_hours: 0,
   });
-  const [hasReportData, setHasReportData] = useState(false);
-
-  const { state, dispatch } = useUserContext();
-  const userToken = state.user?.access_token;
 
   const resetScrollViewPosition = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -49,60 +53,53 @@ export default function Report() {
     React.useCallback(() => {
       //
       const dateString = selectedDate.format(); // Convert moment object to string (ISO 8601 format)
+      setIsLoading(true);
 
-      const getReportData = async () => {
+      const fetchData = async () => {
         try {
-          const response = await axios.get(`${GET_REPORT_DATA_URL}?date_str=${dateString}`, {
+          const reportResponse = await axios.get(`${GET_REPORT_DATA_URL}?date_str=${dateString}`, {
             headers: {
               Authorization: `Bearer ${userToken}`,
             },
           });
-
-          if (response.data.message) {
-            setHasReportData(false);
-          } else {
-            setHasReportData(true);
-            setReportData(response.data);
-          }
-
-          //
-        } catch (error) {
-          console.error('Error getting report data from Database', error);
-          setHasReportData(false);
-        }
-      };
-
-      const getCheckinData = async () => {
-        try {
-          const response = await axios.get(`${GET_CHECKIN_DATA_URL}?date_str=${dateString}`, {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
+          const checkinResponse = await axios.get(
+            `${GET_CHECKIN_DATA_URL}?date_str=${dateString}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
             },
-          });
+          );
 
-          setCheckInInfo(response.data);
+          const [currentReportData, currentCheckinData] = await Promise.all([
+            reportResponse,
+            checkinResponse,
+          ]);
+
+          setReportData(currentReportData.data);
+          setCheckInInfo(currentCheckinData.data);
+          setHasReportData(
+            currentReportData.data.message || currentCheckinData.data.message ? false : true,
+          );
         } catch (error) {
-          console.error('Error getting check in data from Database', error);
+          console.error('Error fetching data', error);
+        } finally {
+          setIsLoading(false);
         }
       };
 
-      if (selectedDate) {
-        getReportData();
-        getCheckinData();
-      }
-      // console.log(data);
-
+      fetchData();
       resetScrollViewPosition();
     }, [selectedDate, userToken]),
   );
 
   //
 
-  const datesBlacklistFunc = (date) => {
+  const datesBlacklistFunc = (date: moment.Moment) => {
     return date.isAfter(moment(), 'day');
   };
 
-  const handleDateSelection = async (selectedMoment) => {
+  const handleDateSelection = async (selectedMoment: moment.Moment) => {
     setSelectedDate(selectedMoment);
     setIsModalVisible(false);
   };
@@ -136,6 +133,7 @@ export default function Report() {
           onPress={() => setIsModalVisible(false)}>
           <Calendar
             initialDate={moment().toString()}
+            maxDate={moment().format('YYYY-MM-DD')}
             theme={{
               textMonthFontWeight: '600',
               textMonthFontSize: 15,
@@ -145,6 +143,7 @@ export default function Report() {
           />
         </TouchableOpacity>
       </Modal>
+
       <ScrollView ref={scrollViewRef}>
         {hasReportData ? (
           <>
@@ -157,9 +156,21 @@ export default function Report() {
             <View style={styles.checkInInfoContainer}>
               <CheckInInfo checkInInfo={checkInInfo} />
             </View>
+            <LoadingIndicator
+              isLoading={isLoading}
+              color={Colors.black}
+              isReportPage={isReportPage}
+            />
           </>
         ) : (
-          <Text style={styles.noReportText}>There is no report for this date</Text>
+          <>
+            <Text style={styles.noReportText}>There is no report for this date</Text>
+            <LoadingIndicator
+              isLoading={isLoading}
+              color={Colors.black}
+              isReportPage={isReportPage}
+            />
+          </>
         )}
       </ScrollView>
     </View>
@@ -214,7 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   calendarInModal: {
-    height: verticalScale(360),
+    height: 360,
     borderRadius: 10,
   },
 
