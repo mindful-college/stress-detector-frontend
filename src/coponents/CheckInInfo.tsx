@@ -48,24 +48,35 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
   };
 
   const calculateMarginOfError = (type: string) => {
-    if (!state.averageReportData) {
-      return <Text>Unavailable</Text>;
-    }
-
+    //
     const typeForCheckIn = getDataType(type);
+    let minBoundary = 0;
+    let maxBoundary = 0;
 
     if (!typeForCheckIn) {
       return <Text>Unavailable</Text>;
     }
 
+    if (!state.averageReportData) {
+      return <Text>Unavailable</Text>;
+    }
     const averageData = state.averageReportData[type];
     const checkInData = checkInInfo[typeForCheckIn];
 
-    const minBoundary = Math.round(averageData * 0.9);
-    const maxBoundary = Math.round(averageData * 1.1);
+    if (typeForCheckIn === 'heart_rate') {
+      minBoundary = Math.round(averageData * 0.85);
+      maxBoundary = Math.round(averageData * 1.15);
+    } else {
+      minBoundary = Math.round(averageData * 0.9);
+      maxBoundary = Math.round(averageData * 1.1);
+    }
 
     if (checkInData < minBoundary) {
-      return <Text style={styles.lowStyle}>Low</Text>;
+      if (typeForCheckIn === 'heart_rate') {
+        return <Text style={styles.lowStyleForHeartRate}>Low</Text>;
+      } else {
+        return <Text style={styles.lowStyle}>Low</Text>;
+      }
     } else if (checkInData >= maxBoundary) {
       return <Text style={styles.highStyle}>High</Text>;
     } else {
@@ -206,6 +217,17 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     color: 'limegreen',
     borderColor: 'limegreen',
+    fontWeight: '700',
+    marginTop: verticalScale(5),
+  },
+  lowStyleForHeartRate: {
+    fontSize: moderateScale(11),
+    borderWidth: 1,
+    paddingVertical: verticalScale(1),
+    paddingHorizontal: horizontalScale(3),
+    borderRadius: 4,
+    color: 'hotpink',
+    borderColor: 'hotpink',
     fontWeight: '700',
     marginTop: verticalScale(5),
   },
