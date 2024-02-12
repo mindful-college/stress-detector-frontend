@@ -14,18 +14,16 @@ export default function Permission() {
     'Notification',
   ]);
   const { state, dispatch } = useUserContext();
-
   const getPermission = async () => {
     try {
       const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
       };
-
       const res = await axios.get(PERMISSION_URL, { headers });
 
       if (res.status === 200) {
-        dispatch({ type: 'SET_PERMISSION', payload: res.data });
+        dispatch({ type: 'SET_PERMISSION', payload: res.data })
       }
     } catch (error) {
       // Handle errors if the request fails
