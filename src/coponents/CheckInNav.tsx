@@ -5,6 +5,7 @@ import { Colors } from '../utils/colors';
 import CheckIn from '../screens/CheckIn';
 import Report from '../screens/Report';
 import Setting from '../screens/Setting';
+import Analysis from '../screens/Analysis';
 
 const CustomTabBarIcon = ({ focused, name }) => {
   if (name === 'CHECK-IN' && focused) {
@@ -45,6 +46,7 @@ export default function CheckInNav() {
         tabBarIcon: ({ focused }) => <CustomTabBarIcon focused={focused} name={route.name} />,
       })}>
       <Tab.Screen name="REPORT" component={Report} />
+      <Tab.Screen name="ANALYSIS" component={Analysis} />
       <Tab.Screen name="CHECK-IN" component={CheckIn} />
       <Tab.Screen name="SETTING" component={Setting} />
     </Tab.Navigator>

@@ -11,3 +11,5 @@ export const PERMISSION_URL = `${DEFAULT_URL}/settings/permissions`;
 export const CONTACTUS_URL = `${DEFAULT_URL}/settings/contact-us`;
 export const DELETE_ACCOUNT_URL = `${DEFAULT_URL}/v1/delete_user`;
 export const CHECK_IN_URL = `${DEFAULT_URL}/v1/checkin`;
+export const ANALYSIS_WEEKLY = `${DEFAULT_URL}/analyses/data/weekly`;
+export const ANALYSIS_MONTHLY = `${DEFAULT_URL}/analyses/data/monthly`;
