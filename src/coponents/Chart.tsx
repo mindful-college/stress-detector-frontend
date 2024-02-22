@@ -4,37 +4,38 @@ import { LineChart } from "react-native-chart-kit";
 import { Colors } from '../utils/colors';
 
 type chartData = {
-    chartData: object,
-    eee: number[]
+    chartData: number[],
+    chartLabel: string[],
+    chartTitle: string
 }
 
 
-export default function Chart({chartData}:chartData) {
-    const [chartValue, setChartValue] = useState([]);
-    console.log('Months:', chartData['months']);
-    console.log('Stress Level:', chartData['stress_level']);
-    console.log('Chart Value:', chartValue);
+export default function Chart({chartData, chartLabel, chartTitle}:chartData) {
+    const [chartValue, setChartValue] = useState([0]);
+    const [label, setLabel] = useState(['']);
+    const [title, setTitle] = useState('');
     useEffect(() => {
-        console.log(chartData)
-        console.log(chartData['stress_level'])
-        setChartValue(chartData['stress_level']);
+        if(chartData && chartLabel && chartTitle){
+          setTitle(chartTitle)
+          setLabel(chartData['months']);
+          setChartValue(chartData['stress_level']);
+        }
       }, [chartData]); // This effect runs on mount and whenever chartData changes
 
-    const arr = chartData['stress_level']
     const chartConfig = {
         backgroundGradientFrom: "white",
         backgroundGradientTo: "white",
         color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
         strokeWidth: 3, // optional, default 3
-        barPercentage: 0.8,
+        barPercentage: 0.5,
         useShadowColorFromDataset: true // optional
     };
     const screenWidth = Dimensions.get("window").width;
     const data = {
-        labels: chartData['months'],
+        labels: label,
         datasets: [
           {
-            data: [1,2,3,4,5],
+            data: chartValue,
             color: (opacity = 1) => `rgba(249,80,1, ${opacity})`, // optional
             strokeWidth: 5 // optional
           }
@@ -43,7 +44,6 @@ export default function Chart({chartData}:chartData) {
       };
     return (
       <View style={styles.container}>
-          <ScrollView horizontal={true}>
               <LineChart
                     data={data}
                     width={screenWidth}
@@ -52,7 +52,7 @@ export default function Chart({chartData}:chartData) {
                     chartConfig={chartConfig}
                     bezier
               />
-          </ScrollView>
+
       </View>
     );
 }
