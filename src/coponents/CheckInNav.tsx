@@ -14,6 +14,12 @@ const CustomTabBarIcon = ({ focused, name }) => {
   if (name === 'CHECK-IN' && !focused) {
     return <Image style={styles.icon} source={require(`../images/checkin_inactive.png`)} />;
   }
+  if (name === 'ANALYSIS' && focused) {
+    return <Image style={styles.icon} source={require(`../images/analysis_active.png`)} />;
+  }
+  if (name === 'ANALYSIS' && !focused) {
+    return <Image style={styles.icon} source={require(`../images/analysis_inactive.png`)} />;
+  }
   if (name === 'REPORT' && focused) {
     return <Image style={styles.icon} source={require(`../images/report_active.png`)} />;
   }
