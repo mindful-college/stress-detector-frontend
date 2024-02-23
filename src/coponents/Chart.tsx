@@ -74,7 +74,7 @@ export default function Chart({ chartData, chartLabel, chartTitle, min, max}:cha
                               left: x + 5, // Adjust these values to position your content correctly
                               top: y - 20, // Adjust these values to position your content correctly
                           }}>
-                          <Text style={{ color: 'black', fontSize:8 }}>{indexData}</Text>
+                          <Text style={{ color: 'black', fontSize:10 }}>{indexData}</Text>
                       </View>
                   )}
               />
