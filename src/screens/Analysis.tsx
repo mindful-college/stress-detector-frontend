@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Text, View, Dimensions, ScrollView, StyleSheet } from 'react-native';
 import { LineChart } from "react-native-chart-kit";
+import Swiper from 'react-native-swiper';
 import { Colors } from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import { ANALYSIS_WEEKLY, ANALYSIS_MONTHLY } from "../utils/api";
@@ -8,13 +9,35 @@ import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import Chart from '../coponents/Chart';
 export default function Analysis() {
-    const [weeklyData, setWeeklyData] = useState({});
+    const [weeklyData, setWeeklyData] = useState({"days":[['']], "stress_level": [[0]], "heart_rate":[[0]],
+    "sleep_hours":[[0]], "social_media_usage": [[0]], "step_count":[[0]],
+    "study_hours": [[0]], "work_hours": [[0]]});
+    // const [monthlyData, setMonthlyData] = useState({});
     const [monthlyData, setMonthlyData] = useState({"months":[['']], "stress_level": [[0]], "heart_rate":[[0]],
     "sleep_hours":[[0]], "social_media_usage": [[0]], "step_count":[[0]],
     "study_hours": [[0]], "work_hours": [[0]]});
     const { state, dispatch } = useUserContext();
-    const [count, setCount] = useState(-9999999);
-    const [maxCount, setMaxCount] = useState(-9999999);
+    const [maxCount, setMaxCount] = useState(0);
+    const [value, setValue] = useState('weekly');
+    const [heartRatePerm, setHeartRatePerm] = useState(false);
+    const [stepCountPerm, setStepCountPerm] = useState(false);
+    const [sleepHoursPerm, setSleepHoursPerm] = useState(false);
+    const [socialMediaPerm, setSocialMediaPerm] = useState(false);
+
+    useEffect(() => {
+      // Check the specific permission, adjust according to your state structure
+      const heart_permission = state.permission?.heartRate || false;
+      const step_permission = state.permission?.stepCounts || false;
+      const sleep_permission = state.permission?.sleepHours || false;
+      const social_permission = state.permission?.socialMediaUsage || false;
+  
+      setHeartRatePerm(heart_permission);
+      setSleepHoursPerm(sleep_permission);
+      setSocialMediaPerm(social_permission);
+      setStepCountPerm(step_permission);
+
+    }, [state.permission]);
+
     useEffect(() => {
       const headers = {
         'Content-Type': 'application/json',
@@ -27,55 +50,8 @@ export default function Analysis() {
     
           if (res.status === 200) {
 
-              // whole data
-              let daysList = res.data['days'];
-              let stressList = res.data['stress_level'];
-              let heartRateList = res.data['heart_rate'];
-              let sleepHoursList = res.data['sleep_hours'];
-              let socialMediaUsageList = res.data['social_media_usage'];
-              let stepCountList = res.data['step_count']
-              let studyHoursList = res.data['study_hours'];
-              let workHoursList = res.data['work_hours'];
-
-              let dayList = ["Sun", "Mon", "Tue", "Wen", "Thur", "Fri", "Sat"]
-              for(let i = 0; i < daysList.length; i++){
-                daysList[i] = dayList[daysList[i]];
-              }
-
-              for(let i = 0; i < daysList.length; i++){
-                if(!stepCountList[i]){
-                  stepCountList[i] = 0;
-                }
-              }
-
-              // parsed newList
-              let parsedDaysList: Array<Array<string>> = [];
-              let parsedStressList: Array<Array<number>> = [];
-              let parsedHeartRateList: Array<Array<number>> = [];
-              let parsedSleepHoursList: Array<Array<number>> = [];
-              let parsedSocialMediaUsageList: Array<Array<number>> = [];
-              let parsedStepCountList: Array<Array<number>> = [];
-              let parsedStudyHoursList: Array<Array<number>> = [];
-              let parsedWorkHoursList: Array<Array<number>> = [];
-              let len = stressList.length;
-
-              while(len > 0){
-                parsedDaysList.unshift(daysList.slice(Math.max(len-7,0),len));
-                parsedStressList.unshift(stressList.slice(Math.max(len-7,0),len));
-                parsedHeartRateList.unshift(heartRateList.slice(Math.max(len-7,0),len));
-                parsedSleepHoursList.unshift(sleepHoursList.slice(Math.max(len-7,0),len));
-                parsedSocialMediaUsageList.unshift(socialMediaUsageList.slice(Math.max(len-7,0),len));
-                parsedStepCountList.unshift(stepCountList.slice(Math.max(len-7,0),len));
-                parsedStudyHoursList.unshift(studyHoursList.slice(Math.max(len-7,0),len));
-                parsedWorkHoursList.unshift(workHoursList.slice(Math.max(len-7,0),len));
-                stressList = stressList.slice(0,Math.max(len-7,0))
-                len = stressList.length
-              }
-
-              setWeeklyData({ "days": parsedDaysList, "stress_level": parsedStressList, "heart_rate":parsedHeartRateList,
-                              "sleep_hours": parsedSleepHoursList, "social_media_usage": parsedSocialMediaUsageList, "step_count":parsedStepCountList,
-                              "study_hours": parsedStudyHoursList, "work_hours": parsedStudyHoursList })
-              setMaxCount(parsedWorkHoursList.length)
+              setWeeklyData(res.data)
+              setMaxCount(res.data['stress_level'].length-1)
           }
         } catch (error) {
           // Handle errors if the request fails
@@ -87,55 +63,8 @@ export default function Analysis() {
           const res = await axios.get(ANALYSIS_MONTHLY, { headers });
     
           if (res.status === 200) {
-              let monthsList = res.data['months'];
-              let stressList = res.data['stress_level'];
-              let heartRateList = res.data['heart_rate'];
-              let sleepHoursList = res.data['sleep_hours'];
-              let socialMediaUsageList = res.data['social_media_usage'];
-              let stepCountList = res.data['step_count']
-              let studyHoursList = res.data['study_hours'];
-              let workHoursList = res.data['work_hours'];
-
-              let monthList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
-              for(let i = 0; i < monthsList.length; i++){
-                monthsList[i] = monthList[monthsList[i]];
-              }
-
-              for(let i = 0; i < monthsList.length; i++){
-                if(!stepCountList[i]){
-                  stepCountList[i] = 0;
-                }
-              }
-
-              // parsed newList
-              let parsedMonthsList: Array<Array<string>> = [];
-              let parsedStressList: Array<Array<number>> = [];
-              let parsedHeartRateList: Array<Array<number>> = [];
-              let parsedSleepHoursList: Array<Array<number>> = [];
-              let parsedSocialMediaUsageList: Array<Array<number>> = [];
-              let parsedStepCountList: Array<Array<number>> = [];
-              let parsedStudyHoursList: Array<Array<number>> = [];
-              let parsedWorkHoursList: Array<Array<number>> = [];
-              let len = stressList.length;
-
-              while(len > 0){
-                parsedMonthsList.unshift(monthsList.slice(Math.max(len-6,0),len));
-                parsedStressList.unshift(stressList.slice(Math.max(len-6,0),len));
-                parsedHeartRateList.unshift(heartRateList.slice(Math.max(len-6,0),len));
-                parsedSleepHoursList.unshift(sleepHoursList.slice(Math.max(len-6,0),len));
-                parsedSocialMediaUsageList.unshift(socialMediaUsageList.slice(Math.max(len-6,0),len));
-                parsedStepCountList.unshift(stepCountList.slice(Math.max(len-6,0),len));
-                parsedStudyHoursList.unshift(studyHoursList.slice(Math.max(len-6,0),len));
-                parsedWorkHoursList.unshift(workHoursList.slice(Math.max(len-6,0),len));
-                stressList = stressList.slice(0,Math.max(len-6,0))
-                len = stressList.length
-              }
-
               // console.log(res.data)
-              setMonthlyData({...monthlyData,
-                              "months": parsedMonthsList, "stress_level": parsedStressList, "heart_rate":parsedHeartRateList,
-                              "sleep_hours": parsedSleepHoursList, "social_media_usage": parsedSocialMediaUsageList, "step_count":parsedStepCountList,
-                              "study_hours": parsedStudyHoursList, "work_hours": parsedStudyHoursList})
+              setMonthlyData(res.data)
           }
         } catch (error) {
           // Handle errors if the request fails
@@ -157,13 +86,15 @@ export default function Analysis() {
       }
     ];
 
-    const [value, setValue] = useState('weekly');
+    
 
     type DropdownItem = {
       value: string;
     };
 
     const renderItem = (item: DropdownItem) => {
+      setMaxCount(weeklyData['days'].length-1)
+      // item.value === 'weekly'? :setMaxCount(monthlyData['months'].length-1)
       return (
         <View style={styles.item}>
           <Text style={styles.textItem}>{item.value}</Text>
@@ -172,7 +103,8 @@ export default function Analysis() {
     };
 
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
+        <View style={styles.itemContainer}>
           <Dropdown
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
@@ -188,20 +120,131 @@ export default function Analysis() {
               }}
               renderItem={renderItem}
           />
-          <ScrollView horizontal={true}>
-            <Chart chartData={monthlyData['stress_level'][0]} chartLabel={monthlyData['months'][0]} chartTitle='stress level'></Chart>
-            {/* {maxCount>0&&
-              monthlyData['stress_level'].map((item, i)=>{
-                <Chart chartData={monthlyData['stress_level'][i]} chartLabel={monthlyData['months'][i]} chartTitle='stress level'></Chart>})
-            } */}
-           </ScrollView>
-            
-        </View>
+          <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width }}>
+            {/* <Text style={styles.title}>{'Stress Level'}</Text> */}
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&
+                (value === 'weekly')?
+                weeklyData['stress_level'].map((item, i) => {
+                  return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={weeklyData['stress_level'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Stress Level'/>}):
+                monthlyData['stress_level'].map((item, i) => {
+                  return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={monthlyData['stress_level'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Stress Level'/>
+                })
+              }
+            </Swiper>
+          </View>
+          <View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&
+                (value === 'weekly')?
+                weeklyData['study_hours'].map((item, i) => {
+                  return <Chart key={`${value}study${i}`} min={0} max={8} chartData={weeklyData['study_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Study Hours'/>}):
+                monthlyData['study_hours'].map((item, i) => {
+                  return <Chart key={`${value}study${i}`} min={0} max={8} chartData={monthlyData['study_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Study Hours'/>
+                })
+              }
+            </Swiper>
+          </View>
+          <View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&
+                (value === 'weekly')?
+                weeklyData['work_hours'].map((item, i) => {
+                  return <Chart key={`${value}work${i}`} min={0} max={8} chartData={weeklyData['work_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Work Hours'/>}):
+                monthlyData['work_hours'].map((item, i) => {
+                  return <Chart key={`${value}work${i}`} min={0} max={8} chartData={monthlyData['work_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Work Hours'/>
+                })
+              }
+            </Swiper>
+          </View>
+          {socialMediaPerm&&<View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&(value === 'weekly')?
+                weeklyData['social_media_usage'].map((item, i) => {
+                  console.log(socialMediaPerm)
+                  return <Chart key={`${value}media${i}`} min={0} max={6} chartData={weeklyData['social_media_usage'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Social Media Usage'/>}):
+                monthlyData['social_media_usage'].map((item, i) => {
+                  return <Chart key={`${value}media${i}`} min={0} max={6} chartData={monthlyData['social_media_usage'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Social Media Usage'/>
+                })
+              }
+            </Swiper>
+          </View>}
+          {sleepHoursPerm&&<View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&
+                (value === 'weekly')?
+                weeklyData['sleep_hours'].map((item, i) => {
+                  return <Chart key={`${value}sleep${i}`} min={4} max={8} chartData={weeklyData['sleep_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Sleep Hours'/>
+                }):
+                monthlyData['sleep_hours'].map((item, i) => {
+                  return <Chart key={`${value}sleep${i}`} min={4} max={8} chartData={monthlyData['sleep_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Sleep Hours'/>
+                })
+              }
+            </Swiper>
+          </View>}
+          {stepCountPerm&&<View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+              {weeklyData&&value&&
+                (value === 'weekly')?
+                weeklyData['step_count'].map((item, i) => {
+                  return <Chart key={`${value}step${i}`} min={0} max={8000} chartData={weeklyData['step_count'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Step Count'/>}):
+                monthlyData['step_count'].map((item, i) => {
+                  return <Chart key={`${value}step${i}`} min={0} max={8000} chartData={monthlyData['step_count'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Step Count'/>
+                })
+              }
+            </Swiper>
+          </View>}
+          {heartRatePerm&&<View style={{ height: Dimensions.get('window').height / 2 }}>
+            <Swiper 
+              loop={false} 
+              index={maxCount} 
+              showsPagination={false}
+              showsButtons={false}>
+                {weeklyData&&
+                (value === 'weekly')?
+                weeklyData['heart_rate'].map((item, i) => {
+                  return <Chart key={`${value}heart${i}`} min={60} max={140} chartData={weeklyData['heart_rate'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Heart Rate'/>}):
+                monthlyData['heart_rate'].map((item, i) => {
+                  return <Chart key={`${value}heart${i}`} min={60} max={140} chartData={monthlyData['heart_rate'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Heart Rate'/>
+                })
+              }
+            </Swiper>
+          </View>}
+          </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container:{
+    flex: 1,
+    backgroundColor: Colors.white,
+  },
+  itemContainer: {
     // paddingHorizontal: 5,
     flex: 1,
     alignItems: 'center',
@@ -243,4 +286,11 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  title: {
+    fontSize: 15,
+    color: Colors.black,
+    textAlign:'center',
+    paddingBottom: 10,
+    marginHorizontal: '5%',
+  }
 });
