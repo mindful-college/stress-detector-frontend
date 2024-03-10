@@ -80,6 +80,7 @@ export default function ToggleButton({ item }: toggleButtonProps) {
     );
   }
 
+
   // Send API Request to update permission
   const updatePermission = async (newPermission) => {
     // Header for API call
@@ -162,6 +163,7 @@ export default function ToggleButton({ item }: toggleButtonProps) {
     //To set initial data
     checkNotificationPermission();
   }, [permission])
+
   useEffect(() => {
     //To handle permission after mobile setting changed
     const listener = AppState.addEventListener('change', checkNotificationPermission);
