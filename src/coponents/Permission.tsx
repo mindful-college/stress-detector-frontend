@@ -14,16 +14,12 @@ export default function Permission() {
     'Notification',
   ]);
   const { state, dispatch } = useUserContext();
-
-  
-
   const getPermission = async () => {
     try {
       const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
       };
-
       const res = await axios.get(PERMISSION_URL, { headers });
 
       if (res.status === 200) {
@@ -46,7 +42,7 @@ export default function Permission() {
       <ToggleButton item={props.item} />
     </View>
   );
-  
+
   return (
     <View>
       <Text style={styles.title}>Permission Setting</Text>
