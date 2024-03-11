@@ -7,6 +7,7 @@ import { useUserContext } from '../context/UserContext';
 import { ANALYSIS_WEEKLY, ANALYSIS_MONTHLY } from "../utils/api";
 import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
+import { moderateScale, verticalScale } from '../themes/metrics';
 import Chart from '../coponents/Chart';
 export default function Analysis() {
     const [weeklyData, setWeeklyData] = useState({"days":[['']], "stress_level": [[0]], "heart_rate":[[0]],
@@ -23,6 +24,8 @@ export default function Analysis() {
     const [stepCountPerm, setStepCountPerm] = useState(false);
     const [sleepHoursPerm, setSleepHoursPerm] = useState(false);
     const [socialMediaPerm, setSocialMediaPerm] = useState(false);
+    const [dayCount, setDayCount] = useState(0);
+    const [monthCount, setMonthCount] = useState(0);
 
     useEffect(() => {
       // Check the specific permission, adjust according to your state structure
@@ -52,6 +55,7 @@ export default function Analysis() {
 
               setWeeklyData(res.data)
               setMaxCount(res.data['stress_level'].length-1)
+              setDayCount(res.data.days_count)
           }
         } catch (error) {
           // Handle errors if the request fails
@@ -65,6 +69,7 @@ export default function Analysis() {
           if (res.status === 200) {
               // console.log(res.data)
               setMonthlyData(res.data)
+              setMonthCount(res.data.month_count)
           }
         } catch (error) {
           // Handle errors if the request fails
@@ -120,6 +125,7 @@ export default function Analysis() {
               }}
               renderItem={renderItem}
           />
+          
           <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width }}>
             {/* <Text style={styles.title}>{'Stress Level'}</Text> */}
             <Swiper 
@@ -129,11 +135,18 @@ export default function Analysis() {
               showsButtons={false}>
               {weeklyData&&value&&
                 (value === 'weekly')?
-                weeklyData['stress_level'].map((item, i) => {
-                  return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={weeklyData['stress_level'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Stress Level'/>}):
-                monthlyData['stress_level'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? 
+                  weeklyData['stress_level'].map((item, i) => {
+                  return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={weeklyData['stress_level'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Stress Level'/>
+                }):
+                  <Text style={styles.noReportText}>There is no report for this date</Text>
+                ) : 
+                (monthCount && monthCount >= 2 ?
+                  monthlyData['stress_level'].map((item, i) => {
                   return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={monthlyData['stress_level'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Stress Level'/>
-                })
+                }):
+                  <Text style={styles.noReportText}>There is no report for this date</Text>
+                )
               }
             </Swiper>
           </View>
@@ -145,11 +158,11 @@ export default function Analysis() {
               showsButtons={false}>
               {weeklyData&&value&&
                 (value === 'weekly')?
-                weeklyData['study_hours'].map((item, i) => {
-                  return <Chart key={`${value}study${i}`} min={0} max={8} chartData={weeklyData['study_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Study Hours'/>}):
-                monthlyData['study_hours'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? weeklyData['study_hours'].map((item, i) => {
+                  return <Chart key={`${value}study${i}`} min={0} max={8} chartData={weeklyData['study_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Study Hours'/>}):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['study_hours'].map((item, i) => {
                   return <Chart key={`${value}study${i}`} min={0} max={8} chartData={monthlyData['study_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Study Hours'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>
@@ -161,11 +174,11 @@ export default function Analysis() {
               showsButtons={false}>
               {weeklyData&&value&&
                 (value === 'weekly')?
-                weeklyData['work_hours'].map((item, i) => {
-                  return <Chart key={`${value}work${i}`} min={0} max={8} chartData={weeklyData['work_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Work Hours'/>}):
-                monthlyData['work_hours'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? weeklyData['work_hours'].map((item, i) => {
+                  return <Chart key={`${value}work${i}`} min={0} max={8} chartData={weeklyData['work_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Work Hours'/>}):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['work_hours'].map((item, i) => {
                   return <Chart key={`${value}work${i}`} min={0} max={8} chartData={monthlyData['work_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Work Hours'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>
@@ -175,13 +188,12 @@ export default function Analysis() {
               index={maxCount} 
               showsPagination={false}
               showsButtons={false}>
-              {weeklyData&&value&&(value === 'weekly')?
-                weeklyData['social_media_usage'].map((item, i) => {
-                  console.log(socialMediaPerm)
-                  return <Chart key={`${value}media${i}`} min={0} max={6} chartData={weeklyData['social_media_usage'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Social Media Usage'/>}):
-                monthlyData['social_media_usage'].map((item, i) => {
+              {weeklyData&&value&&(value === 'weekly') ?
+                (dayCount && dayCount >= 3 ? weeklyData['social_media_usage'].map((item, i) => {
+                  return <Chart key={`${value}media${i}`} min={0} max={6} chartData={weeklyData['social_media_usage'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Social Media Usage'/>}):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['social_media_usage'].map((item, i) => {
                   return <Chart key={`${value}media${i}`} min={0} max={6} chartData={monthlyData['social_media_usage'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Social Media Usage'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>}
@@ -193,12 +205,12 @@ export default function Analysis() {
               showsButtons={false}>
               {weeklyData&&value&&
                 (value === 'weekly')?
-                weeklyData['sleep_hours'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? weeklyData['sleep_hours'].map((item, i) => {
                   return <Chart key={`${value}sleep${i}`} min={4} max={8} chartData={weeklyData['sleep_hours'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Sleep Hours'/>
-                }):
-                monthlyData['sleep_hours'].map((item, i) => {
+                }):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['sleep_hours'].map((item, i) => {
                   return <Chart key={`${value}sleep${i}`} min={4} max={8} chartData={monthlyData['sleep_hours'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Sleep Hours'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>}
@@ -210,11 +222,11 @@ export default function Analysis() {
               showsButtons={false}>
               {weeklyData&&value&&
                 (value === 'weekly')?
-                weeklyData['step_count'].map((item, i) => {
-                  return <Chart key={`${value}step${i}`} min={0} max={8000} chartData={weeklyData['step_count'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Step Count'/>}):
-                monthlyData['step_count'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? weeklyData['step_count'].map((item, i) => {
+                  return <Chart key={`${value}step${i}`} min={0} max={8000} chartData={weeklyData['step_count'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Step Count'/>}):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['step_count'].map((item, i) => {
                   return <Chart key={`${value}step${i}`} min={0} max={8000} chartData={monthlyData['step_count'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Step Count'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>}
@@ -226,11 +238,11 @@ export default function Analysis() {
               showsButtons={false}>
                 {weeklyData&&
                 (value === 'weekly')?
-                weeklyData['heart_rate'].map((item, i) => {
-                  return <Chart key={`${value}heart${i}`} min={60} max={140} chartData={weeklyData['heart_rate'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Heart Rate'/>}):
-                monthlyData['heart_rate'].map((item, i) => {
+                (dayCount && dayCount >= 3 ? weeklyData['heart_rate'].map((item, i) => {
+                  return <Chart key={`${value}heart${i}`} min={60} max={140} chartData={weeklyData['heart_rate'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Heart Rate'/>}):<></>):
+                (monthCount && monthCount >= 2 ? monthlyData['heart_rate'].map((item, i) => {
                   return <Chart key={`${value}heart${i}`} min={60} max={140} chartData={monthlyData['heart_rate'][i]} chartLabel={monthlyData['months'][i]} chartTitle='Heart Rate'/>
-                })
+                }):<></>)
               }
             </Swiper>
           </View>}
@@ -292,5 +304,11 @@ const styles = StyleSheet.create({
     textAlign:'center',
     paddingBottom: 10,
     marginHorizontal: '5%',
-  }
+  },
+  noReportText: {
+    marginTop: verticalScale(100),
+    textAlign: 'center',
+    fontSize: moderateScale(20),
+  },
 });
+
