@@ -18,7 +18,7 @@ export default function Analysis() {
     "sleep_hours":[[0]], "social_media_usage": [[0]], "step_count":[[0]],
     "study_hours": [[0]], "work_hours": [[0]]});
     const { state, dispatch } = useUserContext();
-    const [maxCount, setMaxCount] = useState(0);
+    const [maxCount, setMaxCount] = useState(9999);
     const [value, setValue] = useState('weekly');
     const [heartRatePerm, setHeartRatePerm] = useState(false);
     const [stepCountPerm, setStepCountPerm] = useState(false);
@@ -54,7 +54,7 @@ export default function Analysis() {
           if (res.status === 200) {
 
               setWeeklyData(res.data)
-              setMaxCount(res.data['stress_level'].length-1)
+              setMaxCount(res.data['stress_level'].length)
               setDayCount(res.data.days_count)
           }
         } catch (error) {
@@ -98,7 +98,6 @@ export default function Analysis() {
     };
 
     const renderItem = (item: DropdownItem) => {
-      setMaxCount(weeklyData['days'].length-1)
       // item.value === 'weekly'? :setMaxCount(monthlyData['months'].length-1)
       return (
         <View style={styles.item}>
@@ -127,7 +126,6 @@ export default function Analysis() {
           />
           
           <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width }}>
-            {/* <Text style={styles.title}>{'Stress Level'}</Text> */}
             <Swiper 
               loop={false} 
               index={maxCount} 
@@ -137,6 +135,7 @@ export default function Analysis() {
                 (value === 'weekly')?
                 (dayCount && dayCount >= 3 ? 
                   weeklyData['stress_level'].map((item, i) => {
+                  console.log(maxCount)
                   return <Chart key={`${value}stress${i}`} min={0} max={5} chartData={weeklyData['stress_level'][i]} chartLabel={weeklyData['days'][i]} chartTitle='Stress Level'/>
                 }):
                   <Text style={styles.noReportText}>There is no report for this date</Text>
