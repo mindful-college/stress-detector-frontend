@@ -21,8 +21,7 @@ export default function Report() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [hasReportData, setHasReportData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isReportPage, setIsReportPage] = useState(true);
-
+  const now = new Date();
   const { state } = useUserContext();
 
   const userToken = state.user?.access_token;
@@ -54,7 +53,6 @@ export default function Report() {
       //
       const dateString = selectedDate.format(); // Convert moment object to string (ISO 8601 format)
       setIsLoading(true);
-
       const fetchData = async () => {
         try {
           const reportResponse = await axios.get(`${GET_REPORT_DATA_URL}?date_str=${dateString}`, {
@@ -70,12 +68,10 @@ export default function Report() {
               },
             },
           );
-
           const [currentReportData, currentCheckinData] = await Promise.all([
             reportResponse,
             checkinResponse,
           ]);
-
           setReportData(currentReportData.data);
           setCheckInInfo(currentCheckinData.data);
           setHasReportData(
@@ -146,30 +142,26 @@ export default function Report() {
 
       <ScrollView ref={scrollViewRef}>
         {hasReportData ? (
-          <>
-            <View style={styles.stressLevelSvgContainer}>
-              <FaceSvg reportData={reportData} />
-            </View>
-            <View style={styles.checkInSummaryContainer}>
-              <CheckInSummary reportData={reportData} />
-            </View>
-            <View style={styles.checkInInfoContainer}>
-              <CheckInInfo checkInInfo={checkInInfo} />
-            </View>
-            <LoadingIndicator
-              isLoading={isLoading}
-              color={Colors.black}
-              isReportPage={isReportPage}
-            />
-          </>
+          now.getHours() >= 21 || now.getDate().toString() !== selectedDate.format('D') ? (
+            <>
+              <View style={styles.stressLevelSvgContainer}>
+                <FaceSvg reportData={reportData} />
+              </View>
+              <View style={styles.checkInSummaryContainer}>
+                <CheckInSummary reportData={reportData} />
+              </View>
+              <View style={styles.checkInInfoContainer}>
+                <CheckInInfo checkInInfo={checkInInfo} />
+              </View>
+              <LoadingIndicator isLoading={isLoading} color={Colors.black} isReportPage={true} />
+            </>
+          ) : (
+            <Text style={styles.noReportText}>Daily report opens after 9 pm.</Text>
+          )
         ) : (
           <>
             <Text style={styles.noReportText}>There is no report for this date</Text>
-            <LoadingIndicator
-              isLoading={isLoading}
-              color={Colors.black}
-              isReportPage={isReportPage}
-            />
+            <LoadingIndicator isLoading={isLoading} color={Colors.black} isReportPage={true} />
           </>
         )}
       </ScrollView>

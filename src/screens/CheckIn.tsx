@@ -29,6 +29,7 @@ import axios from 'axios';
 import { CHECK_IN_URL } from '../utils/api';
 import Toast from 'react-native-toast-message';
 import { useUserContext } from '../context/UserContext';
+import LoadingIndicator from '../coponents/LoadingIndicator';
 
 const DEFAULT_REPORT = {
   text: [],
@@ -49,6 +50,7 @@ export default function CheckIn() {
   const [conversation, setConversation] = useState<Conversation[]>([]);
   const [step, setStep] = useState<ChatbotKey>('init');
   const [isLoading, setIsLoading] = useState(false);
+  const [isReportSubmitted, setIsReportSubmitted] = useState(false);
   const [report, setReport] = useState<Report>(DEFAULT_REPORT);
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -143,8 +145,9 @@ export default function CheckIn() {
       social_media_usage: getRandomNumber(),
       stress_level: stress,
     };
-
     try {
+      setIsReportSubmitted(true);
+      setStep('init');
       const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
@@ -167,7 +170,8 @@ export default function CheckIn() {
         type: 'error',
         text1: 'Please restart the conversation.',
       });
-      setStep('init');
+    } finally {
+      setIsReportSubmitted(false);
     }
   };
 
@@ -237,9 +241,10 @@ export default function CheckIn() {
           />
         </View>
       </KeyboardAvoidingView>
+      <LoadingIndicator isLoading={isReportSubmitted} color={Colors.black} />
       <Modal
         style={{ flex: 1 }}
-        visible={step === 'stressLevel'}
+        visible={step === 'stressLevel' && !isReportSubmitted}
         animationType="slide"
         transparent={true}>
         <View style={[styles.modalContainer, { width: width }]}>

@@ -20,14 +20,14 @@ import CustomButton from '../coponents/CustomButton';
 import CustomLink from '../coponents/CustomLink';
 import LoadingIndicator from '../coponents/LoadingIndicator';
 
-const DUMMY_AVERAGE_REPORT_DATA = {
-  stepCounts: 6000,
-  sleepHours: 8,
-  studyHours: 5,
-  workHours: 4,
-  heartRate: 80,
-  socialMediaUsage: 3,
-};
+// const DUMMY_AVERAGE_REPORT_DATA = {
+//   stepCounts: 6000,
+//   sleepHours: 8,
+//   studyHours: 5,
+//   workHours: 4,
+//   heartRate: 80,
+//   socialMediaUsage: 3,
+// };
 
 const DUMMY_PERMISSION = {
   stepCounts: true,
@@ -65,7 +65,7 @@ export default function Signin({ navigation }) {
       const userObj = { email: user.email, access_token: data.access_token };
       AsyncStorage.setItem('user', JSON.stringify(userObj));
       dispatch({ type: 'SET_USER', payload: userObj });
-      dispatch({ type: 'SET_AVERAGE_REPORT_DATA', payload: DUMMY_AVERAGE_REPORT_DATA });
+      // dispatch({ type: 'SET_AVERAGE_REPORT_DATA', payload: DUMMY_AVERAGE_REPORT_DATA });
       dispatch({ type: 'SET_PERMISSION', payload: DUMMY_PERMISSION });
       setUser({ email: '', password: '' });
     } catch (e) {

@@ -5,10 +5,10 @@ import { Colors } from '../utils/colors';
 type LoadingIndicatorProps = {
   isLoading: boolean;
   color: string;
-  isReportPage: boolean;
+  isReportPage?: boolean;
 };
 
-const LoadingIndicator = ({ isLoading, color, isReportPage }: LoadingIndicatorProps) => {
+const LoadingIndicator = ({ isLoading, color, isReportPage = false }: LoadingIndicatorProps) => {
   return !isReportPage
     ? isLoading && (
         <View style={styles.loadingContainer}>
@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
   },
   loading: {
     opacity: 1,
-    top: 250,
   },
   loadingContainerForReportScreen: {
     position: 'absolute',

@@ -52,8 +52,8 @@ export default function CheckInNav() {
         tabBarIcon: ({ focused }) => <CustomTabBarIcon focused={focused} name={route.name} />,
       })}>
       <Tab.Screen name="REPORT" component={Report} />
-      <Tab.Screen name="ANALYSIS" component={Analysis} />
       <Tab.Screen name="CHECK-IN" component={CheckIn} />
+      <Tab.Screen name="ANALYSIS" component={Analysis} />
       <Tab.Screen name="SETTING" component={Setting} />
     </Tab.Navigator>
   );

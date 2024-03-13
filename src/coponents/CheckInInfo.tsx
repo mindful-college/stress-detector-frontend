@@ -27,7 +27,6 @@ type CheckInInfoProps = {
 
 const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
   const { state } = useUserContext();
-
   const getDataType = (dataType: string) => {
     switch (dataType) {
       case 'stepCounts':
@@ -72,13 +71,21 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
     }
 
     if (checkInData < minBoundary) {
-      if (typeForCheckIn === 'heart_rate') {
+      if (
+        typeForCheckIn === 'heart_rate' ||
+        typeForCheckIn === 'step_count' ||
+        typeForCheckIn === 'sleep_hours'
+      ) {
         return <Text style={styles.lowStyleForHeartRate}>Low</Text>;
       } else {
         return <Text style={styles.lowStyle}>Low</Text>;
       }
-    } else if (checkInData >= maxBoundary) {
-      return <Text style={styles.highStyle}>High</Text>;
+    } else if (checkInData > maxBoundary) {
+      if (typeForCheckIn === 'step_count' || typeForCheckIn === 'sleep_hours') {
+        return <Text style={styles.lowStyle}>High</Text>;
+      } else {
+        return <Text style={styles.highStyle}>High</Text>;
+      }
     } else {
       return <Text style={styles.normalStyle}>Normal</Text>;
     }

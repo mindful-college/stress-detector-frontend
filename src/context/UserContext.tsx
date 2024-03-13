@@ -36,7 +36,14 @@ export const userReducer = (state: AppState, action: AppAction): AppState => {
 
 export const initialUser = {
   user: null,
-  averageReportData: null,
+  averageReportData: {
+    stepCounts: 6000,
+    sleepHours: 8,
+    studyHours: 5,
+    workHours: 4,
+    heartRate: 80,
+    socialMediaUsage: 3,
+  },
   permission: null,
 };
 
