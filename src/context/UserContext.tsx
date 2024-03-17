@@ -11,7 +11,9 @@ type AppAction =
   | { type: 'SET_USER'; payload: User }
   | { type: 'SET_AVERAGE_REPORT_DATA'; payload: AverageReportData }
   | { type: 'SET_PERMISSION'; payload: Permission }
-  | { type: 'REMOVE_USER' };
+  | { type: 'REMOVE_USER' }
+  | { type: 'UPDATE_USERNAME'; payload: string }
+  | { type: 'UPDATE_POINTS'; payload: number };
 type AppContextProps = {
   state: AppState;
   dispatch: Dispatch<AppAction>;
@@ -22,13 +24,17 @@ export const UserContext = createContext<AppContextProps | null>(null);
 export const userReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, user: action.payload };
+      return { ...state, user: { ...state.user, ...action.payload } };
     case 'SET_AVERAGE_REPORT_DATA':
       return { ...state, averageReportData: action.payload };
     case 'SET_PERMISSION':
       return { ...state, permission: action.payload };
     case 'REMOVE_USER':
       return { ...state, user: null };
+    case 'UPDATE_USERNAME':
+      return { ...state, user: { ...state.user, name: action.payload } };
+    case 'UPDATE_POINTS':
+      return { ...state, user: { ...state.user, points: action.payload } };
     default:
       return state;
   }

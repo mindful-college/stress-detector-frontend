@@ -35,29 +35,29 @@ export default function ToggleButton({ item }: toggleButtonProps) {
   const [isToggleEnabled, setIsToggleEnabled] = useState(false);
   //Bool for device setting permission
   const [permission, setPermission] = useState(false);
-
+  console.log(JSON.stringify(permissions));
   const getToggleEnabled = () => {
-      switch(item){
-          case 'Step Count':
-              setIsToggleEnabled(state.permission?.stepCounts||false);
-              break;
-          case 'Sleep Hours':
-              setIsToggleEnabled(state.permission?.sleepHours||false);
-              break;
-          case 'Heart Rate':
-              setIsToggleEnabled(state.permission?.heartRate||false);
-              break;
-          case 'Social Media Usage':
-              setIsToggleEnabled(state.permission?.socialMediaUsage||false);
-              break;
-          case 'Notification':
-              setIsToggleEnabled(state.permission?.notification||false);
-              break;
-          default:
-              break;
-      }
-      return;
-  }
+    switch (item) {
+      case 'Step Count':
+        setIsToggleEnabled(state.permission?.stepCounts || false);
+        break;
+      case 'Sleep Hours':
+        setIsToggleEnabled(state.permission?.sleepHours || false);
+        break;
+      case 'Heart Rate':
+        setIsToggleEnabled(state.permission?.heartRate || false);
+        break;
+      case 'Social Media Usage':
+        setIsToggleEnabled(state.permission?.socialMediaUsage || false);
+        break;
+      case 'Notification':
+        setIsToggleEnabled(state.permission?.notification || false);
+        break;
+      default:
+        break;
+    }
+    return;
+  };
 
   //Link to mobile setting page
   const toSetting = () => {
@@ -78,8 +78,7 @@ export default function ToggleButton({ item }: toggleButtonProps) {
       ],
       { cancelable: false },
     );
-  }
-
+  };
 
   // Send API Request to update permission
   const updatePermission = async (newPermission) => {
@@ -92,14 +91,14 @@ export default function ToggleButton({ item }: toggleButtonProps) {
     const get_permission_type = () => {
       let permission_type = item.toLowerCase();
       let permission_type_split = permission_type.split(' ');
-      let permission_type_result = "";
-      for(let i = 0; i < permission_type_split.length; i++){
-          if(i !== 0){
-            permission_type_result += '_';
-          }
-          permission_type_result+= permission_type_split[i];
+      let permission_type_result = '';
+      for (let i = 0; i < permission_type_split.length; i++) {
+        if (i !== 0) {
+          permission_type_result += '_';
+        }
+        permission_type_result += permission_type_split[i];
       }
-      return permission_type_result
+      return permission_type_result;
     };
     try {
       const res = await axios.put(
@@ -120,8 +119,8 @@ export default function ToggleButton({ item }: toggleButtonProps) {
 
   // check Mobile setting permission
   const checkNotificationPermission =
-    item === 'Notification'? 
-    async () => {
+    item === 'Notification'
+      ? async () => {
           //get mobile setting notification permission
           await checkNotifications()
             .then((status) => {
@@ -132,15 +131,15 @@ export default function ToggleButton({ item }: toggleButtonProps) {
                 //Turn off the switch button
                 // setIsToggleEnabled(false);
                 //Set false in server data
-                if(state.permission?.notification === true){
+                if (state.permission?.notification === true) {
                   updatePermission(false);
                 }
               }
             })
             //error handle for getting mobile setting permission
             .catch((error) => console.log('checkNotifications', error));
-      } : 
-      async () => {
+        }
+      : async () => {
           // Implement Health Permission
           AppleHealthKit.initHealthKit(permissions, (error: string) => {
             /* Called after we receive a response from the system */
@@ -153,16 +152,16 @@ export default function ToggleButton({ item }: toggleButtonProps) {
             }
             setPermission(true);
           });
-      };
+        };
 
-  useEffect(()=>{
+  useEffect(() => {
     getToggleEnabled();
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     //To set initial data
     checkNotificationPermission();
-  }, [permission])
+  }, [permission]);
 
   useEffect(() => {
     //To handle permission after mobile setting changed

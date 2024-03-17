@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, View, StyleSheet, Text, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../context/UserContext';
@@ -12,6 +12,7 @@ import { useMutation } from '@tanstack/react-query';
 import ContactUsModal from '../coponents/ContactUsModal';
 import CustomButton from '../coponents/CustomButton';
 import { deleteAccount } from '../utils/userService';
+import PrivacyModal from '../coponents/PrivacyModal';
 
 type SupportListProps = {
   item: string;
@@ -27,7 +28,7 @@ const HelpSupportLists: React.FC<SupportListProps> = ({ item, checkSupportType }
 
 export default function Setting() {
   const { state, dispatch } = useUserContext();
-  const [support, setSupport] = useState(['Contact Us', 'Terms of Use', 'Privacy Policy']);
+  const [support, setSupport] = useState(['Contact Us', 'Privacy Policy']);
   const [isContactModalVisible, setContactModalVisible] = useState(false);
   const [isTermsOfUseModalVisible, setTermsOfUseModalVisible] = useState(false);
   const [isPrivacyPolicyModalVisible, setPrivacyPolicyModalVisible] = useState(false);
@@ -41,6 +42,7 @@ export default function Setting() {
         Authorization: `Bearer ${state.user?.access_token}`,
       };
       const { status } = await axios.post(SING_OUT_URL, {}, { headers });
+      console.log(status);
       if (status === 200) {
         AsyncStorage.removeItem('user');
         dispatch({ type: 'REMOVE_USER' });
@@ -184,6 +186,10 @@ export default function Setting() {
 
       <Button title="Sign Out" onPress={handleSignOut} />
       <Button title="Delete Account" onPress={handleDeleteAccountWithConfirmation} />
+      <PrivacyModal
+        isPrivacyPolicyModalVisible={isPrivacyPolicyModalVisible}
+        onClose={() => handleCloseModal('Privacy Policy')}
+      />
     </ScrollView>
   );
 }

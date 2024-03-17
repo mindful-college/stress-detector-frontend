@@ -1,4 +1,9 @@
 import { ChatbotKey, Conversation } from '../types/checkin';
+import AppleHealthKit, { HealthValue } from 'react-native-health';
+// import * as RNLocalize from 'react-native-localize';
+// import moment from 'moment-timezone';
+
+// const deviceTimeZone = RNLocalize.getTimeZone();
 
 export const QUESTIONS = {
   init: '',
@@ -95,4 +100,94 @@ export const getChatbotMessage = (
     },
     nextStep,
   ];
+};
+
+export const getStepCount = () => {
+  let options = {
+    date: new Date().toISOString(), // optional; default now
+    includeManuallyAdded: true, // optional: default true
+  };
+
+  return new Promise((resolve, reject) => {
+    AppleHealthKit.getStepCount(options, (err: Object, results: HealthValue) => {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(results.value);
+        resolve(results.value);
+      }
+    });
+  });
+};
+
+export const getSleepHours = () => {
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
+  const startDateISO = startDate.toISOString();
+  const endDateISO = endDate.toISOString();
+  let options = {
+    startDate: startDateISO, // required
+    endDate: endDateISO, // optional; default now
+    limit: 10, // optional; default no limit
+    ascending: true, // optional; default false
+  };
+
+  return new Promise((resolve, reject) => {
+    AppleHealthKit.getSleepSamples(options, (err: Object, results: any) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (results.length === 0) resolve(null);
+
+        let res = 0;
+        for (const result of results) {
+          if (result.value === 'ASLEEP' || result.value === 'INBED') {
+            const resEndDate = new Date(result.endDate);
+            const resStartDate = new Date(result.startDate);
+            const differenceInMilliseconds = resEndDate.getTime() - resStartDate.getTime();
+            const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+            res += differenceInHours;
+          }
+        }
+        resolve(res);
+      }
+    });
+  });
+};
+export const getHeartRate = (): Promise<null | number> => {
+  // const today = moment().tz(deviceTimeZone);
+  // console.log('today', today);
+  return new Promise((resolve, reject) => {
+    // const endDate = new Date();
+    // const now = moment();
+    // const startDate = new Date(endDate.getTime() - 12 * 60 * 60 * 1000);
+    // const startDateISO = startDate.toISOString();
+    // const endDateISO = endDate.toISOString();
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
+    const startDateISO = startDate.toISOString();
+    const endDateISO = endDate.toISOString();
+    let options = {
+      // unit: 'bpm', // optional; default 'bpm'
+      startDate: startDateISO, // required
+      endDate: endDateISO, // optional; default now
+      ascending: false, // optional; default false
+      limit: 10, // optional; default no limit
+    };
+    let bpmTotal = 0;
+    let totalCnt = 0;
+    console.log(options);
+    AppleHealthKit.getHeartRateSamples(options, (err: Object, results: Array<HealthValue>) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (results.length === 0) resolve(null);
+        totalCnt = results.length;
+        for (const result of results) {
+          bpmTotal += result.value;
+        }
+        resolve(bpmTotal / totalCnt);
+      }
+    });
+  });
 };

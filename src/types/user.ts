@@ -1,6 +1,8 @@
 export type User = {
-  email: string;
-  access_token: string;
+  email?: string;
+  access_token?: string;
+  name?: string;
+  points?: number;
 };
 
 export type AverageReportData = {

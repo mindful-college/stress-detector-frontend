@@ -23,7 +23,8 @@ export default function Permission() {
       const res = await axios.get(PERMISSION_URL, { headers });
 
       if (res.status === 200) {
-        dispatch({ type: 'SET_PERMISSION', payload: res.data })
+        console.log(res.data);
+        dispatch({ type: 'SET_PERMISSION', payload: res.data });
       }
     } catch (error) {
       // Handle errors if the request fails

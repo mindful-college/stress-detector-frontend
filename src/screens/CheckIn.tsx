@@ -16,7 +16,7 @@ import {
 import { Colors } from '../utils/colors';
 import { ChatbotKey, Conversation, Report } from '../types/checkin';
 import LoadingDots from 'react-native-loading-dots';
-import { getChatbotMessage } from '../utils/checkin';
+import { getChatbotMessage, getHeartRate, getSleepHours, getStepCount } from '../utils/checkin';
 import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
 import SadFaceSvg from '../svg/SadFaceSvg';
 import StraightFaceSvg from '../svg/StraightFaceSvg';
@@ -44,7 +44,7 @@ const DEFAULT_REPORT = {
 };
 
 export default function CheckIn() {
-  const { state } = useUserContext();
+  const { state, dispatch } = useUserContext();
   const [text, setText] = useState('');
   const [isVoiceClicked, setIsVoiceClicked] = useState(false);
   const [conversation, setConversation] = useState<Conversation[]>([]);
@@ -137,12 +137,15 @@ export default function CheckIn() {
   };
 
   const setStressLevel = async (stress: number) => {
+    const stepCount = state.permission?.stepCounts ? await getStepCount() : null;
+    const sleepHours = state.permission?.sleepHours ? await getSleepHours() : null;
+    const heartRate = state.permission?.sleepHours ? await getHeartRate() : null;
     const finalReport: Report = {
       ...report,
-      step_count: getRandomNumber(),
-      sleep_hours: getRandomNumber(),
-      heart_rate: getRandomNumber(),
-      social_media_usage: getRandomNumber(),
+      step_count: stepCount as number | null,
+      sleep_hours: sleepHours as number | null,
+      heart_rate: heartRate as number | null,
+      social_media_usage: getRandomNumber(), // todo
       stress_level: stress,
     };
     try {
@@ -164,6 +167,7 @@ export default function CheckIn() {
         ]);
         setReport(DEFAULT_REPORT);
         setNextChatbotMessage();
+        dispatch({ type: 'UPDATE_POINTS', payload: (state.user?.points ?? 0) + 100 });
       }
     } catch (e) {
       Toast.show({

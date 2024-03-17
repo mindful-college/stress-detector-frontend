@@ -62,7 +62,10 @@ export default function Signin({ navigation }) {
       form.append('username', user.email);
       form.append('password', user.password);
       const { data } = await axios.post(SING_IN_URL, form);
-      const userObj = { email: user.email, access_token: data.access_token };
+      const userObj = {
+        email: user.email,
+        access_token: data.access_token,
+      };
       AsyncStorage.setItem('user', JSON.stringify(userObj));
       dispatch({ type: 'SET_USER', payload: userObj });
       // dispatch({ type: 'SET_AVERAGE_REPORT_DATA', payload: DUMMY_AVERAGE_REPORT_DATA });
