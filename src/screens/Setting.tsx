@@ -42,7 +42,6 @@ export default function Setting() {
         Authorization: `Bearer ${state.user?.access_token}`,
       };
       const { status } = await axios.post(SING_OUT_URL, {}, { headers });
-      console.log(status);
       if (status === 200) {
         AsyncStorage.removeItem('user');
         dispatch({ type: 'REMOVE_USER' });
@@ -90,8 +89,6 @@ export default function Setting() {
   const deleteAccountMutation = useMutation({
     mutationFn: () => deleteAccount(userToken),
     onSuccess: () => {
-      console.log('Account deleted successfully');
-
       AsyncStorage.removeItem('user');
       dispatch({ type: 'REMOVE_USER' });
 
