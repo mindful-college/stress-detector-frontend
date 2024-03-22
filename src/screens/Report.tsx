@@ -14,15 +14,17 @@ import FaceSvg from '../coponents/FaceSvg';
 import CheckInSummary from '../coponents/CheckInSummary';
 import CheckInInfo from '../coponents/CheckInInfo';
 import LoadingIndicator from '../coponents/LoadingIndicator';
+import CustomButton from '../coponents/CustomButton';
 
 export default function Report() {
   const scrollViewRef = useRef<ScrollView>(null);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [hasCheckInData, setHasCheckInData] = useState(false);
   const [hasReportData, setHasReportData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const now = new Date();
-  const { state } = useUserContext();
+  const { state, dispatch } = useUserContext();
 
   const userToken = state.user?.access_token;
   const [reportData, setReportData] = useState({
@@ -30,6 +32,7 @@ export default function Report() {
     date: new Date(),
     summary: { text: [], voice: [] },
     stress_level: 0,
+    self_stress_level: 0,
   });
 
   const [checkInInfo, setCheckInInfo] = useState({
@@ -74,9 +77,8 @@ export default function Report() {
           ]);
           setReportData(currentReportData.data);
           setCheckInInfo(currentCheckinData.data);
-          setHasReportData(
-            currentReportData.data.message || currentCheckinData.data.message ? false : true,
-          );
+          setHasReportData(!currentReportData.data.message);
+          setHasCheckInData(!currentCheckinData.data.message);
         } catch (error) {
           console.error('Error fetching data', error);
         } finally {
@@ -89,8 +91,6 @@ export default function Report() {
     }, [selectedDate, userToken]),
   );
 
-  //
-
   const datesBlacklistFunc = (date: moment.Moment) => {
     return date.isAfter(moment(), 'day');
   };
@@ -98,6 +98,15 @@ export default function Report() {
   const handleDateSelection = async (selectedMoment: moment.Moment) => {
     setSelectedDate(selectedMoment);
     setIsModalVisible(false);
+  };
+
+  // todo
+  const canShowCheckInModal = () => {
+    return now.getHours() >= 21 && !hasReportData;
+  };
+
+  const goToSelfCheckIn = () => {
+    dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: true });
   };
 
   return (
@@ -142,7 +151,7 @@ export default function Report() {
 
       <ScrollView ref={scrollViewRef}>
         {hasReportData ? (
-          now.getHours() >= 21 || now.getDate().toString() !== selectedDate.format('D') ? (
+          now.getHours() >= 12 || now.getDate().toString() !== selectedDate.format('D') ? (
             <>
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
@@ -151,16 +160,34 @@ export default function Report() {
                 <CheckInSummary reportData={reportData} />
               </View>
               <View style={styles.checkInInfoContainer}>
-                <CheckInInfo checkInInfo={checkInInfo} />
+                {hasCheckInData ? (
+                  <CheckInInfo checkInInfo={checkInInfo} />
+                ) : (
+                  <View style={{ marginLeft: 30 }}>
+                    {canShowCheckInModal() && (
+                      <View>
+                        <CustomButton
+                          title="Go to End of Day CheckIn"
+                          color={Colors.primary}
+                          onPress={goToSelfCheckIn}
+                          style={styles.selfCheckInBtn}
+                          textStyle={styles.selfCheckInText}
+                        />
+                        <Text>This Check-in is to get the hours you studied,</Text>
+                        <Text>worked, and used social media</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
               <LoadingIndicator isLoading={isLoading} color={Colors.black} isReportPage={true} />
             </>
           ) : (
-            <Text style={styles.noReportText}>Daily report opens after 9 pm.</Text>
+            <Text style={styles.noReportText}>Daily Report opens after 9 pm</Text>
           )
         ) : (
           <>
-            <Text style={styles.noReportText}>There is no report for this date</Text>
+            <Text style={styles.noReportText}>There is no Report on this date</Text>
             <LoadingIndicator isLoading={isLoading} color={Colors.black} isReportPage={true} />
           </>
         )}
@@ -244,5 +271,20 @@ const styles = StyleSheet.create({
   checkInInfoContainer: {
     marginTop: verticalScale(40),
     marginBottom: verticalScale(30),
+  },
+  noSelfCheckInText: {
+    color: Colors.black,
+    fontSize: moderateScale(19),
+    fontWeight: '500',
+  },
+  selfCheckInBtn: {
+    marginTop: 0,
+    padding: 10,
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primary,
+  },
+  selfCheckInText: {
+    color: Colors.white,
+    fontWeight: '600',
   },
 });

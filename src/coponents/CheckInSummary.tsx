@@ -16,18 +16,20 @@ const CheckInSummary: React.FC<CheckInSummaryProps> = ({ reportData }) => {
   return (
     <>
       <View>
-        <Text style={styles.checkInHeader}>Check-in Summary</Text>
+        <Text style={styles.checkInHeader}>Journey Summary</Text>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>
           We found "{''}
-          {reportData.summary && <Text style={styles.keyWords}>{reportData.summary.text[0]}</Text>}
-          ", "
-          {reportData.summary && <Text style={styles.keyWords}>{reportData.summary.text[1]}</Text>}"
-          keywords from texts.
+          {reportData.summary?.text?.map((item, idx) => (
+            <Text key={idx} style={styles.keyWords}>
+              {idx !== reportData.summary?.text?.length - 1 ? `${item}, ` : item}
+            </Text>
+          ))}
+          " keywords from texts.
         </Text>
       </View>
-      <View style={styles.textContainer}>
+      {/* <View style={styles.textContainer}>
         <Text style={styles.text}>
           We detect "{''}
           {reportData.summary && <Text style={styles.keyWords}>{reportData.summary.voice[0]}</Text>}
@@ -35,7 +37,7 @@ const CheckInSummary: React.FC<CheckInSummaryProps> = ({ reportData }) => {
           {reportData.summary && <Text style={styles.keyWords}>{reportData.summary.voice[1]}</Text>}
           " voices from voices.
         </Text>
-      </View>
+      </View> */}
     </>
   );
 };

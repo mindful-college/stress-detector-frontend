@@ -15,6 +15,7 @@ type FaceSvgProps = {
     date: Date;
     summary: { text: string[]; voice: string[] };
     stress_level: number;
+    self_stress_level: number;
   };
 };
 
@@ -44,13 +45,8 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
         return styles.default;
     }
   };
-
-  const [stressLevelWord, setStressLevelWord] = useState('');
-  //
-  useEffect(() => {
-    setStressLevelWord(stressLevelMap[reportData.stress_level]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reportData.stress_level]);
+  const predictedStressLevel = Math.round(reportData.stress_level);
+  const selfStressLevel = reportData.self_stress_level;
 
   const handleFaceSVG = (level: number) => {
     switch (level) {
@@ -106,12 +102,23 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
 
   return (
     <>
-      <View style={styles.facesvg}>{handleFaceSVG(reportData.stress_level)}</View>
+      <View style={styles.facesvg}>{handleFaceSVG(predictedStressLevel)}</View>
       <View>
-        {stressLevelWord && (
-          <Text style={styles.stressLevelText}>
-            Stress Level is <Text style={getColor(stressLevelWord)}>{stressLevelWord}</Text>
-          </Text>
+        {stressLevelMap[predictedStressLevel] && (
+          <View>
+            <View style={styles.stressLevelWrapper}>
+              <Text style={styles.stressLevelText}>Predicted stress Level is </Text>
+              <Text style={getColor(stressLevelMap[predictedStressLevel])}>
+                {stressLevelMap[predictedStressLevel]}
+              </Text>
+            </View>
+            <View style={styles.stressLevelWrapper}>
+              <Text style={styles.stressLevelText}>Self reported stress Level is </Text>
+              <Text style={getColor(stressLevelMap[selfStressLevel])}>
+                {stressLevelMap[selfStressLevel]}
+              </Text>
+            </View>
+          </View>
         )}
       </View>
     </>
@@ -158,5 +165,12 @@ const styles = StyleSheet.create({
     color: Colors.black,
     fontWeight: '600',
     fontSize: moderateScale(18),
+  },
+  stressLevelWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    margin: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
