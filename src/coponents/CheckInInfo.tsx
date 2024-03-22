@@ -101,14 +101,14 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
         checkInInfo={checkInInfo?.study_hours}
         calculateMarginOfError={calculateMarginOfError}
         icon={<StudyHours width={horizontalScale(19)} height={horizontalScale(19)} />}
-        contents={['Study Hours', 'hrs', 'studyHours']}
+        contents={['Hours you studied', 'hrs', 'studyHours']}
         style={styles.box1}
       />
       <CheckInBox
         checkInInfo={checkInInfo?.work_hours}
         calculateMarginOfError={calculateMarginOfError}
         icon={<WorkHours width={horizontalScale(19)} height={verticalScale(19)} />}
-        contents={['Work Hours', 'hrs', 'workHours']}
+        contents={['Hours you worked', 'hrs', 'workHours']}
         style={styles.box2}
       />
       <CheckInBox
