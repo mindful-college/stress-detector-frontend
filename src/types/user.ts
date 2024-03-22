@@ -21,3 +21,8 @@ export type Permission = {
   socialMediaUsage: boolean;
   notification: boolean;
 };
+
+export type DailyCheckIn = {
+  lastDailyCheckIn: Date | null;
+  isDailyCheckInOpen: boolean;
+};

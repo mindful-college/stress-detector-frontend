@@ -14,9 +14,9 @@ import {
   Platform,
 } from 'react-native';
 import { Colors } from '../utils/colors';
-import { ChatbotKey, Conversation, Report } from '../types/checkin';
+import { ChatbotKey, Conversation, ChatReport } from '../types/checkin';
 import LoadingDots from 'react-native-loading-dots';
-import { getChatbotMessage, getHeartRate, getSleepHours, getStepCount } from '../utils/checkin';
+import { getChatbotMessage } from '../utils/checkin';
 import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
 import SadFaceSvg from '../svg/SadFaceSvg';
 import StraightFaceSvg from '../svg/StraightFaceSvg';
@@ -26,7 +26,7 @@ import ChatBox from '../coponents/ChatBox';
 import { useHeaderHeight } from '@react-navigation/elements';
 import AudioRecording from '../coponents/AudioRecording';
 import axios from 'axios';
-import { CHECK_IN_URL } from '../utils/api';
+import { REPORT_URL } from '../utils/api';
 import Toast from 'react-native-toast-message';
 import { useUserContext } from '../context/UserContext';
 import LoadingIndicator from '../coponents/LoadingIndicator';
@@ -34,12 +34,6 @@ import LoadingIndicator from '../coponents/LoadingIndicator';
 const DEFAULT_REPORT = {
   text: [],
   voice: [],
-  study_hours: null,
-  work_hours: null,
-  step_count: null,
-  sleep_hours: null,
-  heart_rate: null,
-  social_media_usage: null,
   stress_level: null,
 };
 
@@ -51,7 +45,7 @@ export default function CheckIn() {
   const [step, setStep] = useState<ChatbotKey>('init');
   const [isLoading, setIsLoading] = useState(false);
   const [isReportSubmitted, setIsReportSubmitted] = useState(false);
-  const [report, setReport] = useState<Report>(DEFAULT_REPORT);
+  const [report, setReport] = useState<ChatReport>(DEFAULT_REPORT);
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = useHeaderHeight();
@@ -68,34 +62,9 @@ export default function CheckIn() {
 
   const appendReport = () => {
     const trimedText = text.trim();
-    if (trimedText.toLocaleLowerCase() === 'skip') return;
-
+    // if (trimedText.toLocaleLowerCase() === 'skip') return;
     if (step === 'restart') {
       setReport(DEFAULT_REPORT);
-    }
-
-    if (
-      step === 'studyHours' ||
-      step === 'studyError' ||
-      step === 'workHours' ||
-      step === 'workError'
-    ) {
-      if (isNaN(Number(trimedText))) return;
-
-      if (step === 'studyHours' || step === 'studyError') {
-        setReport((prev) => ({
-          ...prev,
-          study_hours: Number(trimedText),
-        }));
-      }
-
-      if (step === 'workHours' || step === 'workError') {
-        setReport((prev) => ({
-          ...prev,
-          work_hours: Number(trimedText),
-        }));
-      }
-      return;
     }
 
     setReport((prev) => ({
@@ -113,7 +82,7 @@ export default function CheckIn() {
         text: text,
       },
     ]);
-    appendReport();
+    if (text.trim().toLowerCase() !== 'done') appendReport();
     setText('');
     setNextChatbotMessage();
   };
@@ -129,23 +98,9 @@ export default function CheckIn() {
     }
   }, [step]);
 
-  // TODO : get data from phone
-  const getRandomNumber = () => {
-    const myArray = [null, 0, 1, 2, 3, 4, 5];
-    const randomIndex = Math.floor(Math.random() * myArray.length);
-    return myArray[randomIndex];
-  };
-
   const setStressLevel = async (stress: number) => {
-    const stepCount = state.permission?.stepCounts ? await getStepCount() : null;
-    const sleepHours = state.permission?.sleepHours ? await getSleepHours() : null;
-    const heartRate = state.permission?.sleepHours ? await getHeartRate() : null;
-    const finalReport: Report = {
+    const finalReport: ChatReport = {
       ...report,
-      step_count: stepCount as number | null,
-      sleep_hours: sleepHours as number | null,
-      heart_rate: heartRate as number | null,
-      social_media_usage: getRandomNumber(), // todo
       stress_level: stress,
     };
     try {
@@ -155,7 +110,7 @@ export default function CheckIn() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${state.user?.access_token}`,
       };
-      const { status } = await axios.post(CHECK_IN_URL, finalReport, { headers });
+      const { status } = await axios.post(REPORT_URL, finalReport, { headers });
       if (status === 200) {
         setConversation((prev) => [
           ...prev,
@@ -234,9 +189,13 @@ export default function CheckIn() {
               />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.icon} onPress={() => setIsVoiceClicked(true)}>
-              <Image style={{ width: 20, height: 24 }} source={require('../images/voice.png')} />
-            </TouchableOpacity>
+            <Image
+              style={(styles.icon, { marginLeft: 10, width: 24, height: 24 })}
+              source={require('../images/send-empty.png')}
+            />
+            // <TouchableOpacity style={styles.icon} onPress={() => setIsVoiceClicked(true)}>
+            //   <Image style={{ width: 20, height: 24 }} source={require('../images/voice.png')} />
+            // </TouchableOpacity>
           )}
           <AudioRecording
             handleAudio={handleAudio}
@@ -254,20 +213,21 @@ export default function CheckIn() {
         <View style={[styles.modalContainer, { width: width }]}>
           <TouchableOpacity onPress={() => setStressLevel(5)}>
             <ThrowUpFaceSvg width="36" height="36" strokeWidth="4" />
-            <Text style={styles.emojiText}>BAD</Text>
+            <Text style={styles.emojiText}>Very High</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(4)}>
             <SadFaceSvg width="36" height="36" strokeWidth="4" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(3)}>
             <StraightFaceSvg width="36" height="36" strokeWidth="4" />
+            <Text style={styles.emojiText}>Moderate</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(2)}>
             <SmileyFaceSvg width="36" height="36" strokeWidth="4" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setStressLevel(1)}>
             <HappyFaceSvg width="36" height="36" strokeWidth="4" />
-            <Text style={styles.emojiText}>GOOD</Text>
+            <Text style={styles.emojiText}>Very Low</Text>
           </TouchableOpacity>
         </View>
       </Modal>

@@ -7,20 +7,16 @@ import AppleHealthKit, { HealthValue } from 'react-native-health';
 
 export const QUESTIONS = {
   init: '',
-  greeting: "Hello! How's your day going? Feel free to share how you're feeling!",
-  text: "I'm curious about what's on your mind! If you'd rather not share, just type 'skip'.",
-  voice: "It's always wonderful to hear your voice! If you're not up for it, type 'skip'.",
+  greeting:
+    "Hello! How's your day going? If you could share a few details about your day more than 5 sentences, it can be better assess your stress level!",
   followup:
-    "Thanks for sharing! Anything else you'd like to tell me? If not, type 'skip'. If you want to restart on any step, you can type 'restart'",
-  studyHours:
-    "How much time did you spend on your studies today? Share the hours (e.g., 1, 1.5, 2). If you're skipping, type 'skip'.",
-  studyError: 'Please enter only numbers within the range of 0 to 24.',
-  workHours:
-    "Tell me about your workday! Share the hours (e.g., 1, 1.5, 2). If you're skipping, type 'skip'.",
-  workError: 'Please enter only numbers within the range of 0 to 24.',
-  stressLevel: "We're almost there! Choose your stress level from the options, please.",
-  closing: 'Thanks a lot for your check-in! See you next time!',
-  restart: 'Reset previous conversations... Please reshare your feeling',
+    'Thanks for sharing! You can tell us more about your day :) Please type "done" when you want to close the conversation',
+  closing:
+    'Thanks a lot for your check-in! See you next time! If you want to start again, please type "restart"',
+  restart: 'Reset previous conversations... Please share your day again :)',
+  stressLevel: "We're almost there! Please choose your stress level from the options",
+  // text: "I'm curious about what's on your mind! If you'd rather not share, just type 'skip'.",
+  // voice: "It's always wonderful to hear your voice! If you're not up for it, type 'skip'.",
 };
 
 export const getChatbotMessage = (
@@ -41,6 +37,17 @@ export const getChatbotMessage = (
     ];
   }
 
+  if (prevText.toLowerCase() === 'done') {
+    nextStep = 'stressLevel';
+    return [
+      {
+        id: nextStep + idx,
+        isChatbot: true,
+        text: QUESTIONS[nextStep],
+      },
+      nextStep,
+    ];
+  }
   switch (step) {
     case 'init':
       nextStep = 'greeting';
@@ -48,37 +55,14 @@ export const getChatbotMessage = (
 
     case 'restart':
     case 'greeting':
-      nextStep = prevText === '' ? 'text' : 'voice';
-      break;
-
-    case 'text':
-    case 'voice':
       nextStep = 'followup';
+      // nextStep = prevText === '' ? 'text' : 'voice';
       break;
 
-    case 'followup':
-      nextStep = 'studyHours';
-      break;
-
-    case 'studyHours':
-    case 'studyError':
-      const studyHours = Number(prevText);
-      nextStep =
-        prevText.toLowerCase() === 'skip' ||
-        (!Number.isNaN(studyHours) && studyHours >= 0 && studyHours <= 24)
-          ? 'workHours'
-          : 'studyError';
-      break;
-
-    case 'workHours':
-    case 'workError':
-      const workHours = Number(prevText);
-      nextStep =
-        prevText.toLowerCase() === 'skip' ||
-        (!Number.isNaN(workHours) && workHours >= 0 && workHours <= 24)
-          ? 'stressLevel'
-          : 'workError';
-      break;
+    // case 'text':
+    // case 'voice':
+    //   nextStep = 'continue';
+    //   break;
 
     case 'stressLevel':
       nextStep = 'closing';
@@ -113,7 +97,6 @@ export const getStepCount = () => {
       if (err) {
         reject(err);
       } else {
-        console.log(results.value);
         resolve(results.value);
       }
     });
@@ -121,6 +104,7 @@ export const getStepCount = () => {
 };
 
 export const getSleepHours = () => {
+  // get sleep hours within 24 hours
   const endDate = new Date();
   const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
   const startDateISO = startDate.toISOString();
@@ -155,20 +139,13 @@ export const getSleepHours = () => {
   });
 };
 export const getHeartRate = (): Promise<null | number> => {
-  // const today = moment().tz(deviceTimeZone);
-  // console.log('today', today);
   return new Promise((resolve, reject) => {
-    // const endDate = new Date();
-    // const now = moment();
-    // const startDate = new Date(endDate.getTime() - 12 * 60 * 60 * 1000);
-    // const startDateISO = startDate.toISOString();
-    // const endDateISO = endDate.toISOString();
+    // get heart rate within 24 hours
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
     const startDateISO = startDate.toISOString();
     const endDateISO = endDate.toISOString();
     let options = {
-      // unit: 'bpm', // optional; default 'bpm'
       startDate: startDateISO, // required
       endDate: endDateISO, // optional; default now
       ascending: false, // optional; default false
@@ -176,7 +153,6 @@ export const getHeartRate = (): Promise<null | number> => {
     };
     let bpmTotal = 0;
     let totalCnt = 0;
-    console.log(options);
     AppleHealthKit.getHeartRateSamples(options, (err: Object, results: Array<HealthValue>) => {
       if (err) {
         reject(err);

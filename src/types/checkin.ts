@@ -12,23 +12,22 @@ export type ChatbotKey =
   | 'followup'
   | 'text'
   | 'voice'
-  | 'studyHours'
-  | 'studyError'
-  | 'workHours'
-  | 'workError'
   | 'confirm'
   | 'stressLevel'
   | 'closing'
   | 'restart';
 
-export type Report = {
+export type ChatReport = {
   text: string[];
   voice: string[];
+  stress_level: number | null;
+};
+
+export type UserInputReport = {
   study_hours: number | null;
   work_hours: number | null;
   step_count: number | null;
   sleep_hours: number | null;
   heart_rate: number | null;
   social_media_usage: number | null;
-  stress_level: number | null;
 };
