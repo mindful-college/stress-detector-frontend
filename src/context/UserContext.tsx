@@ -3,8 +3,9 @@ import { User, AverageReportData, Permission } from '../types/user';
 
 type AppState = {
   user: User | null;
-  averageReportData: AverageReportData | null;
-  permission: Permission | null;
+  averageReportData: AverageReportData;
+  permission: Permission;
+  dailyCheckInModal: boolean;
 };
 
 type AppAction =
@@ -13,7 +14,9 @@ type AppAction =
   | { type: 'SET_PERMISSION'; payload: Permission }
   | { type: 'REMOVE_USER' }
   | { type: 'UPDATE_USERNAME'; payload: string }
-  | { type: 'UPDATE_POINTS'; payload: number };
+  | { type: 'UPDATE_POINTS'; payload: number }
+  | { type: 'UPDATE_DAILY_CHECKIN_MODAL'; payload: boolean };
+
 type AppContextProps = {
   state: AppState;
   dispatch: Dispatch<AppAction>;
@@ -35,6 +38,8 @@ export const userReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, user: { ...state.user, name: action.payload } };
     case 'UPDATE_POINTS':
       return { ...state, user: { ...state.user, points: action.payload } };
+    case 'UPDATE_DAILY_CHECKIN_MODAL':
+      return { ...state, dailyCheckInModal: action.payload };
     default:
       return state;
   }
@@ -50,7 +55,14 @@ export const initialUser = {
     heartRate: 80,
     socialMediaUsage: 3,
   },
-  permission: null,
+  permission: {
+    stepCounts: false,
+    sleepHours: false,
+    heartRate: false,
+    socialMediaUsage: false,
+    notification: false,
+  },
+  dailyCheckInModal: false,
 };
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

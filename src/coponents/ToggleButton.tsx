@@ -35,7 +35,7 @@ export default function ToggleButton({ item }: toggleButtonProps) {
   const [isToggleEnabled, setIsToggleEnabled] = useState(false);
   //Bool for device setting permission
   const [permission, setPermission] = useState(false);
-  console.log(JSON.stringify(permissions));
+
   const getToggleEnabled = () => {
     switch (item) {
       case 'Step Count':
@@ -61,7 +61,11 @@ export default function ToggleButton({ item }: toggleButtonProps) {
 
   //Link to mobile setting page
   const toSetting = () => {
-    requestNotifications(['alert', 'sound']).then(({ status, settings }) => {});
+    requestNotifications(['alert', 'sound']).then(({ status, settings }) => {
+      if (status === 'granted') {
+        fetchPutPermission('notification', true);
+      }
+    });
     openSettings().catch(() => console.warn('cannot open settings'));
   };
 
@@ -82,11 +86,6 @@ export default function ToggleButton({ item }: toggleButtonProps) {
 
   // Send API Request to update permission
   const updatePermission = async (newPermission) => {
-    // Header for API call
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${state.user?.access_token}`,
-    };
     //Text justification for API call
     const get_permission_type = () => {
       let permission_type = item.toLowerCase();
@@ -100,9 +99,18 @@ export default function ToggleButton({ item }: toggleButtonProps) {
       }
       return permission_type_result;
     };
+    fetchPutPermission(get_permission_type(), newPermission);
+  };
+
+  const fetchPutPermission = async (type, isTrue) => {
+    // Header for API call
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${state.user?.access_token}`,
+    };
     try {
       const res = await axios.put(
-        `${PERMISSION_URL}?permission_type=${get_permission_type()}&permission=${newPermission}`,
+        `${PERMISSION_URL}?permission_type=${type}&permission=${isTrue}`,
         {},
         { headers },
       );
@@ -140,8 +148,9 @@ export default function ToggleButton({ item }: toggleButtonProps) {
             .catch((error) => console.log('checkNotifications', error));
         }
       : async () => {
+          console.log('check permission');
           // Implement Health Permission
-          AppleHealthKit.initHealthKit(permissions, (error: string) => {
+          AppleHealthKit.initHealthKit(permissions, (error: string, result) => {
             /* Called after we receive a response from the system */
 
             if (error) {
@@ -150,6 +159,8 @@ export default function ToggleButton({ item }: toggleButtonProps) {
               setPermission(false);
               return;
             }
+            console.log('after permission setting');
+            console.log(result);
             setPermission(true);
           });
         };
@@ -161,11 +172,13 @@ export default function ToggleButton({ item }: toggleButtonProps) {
   useEffect(() => {
     //To set initial data
     checkNotificationPermission();
+    console.log('hhi');
   }, [permission]);
 
   useEffect(() => {
     //To handle permission after mobile setting changed
     const listener = AppState.addEventListener('change', checkNotificationPermission);
+    console.log('hello');
     return () => {
       listener.remove();
     };
@@ -173,6 +186,7 @@ export default function ToggleButton({ item }: toggleButtonProps) {
 
   //To handle switch toggle button
   const toggleSwitch = async () => {
+    console.log('????');
     if (!permission) {
       //error toast message
       Toast.show({

@@ -1,48 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ToggleButton from './ToggleButton';
 import { Colors } from '../utils/colors';
-import axios from 'axios';
-import { useUserContext } from '../context/UserContext';
-import { PERMISSION_URL } from '../utils/api';
+
+const DrawItemWithToggle = (props) => (
+  <View style={styles.block}>
+    <Text style={styles.item}>{props.item}</Text>
+    <ToggleButton item={props.item} />
+  </View>
+);
+
 export default function Permission() {
-  const [permission, setPermission] = useState([
+  const permission = [
     'Step Count',
     'Sleep Hours',
     'Heart Rate',
     'Social Media Usage',
     'Notification',
-  ]);
-  const { state, dispatch } = useUserContext();
-  const getPermission = async () => {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${state.user?.access_token}`,
-      };
-      const res = await axios.get(PERMISSION_URL, { headers });
-
-      if (res.status === 200) {
-        console.log(res.data);
-        dispatch({ type: 'SET_PERMISSION', payload: res.data });
-      }
-    } catch (error) {
-      // Handle errors if the request fails
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    // Call the account function here to trigger the API request
-    getPermission();
-  }, [state.user?.access_token]);
-
-  const DrawItemWithToggle = (props) => (
-    <View style={styles.block}>
-      <Text style={styles.item}>{props.item}</Text>
-      <ToggleButton item={props.item} />
-    </View>
-  );
+  ];
 
   return (
     <View>
