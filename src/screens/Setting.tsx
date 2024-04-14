@@ -173,14 +173,12 @@ export default function Setting() {
     <ScrollView style={styles.container}>
       <Account />
       <Permission />
-
-      <View>
+      <View style={styles.contactWrapper}>
         <Text style={styles.title} />
         {support.map((item) => (
           <HelpSupportLists item={item} key={item} checkSupportType={checkSupportType} />
         ))}
       </View>
-
       <Button title="Sign Out" onPress={handleSignOut} />
       <Button title="Delete Account" onPress={handleDeleteAccountWithConfirmation} />
       <PrivacyModal
@@ -236,5 +234,8 @@ const styles = StyleSheet.create({
   },
   buttonTextForModal: {
     fontWeight: '500',
+  },
+  contactWrapper: {
+    marginBottom: 20,
   },
 });

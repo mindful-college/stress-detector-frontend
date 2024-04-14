@@ -15,7 +15,7 @@ export default function Permission() {
     'Step Count',
     'Sleep Hours',
     'Heart Rate',
-    'Social Media Usage',
+    // 'Social Media Usage',
     'Notification',
   ];
 
