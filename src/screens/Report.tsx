@@ -156,9 +156,9 @@ export default function Report() {
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
               </View>
-              <View style={styles.checkInSummaryContainer}>
+              {/* <View style={styles.checkInSummaryContainer}>
                 <CheckInSummary reportData={reportData} />
-              </View>
+              </View> */}
               <View style={styles.checkInInfoContainer}>
                 {hasCheckInData ? (
                   <CheckInInfo checkInInfo={checkInInfo} />

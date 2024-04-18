@@ -8,6 +8,7 @@ import SadComponentSvg from '../svg/SadFaceSvg';
 import SmileyFaceSvg from '../svg/SmileyFaceSvg';
 import StraightFaceSvg from '../svg/StraightFaceSvg';
 import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
+import { stressLevelMap } from '../utils/common';
 
 type FaceSvgProps = {
   reportData: {
@@ -21,13 +22,6 @@ type FaceSvgProps = {
 
 const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
   //
-  const stressLevelMap = {
-    1: 'Very Low',
-    2: 'Low',
-    3: 'Moderate',
-    4: 'High',
-    5: 'Very High',
-  };
 
   const getColor = (word: string) => {
     switch (word) {
@@ -103,24 +97,34 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
   return (
     <>
       <View style={styles.facesvg}>{handleFaceSVG(predictedStressLevel)}</View>
-      <View>
-        {stressLevelMap[predictedStressLevel] && (
-          <View>
-            <View style={styles.stressLevelWrapper}>
-              <Text style={styles.stressLevelText}>Predicted stress Level is </Text>
-              <Text style={getColor(stressLevelMap[predictedStressLevel])}>
-                {stressLevelMap[predictedStressLevel]}
-              </Text>
-            </View>
-            <View style={styles.stressLevelWrapper}>
-              <Text style={styles.stressLevelText}>Self reported stress Level is </Text>
-              <Text style={getColor(stressLevelMap[selfStressLevel])}>
-                {stressLevelMap[selfStressLevel]}
-              </Text>
-            </View>
+      {stressLevelMap[predictedStressLevel] && (
+        <View>
+          <View style={styles.stressLevelWrapper}>
+            <Text style={styles.stressLevelText}>Self reported stress Level is </Text>
+            <Text style={getColor(stressLevelMap[selfStressLevel])}>
+              {stressLevelMap[selfStressLevel]}
+            </Text>
           </View>
-        )}
-      </View>
+          <View style={styles.stressLevelWrapper}>
+            <Text style={styles.stressLevelText}>Predicted stress Level is </Text>
+            <Text style={getColor(stressLevelMap[predictedStressLevel])}>
+              {stressLevelMap[predictedStressLevel]}
+            </Text>
+          </View>
+          <View style={styles.reasonWrapper}>
+            {/* <Text>Prediction Reason</Text> */}
+            <Text style={styles.stressLevelText}>
+              We found "{''}
+              {reportData.summary?.text?.map((item, idx) => (
+                <Text key={idx} style={styles.keyWords}>
+                  {idx !== reportData.summary?.text?.length - 1 ? `${item}, ` : item}
+                </Text>
+              ))}
+              " keywords from diary.
+            </Text>
+          </View>
+        </View>
+      )}
     </>
   );
 };
@@ -139,27 +143,27 @@ const styles = StyleSheet.create({
   veryLow: {
     color: 'limegreen',
     fontWeight: '600',
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(20),
   },
   low: {
-    color: 'gold',
+    color: '#ffbf00',
     fontWeight: '600',
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(20),
   },
   moderate: {
     color: 'darkorange',
     fontWeight: '600',
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(20),
   },
   high: {
     color: 'coral',
     fontWeight: '600',
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(20),
   },
   veryHigh: {
     color: 'crimson',
     fontWeight: '600',
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(20),
   },
   default: {
     color: Colors.black,
@@ -171,6 +175,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 4,
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+  },
+  keyWords: {
+    color: Colors.primary,
+    fontWeight: '600',
+    fontSize: moderateScale(20),
+  },
+  reasonWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 4,
   },
 });
