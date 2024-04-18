@@ -8,10 +8,10 @@ import Setting from '../screens/Setting';
 import Analysis from '../screens/Analysis';
 
 const CustomTabBarIcon = ({ focused, name }) => {
-  if (name === 'JOURNEY' && focused) {
+  if (name === 'DIARY' && focused) {
     return <Image style={styles.icon} source={require(`../images/jouney_active.png`)} />;
   }
-  if (name === 'JOURNEY' && !focused) {
+  if (name === 'DIARY' && !focused) {
     return <Image style={styles.icon} source={require(`../images/journey_inactive.png`)} />;
   }
   if (name === 'ANALYSIS' && focused) {
@@ -52,7 +52,7 @@ export default function CheckInNav() {
         tabBarIcon: ({ focused }) => <CustomTabBarIcon focused={focused} name={route.name} />,
       })}>
       <Tab.Screen name="REPORT" component={Report} />
-      <Tab.Screen name="JOURNEY" component={CheckIn} />
+      <Tab.Screen name="DIARY" component={CheckIn} />
       <Tab.Screen name="ANALYSIS" component={Analysis} />
       <Tab.Screen name="SETTING" component={Setting} />
     </Tab.Navigator>
