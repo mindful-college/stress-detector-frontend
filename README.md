@@ -30,6 +30,9 @@ npm install
 # Navigate to the iOS directory
 cd ios
 
+# set correct ruby version
+chruby 3.2.2
+
 # Install dependencies in the iOS project
 pod install
 

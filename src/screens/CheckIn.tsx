@@ -13,10 +13,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import CustomButton from '../coponents/CustomButton';
 import { Colors } from '../utils/colors';
 import { ChatbotKey, Conversation, ChatReport } from '../types/checkin';
 import LoadingDots from 'react-native-loading-dots';
-import { getChatbotMessage } from '../utils/checkin';
+import { getChatbotMessage, QUESTIONS } from '../utils/checkin';
 import ThrowUpFaceSvg from '../svg/ThrowUpFaceSvg';
 import SadFaceSvg from '../svg/SadFaceSvg';
 import StraightFaceSvg from '../svg/StraightFaceSvg';
@@ -30,12 +31,17 @@ import { REPORT_URL } from '../utils/api';
 import Toast from 'react-native-toast-message';
 import { useUserContext } from '../context/UserContext';
 import LoadingIndicator from '../coponents/LoadingIndicator';
+import { Picker } from '@react-native-picker/picker';
 
 const DEFAULT_REPORT = {
   text: [],
   voice: [],
   stress_level: null,
 };
+
+const HOUR_RANGE = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+];
 
 export default function CheckIn() {
   const { state, dispatch } = useUserContext();
@@ -46,6 +52,12 @@ export default function CheckIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [isReportSubmitted, setIsReportSubmitted] = useState(false);
   const [report, setReport] = useState<ChatReport>(DEFAULT_REPORT);
+  const [studyHours, setStudyHours] = useState(null);
+  const [workHours, setWorkHours] = useState(null);
+  const [socialMediaHours, setSocialMediaHours] = useState(null);
+  const [stressLevel, setStressLevel] = useState<null | number>(null);
+  const [hourPicker, setHourPicker] = useState<null | string>(null);
+
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = useHeaderHeight();
@@ -54,7 +66,7 @@ export default function CheckIn() {
     const [nextMessage, nextStep] = getChatbotMessage(step, conversation.length, text.trim());
     setIsLoading(true);
     setTimeout(() => {
-      setConversation((prev) => [...prev, nextMessage]);
+      if (nextMessage !== null) setConversation((prev) => [...prev, nextMessage]);
       setStep(nextStep);
       setIsLoading(false);
     }, 1000);
@@ -98,10 +110,22 @@ export default function CheckIn() {
     }
   }, [step]);
 
-  const setStressLevel = async (stress: number) => {
+  const cancelReport = () => {
+    setStep('restart');
+    setConversation((prev) => [
+      ...prev,
+      {
+        id: 'restart' + conversation.length,
+        isChatbot: true,
+        text: QUESTIONS.restart,
+      },
+    ]);
+  };
+
+  const sendReport = async () => {
     const finalReport: ChatReport = {
       ...report,
-      stress_level: stress,
+      stress_level: stressLevel,
     };
     try {
       setIsReportSubmitted(true);
@@ -112,14 +136,6 @@ export default function CheckIn() {
       };
       const { status } = await axios.post(REPORT_URL, finalReport, { headers });
       if (status === 200) {
-        setConversation((prev) => [
-          ...prev,
-          {
-            id: 'myMessage' + conversation.length,
-            isChatbot: false,
-            showIcon: stress,
-          },
-        ]);
         setReport(DEFAULT_REPORT);
         setNextChatbotMessage();
         dispatch({ type: 'UPDATE_POINTS', payload: (state.user?.points ?? 0) + 100 });
@@ -211,24 +227,166 @@ export default function CheckIn() {
         animationType="slide"
         transparent={true}>
         <View style={[styles.modalContainer, { width: width }]}>
-          <TouchableOpacity onPress={() => setStressLevel(5)}>
-            <ThrowUpFaceSvg width="36" height="36" strokeWidth="4" />
-            <Text style={styles.emojiText}>Very High</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setStressLevel(4)}>
-            <SadFaceSvg width="36" height="36" strokeWidth="4" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setStressLevel(3)}>
-            <StraightFaceSvg width="36" height="36" strokeWidth="4" />
-            <Text style={styles.emojiText}>Moderate</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setStressLevel(2)}>
-            <SmileyFaceSvg width="36" height="36" strokeWidth="4" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setStressLevel(1)}>
-            <HappyFaceSvg width="36" height="36" strokeWidth="4" />
-            <Text style={styles.emojiText}>Very Low</Text>
-          </TouchableOpacity>
+          <View>
+            <View>
+              <Text style={{ fontSize: 20, marginBottom: 20 }}>How many hours</Text>
+            </View>
+            <View style={styles.hourContainer}>
+              <Text>did you study today?</Text>
+              <TouchableOpacity onPress={() => setHourPicker('studyHour')}>
+                <Text style={styles.hourButton}>
+                  {studyHours === null ? 'Click' : `${studyHours} H`}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {hourPicker === 'studyHour' && (
+              <Picker
+                selectedValue={studyHours}
+                onValueChange={(itemValue) => {
+                  setStudyHours(itemValue);
+                  setHourPicker(null);
+                }}>
+                {HOUR_RANGE.map((hour) => (
+                  <Picker.Item
+                    key={'studyHourPicker' + hour}
+                    label={hour === 0 || hour === 1 ? `${hour} hour` : `${hour} hours`}
+                    value={hour}
+                  />
+                ))}
+              </Picker>
+            )}
+          </View>
+          <View>
+            <View style={styles.hourContainer}>
+              <Text>did you work today?</Text>
+              <TouchableOpacity onPress={() => setHourPicker('workHour')}>
+                <Text style={styles.hourButton}>
+                  {workHours === null ? 'Click' : `${workHours} H`}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {hourPicker === 'workHour' && (
+              <Picker
+                selectedValue={workHours}
+                onValueChange={(itemValue) => {
+                  setWorkHours(itemValue);
+                  setHourPicker(null);
+                }}>
+                {HOUR_RANGE.map((hour) => (
+                  <Picker.Item
+                    key={'workHourPicker' + hour}
+                    label={hour === 0 || hour === 1 ? `${hour} hours` : `${hour} hours`}
+                    value={hour}
+                  />
+                ))}
+              </Picker>
+            )}
+          </View>
+          <View>
+            <View style={styles.hourContainer}>
+              <Text>did you use social media today?</Text>
+              <TouchableOpacity onPress={() => setHourPicker('socialMediaHour')}>
+                <Text style={styles.hourButton}>
+                  {socialMediaHours === null ? 'Click' : `${socialMediaHours} H`}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {hourPicker === 'socialMediaHour' && (
+              <Picker
+                selectedValue={socialMediaHours}
+                onValueChange={(itemValue) => {
+                  setSocialMediaHours(itemValue);
+                  setHourPicker(null);
+                }}>
+                {HOUR_RANGE.map((hour) => (
+                  <Picker.Item
+                    key={'socialMediaHourPicker' + hour}
+                    label={hour === 0 || hour === 1 ? `${hour} hours` : `${hour} hours`}
+                    value={hour}
+                  />
+                ))}
+              </Picker>
+            )}
+          </View>
+          <View>
+            <Text style={{ fontSize: 20, marginTop: 20 }}>Please select your stress level</Text>
+            <Text style={{ fontSize: 12, color: '#444444', marginBottom: 12 }}>
+              This will help us to examine your stress level
+            </Text>
+          </View>
+          <View style={styles.stressIconWrapper}>
+            <TouchableOpacity onPress={() => setStressLevel(5)}>
+              <ThrowUpFaceSvg
+                width="36"
+                height="36"
+                strokeWidth="4"
+                color={stressLevel === 5 ? Colors.primary : '#4B4B4B'}
+              />
+              <Text style={styles.emojiText}>Very High</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setStressLevel(4)}>
+              <SadFaceSvg
+                width="36"
+                height="36"
+                strokeWidth="4"
+                color={stressLevel === 4 ? Colors.primary : '#4B4B4B'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setStressLevel(3)}>
+              <StraightFaceSvg
+                width="36"
+                height="36"
+                strokeWidth="4"
+                color={stressLevel === 3 ? Colors.primary : '#4B4B4B'}
+              />
+              <Text style={styles.emojiText}>Moderate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setStressLevel(2)}>
+              <SmileyFaceSvg
+                width="36"
+                height="36"
+                strokeWidth="4"
+                color={stressLevel === 2 ? Colors.primary : '#4B4B4B'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setStressLevel(1)}>
+              <HappyFaceSvg
+                width="36"
+                height="36"
+                strokeWidth="4"
+                color={stressLevel === 1 ? Colors.primary : '#4B4B4B'}
+              />
+              <Text style={styles.emojiText}>Very Low</Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 10,
+              justifyContent: 'space-between',
+            }}>
+            <CustomButton
+              color={Colors.primary}
+              backgroundColor={Colors.white}
+              title="Cancel"
+              onPress={cancelReport}
+              style={{ flexGrow: 1, borderColor: Colors.primary, borderWidth: 2 }}
+            />
+            <CustomButton
+              color={Colors.white}
+              backgroundColor={Colors.primary}
+              title="Submit"
+              onPress={sendReport}
+              disabled={
+                stressLevel === null ||
+                studyHours === null ||
+                workHours === null ||
+                socialMediaHours === null
+              }
+              style={{ flexGrow: 1 }}
+            />
+          </View>
         </View>
       </Modal>
     </>
@@ -264,15 +422,22 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     position: 'absolute',
-    bottom: 0,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 120,
-    backgroundColor: Colors.secondary,
+    gap: 10,
+    height: '90%',
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    bottom: 0,
+    backgroundColor: Colors.white,
     padding: 24,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    overflow: 'scroll',
+  },
+  stressIconWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   emoji: {
     width: 28,
@@ -282,5 +447,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 10,
     textAlign: 'center',
+  },
+  hourContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  hourButton: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    padding: 4,
+    borderRadius: 4,
   },
 });

@@ -14,7 +14,7 @@ export const QUESTIONS = {
   closing:
     'Thanks a lot for your check-in! See you next time! If you want to start again, please type "restart"',
   restart: 'Reset previous conversations... Please share your day again :)',
-  stressLevel: "We're almost there! Please choose your stress level from the options",
+  stressLevel: '',
   // text: "I'm curious about what's on your mind! If you'd rather not share, just type 'skip'.",
   // voice: "It's always wonderful to hear your voice! If you're not up for it, type 'skip'.",
 };
@@ -23,7 +23,7 @@ export const getChatbotMessage = (
   step: ChatbotKey,
   idx: number,
   prevText,
-): [Conversation, ChatbotKey] => {
+): [Conversation | null, ChatbotKey] => {
   let nextStep = step;
   if (prevText.toLowerCase() === 'restart') {
     nextStep = 'restart';
@@ -39,14 +39,7 @@ export const getChatbotMessage = (
 
   if (prevText.toLowerCase() === 'done') {
     nextStep = 'stressLevel';
-    return [
-      {
-        id: nextStep + idx,
-        isChatbot: true,
-        text: QUESTIONS[nextStep],
-      },
-      nextStep,
-    ];
+    return [null, nextStep];
   }
   switch (step) {
     case 'init':

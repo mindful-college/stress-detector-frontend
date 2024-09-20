@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* stressDetectorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* stressDetectorTests.m */; };
-		04746ABEE848164A12C76D78 /* libPods-stressDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06C753677223969690F9CC93 /* libPods-stressDetector.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		5E699F631AA6DB3A64FE7572 /* libPods-stressDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF5BA38191E7673C15F3AF1B /* libPods-stressDetector.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		895D3EC22B4BDD6200D960EB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 895D3EC12B4BDD6200D960EB /* Images.xcassets */; };
 		898BF2BD2B45062C00498987 /* emptyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898BF2BC2B45062C00498987 /* emptyFile.swift */; };
-		8C32B4675D5B99E61AAA8F4C /* libPods-stressDetector-stressDetectorTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6422E60A484E7175FC562095 /* libPods-stressDetector-stressDetectorTests.a */; };
+		DE314AC8E4664E852A07CBFB /* libPods-stressDetector-stressDetectorTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5843AC7679EA22D23E56C90F /* libPods-stressDetector-stressDetectorTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,31 +32,25 @@
 		00E356EE1AD99517003FC87E /* stressDetectorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = stressDetectorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* stressDetectorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = stressDetectorTests.m; sourceTree = "<group>"; };
-		06C753677223969690F9CC93 /* libPods-stressDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		09B5BB9AAF83CAFE57BBC29F /* Pods-stressDetector-stressDetectorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.release.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* stressDetector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stressDetector.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = stressDetector/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = stressDetector/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = stressDetector/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = stressDetector/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = stressDetector/main.m; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-stressDetector-stressDetectorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector-stressDetectorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B4392A12AC88292D35C810B /* Pods-stressDetector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-stressDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.release.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.release.xcconfig"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-stressDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		667CFABD2B3C0B44004C9E11 /* stressDetector.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = stressDetector.entitlements; path = stressDetector/stressDetector.entitlements; sourceTree = "<group>"; };
-		4270A7C4E399405E3E5F9D7D /* Pods-stressDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.release.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.release.xcconfig"; sourceTree = "<group>"; };
-		4525061251E547A2F1EB8F91 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.debug.xcconfig"; sourceTree = "<group>"; };
-		4F9E32E2F7EC468B7524AF57 /* Pods-stressDetector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.debug.xcconfig"; sourceTree = "<group>"; };
-		6422E60A484E7175FC562095 /* libPods-stressDetector-stressDetectorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector-stressDetectorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7DFE61FA27C983635BDA27B8 /* Pods-stressDetector-stressDetectorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.release.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.release.xcconfig"; sourceTree = "<group>"; };
+		48C73ACA128D3C1A47553C0B /* Pods-stressDetector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.debug.xcconfig"; sourceTree = "<group>"; };
+		52B6C4D16D6C39480D8C3545 /* Pods-stressDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector.release.xcconfig"; path = "Target Support Files/Pods-stressDetector/Pods-stressDetector.release.xcconfig"; sourceTree = "<group>"; };
+		5843AC7679EA22D23E56C90F /* libPods-stressDetector-stressDetectorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector-stressDetectorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = stressDetector/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		830F8BD7DCEA0162AA2F6C1C /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-stressDetector-stressDetectorTests.debug.xcconfig"; path = "Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		895D3EC12B4BDD6200D960EB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../../../Downloads/Images.xcassets; sourceTree = "<group>"; };
 		895D3EC32B4FBA3900D960EB /* stressDetector.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = stressDetector.entitlements; path = stressDetector/stressDetector.entitlements; sourceTree = "<group>"; };
 		897F24482B45608D00950010 /* RNAudioRecorderPlayer.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; name = RNAudioRecorderPlayer.xcworkspace; path = "../node_modules/react-native-audio-recorder-player/ios/RNAudioRecorderPlayer.xcworkspace"; sourceTree = "<group>"; };
 		898BF2BA2B45062C00498987 /* stressDetector-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "stressDetector-Bridging-Header.h"; sourceTree = "<group>"; };
 		898BF2BC2B45062C00498987 /* emptyFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = emptyFile.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EF5BA38191E7673C15F3AF1B /* libPods-stressDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-stressDetector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C32B4675D5B99E61AAA8F4C /* libPods-stressDetector-stressDetectorTests.a in Frameworks */,
+				DE314AC8E4664E852A07CBFB /* libPods-stressDetector-stressDetectorTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04746ABEE848164A12C76D78 /* libPods-stressDetector.a in Frameworks */,
+				5E699F631AA6DB3A64FE7572 /* libPods-stressDetector.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,8 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				06C753677223969690F9CC93 /* libPods-stressDetector.a */,
-				6422E60A484E7175FC562095 /* libPods-stressDetector-stressDetectorTests.a */,
+				EF5BA38191E7673C15F3AF1B /* libPods-stressDetector.a */,
+				5843AC7679EA22D23E56C90F /* libPods-stressDetector-stressDetectorTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -158,10 +152,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4F9E32E2F7EC468B7524AF57 /* Pods-stressDetector.debug.xcconfig */,
-				4270A7C4E399405E3E5F9D7D /* Pods-stressDetector.release.xcconfig */,
-				4525061251E547A2F1EB8F91 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */,
-				7DFE61FA27C983635BDA27B8 /* Pods-stressDetector-stressDetectorTests.release.xcconfig */,
+				48C73ACA128D3C1A47553C0B /* Pods-stressDetector.debug.xcconfig */,
+				52B6C4D16D6C39480D8C3545 /* Pods-stressDetector.release.xcconfig */,
+				830F8BD7DCEA0162AA2F6C1C /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */,
+				09B5BB9AAF83CAFE57BBC29F /* Pods-stressDetector-stressDetectorTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -173,12 +167,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "stressDetectorTests" */;
 			buildPhases = (
-				0C0F4E82EF931139D04FD833 /* [CP] Check Pods Manifest.lock */,
+				79FA0282379D6B6F4BDBD960 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				2503F38F712884FA22175E23 /* [CP] Embed Pods Frameworks */,
-				E2FA8B56067FF522D490917F /* [CP] Copy Pods Resources */,
+				8C3CEFAE286810FA6DC33FD8 /* [CP] Embed Pods Frameworks */,
+				0695E67D783397A39ABEB30D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -194,14 +188,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "stressDetector" */;
 			buildPhases = (
-				1337BCE191655E6D734B849C /* [CP] Check Pods Manifest.lock */,
+				BE5A35B7720050F3C322389E /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				9A1D12B5261DFC5987613997 /* [CP] Embed Pods Frameworks */,
-				80D9F6CC51F69D3605884F2E /* [CP] Copy Pods Resources */,
+				94C8E2B3B64EC5D0C1B5AB3A /* [CP] Embed Pods Frameworks */,
+				8C59F2A7DBE7311D752FE66F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -285,7 +279,24 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		0C0F4E82EF931139D04FD833 /* [CP] Check Pods Manifest.lock */ = {
+		0695E67D783397A39ABEB30D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		79FA0282379D6B6F4BDBD960 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -307,7 +318,58 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1337BCE191655E6D734B849C /* [CP] Check Pods Manifest.lock */ = {
+		8C3CEFAE286810FA6DC33FD8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8C59F2A7DBE7311D752FE66F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		94C8E2B3B64EC5D0C1B5AB3A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BE5A35B7720050F3C322389E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -327,74 +389,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2503F38F712884FA22175E23 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		80D9F6CC51F69D3605884F2E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9A1D12B5261DFC5987613997 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector/Pods-stressDetector-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E2FA8B56067FF522D490917F /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-stressDetector-stressDetectorTests/Pods-stressDetector-stressDetectorTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -450,7 +444,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4525061251E547A2F1EB8F91 /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */;
+			baseConfigurationReference = 830F8BD7DCEA0162AA2F6C1C /* Pods-stressDetector-stressDetectorTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -479,7 +473,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DFE61FA27C983635BDA27B8 /* Pods-stressDetector-stressDetectorTests.release.xcconfig */;
+			baseConfigurationReference = 09B5BB9AAF83CAFE57BBC29F /* Pods-stressDetector-stressDetectorTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -505,7 +499,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F9E32E2F7EC468B7524AF57 /* Pods-stressDetector.debug.xcconfig */;
+			baseConfigurationReference = 48C73ACA128D3C1A47553C0B /* Pods-stressDetector.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -595,7 +589,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4270A7C4E399405E3E5F9D7D /* Pods-stressDetector.release.xcconfig */;
+			baseConfigurationReference = 52B6C4D16D6C39480D8C3545 /* Pods-stressDetector.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -755,7 +749,6 @@
 					"-Wl",
 					"-ld_classic",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
@@ -830,7 +823,6 @@
 					"-Wl",
 					"-ld_classic",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
