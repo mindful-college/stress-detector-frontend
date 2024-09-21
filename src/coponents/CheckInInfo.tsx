@@ -91,54 +91,58 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
     }
   };
 
-  if (!state.averageReportData) {
-    return <Text>Loading...</Text>;
-  }
+  // if (!state.averageReportData) {
+  //   return <Text>Loading...</Text>;
+  // }
+  console.log(state.averageReportData);
 
   return (
-    <View style={styles.checkInInfoInnerBox}>
-      <CheckInBox
-        checkInInfo={checkInInfo?.study_hours}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<StudyHours width={horizontalScale(19)} height={horizontalScale(19)} />}
-        contents={['Hours you studied', 'hrs', 'studyHours']}
-        style={styles.box1}
-      />
-      <CheckInBox
-        checkInInfo={checkInInfo?.work_hours}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<WorkHours width={horizontalScale(19)} height={verticalScale(19)} />}
-        contents={['Hours you worked', 'hrs', 'workHours']}
-        style={styles.box2}
-      />
-      <CheckInBox
-        checkInInfo={checkInInfo?.sleep_hours}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<SleepHours width={horizontalScale(17)} height={verticalScale(17)} />}
-        contents={['Sleep Hours', 'hrs', 'sleepHours']}
-        style={styles.box3}
-      />
-      <CheckInBox
-        checkInInfo={checkInInfo?.step_count}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<StepCount width={horizontalScale(20)} height={verticalScale(20)} />}
-        contents={['Step Counts', '', 'stepCounts']}
-        style={styles.box4}
-      />
-      <CheckInBox
-        checkInInfo={checkInInfo?.heart_rate}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<HeartRate width={horizontalScale(20)} height={verticalScale(20)} />}
-        contents={['Heart Rate', 'bpm', 'heartRate']}
-        style={styles.box5}
-      />
-      <CheckInBox
-        checkInInfo={checkInInfo?.social_media_usage}
-        calculateMarginOfError={calculateMarginOfError}
-        icon={<SocialMediaUsage width={horizontalScale(20)} height={verticalScale(20)} />}
-        contents={['Social Media Usage', 'hrs', 'socialMediaUsage']}
-        style={styles.box6}
-      />
+    <View>
+      <Text style={styles.title}>END OF DAY CHECK-IN</Text>
+      <View style={styles.checkInInfoInnerBox}>
+        <CheckInBox
+          checkInInfo={checkInInfo?.study_hours}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<StudyHours width={horizontalScale(19)} height={horizontalScale(19)} />}
+          contents={['Hours you studied', 'hrs', 'studyHours']}
+          style={styles.box1}
+        />
+        <CheckInBox
+          checkInInfo={checkInInfo?.work_hours}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<WorkHours width={horizontalScale(19)} height={verticalScale(19)} />}
+          contents={['Hours you worked', 'hrs', 'workHours']}
+          style={styles.box2}
+        />
+        <CheckInBox
+          checkInInfo={checkInInfo?.sleep_hours}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<SleepHours width={horizontalScale(17)} height={verticalScale(17)} />}
+          contents={['Sleep Hours', 'hrs', 'sleepHours']}
+          style={styles.box3}
+        />
+        <CheckInBox
+          checkInInfo={checkInInfo?.step_count}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<StepCount width={horizontalScale(20)} height={verticalScale(20)} />}
+          contents={['Step Counts', '', 'stepCounts']}
+          style={styles.box4}
+        />
+        <CheckInBox
+          checkInInfo={checkInInfo?.heart_rate}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<HeartRate width={horizontalScale(20)} height={verticalScale(20)} />}
+          contents={['Heart Rate', 'bpm', 'heartRate']}
+          style={styles.box5}
+        />
+        <CheckInBox
+          checkInInfo={checkInInfo?.social_media_usage}
+          calculateMarginOfError={calculateMarginOfError}
+          icon={<SocialMediaUsage width={horizontalScale(20)} height={verticalScale(20)} />}
+          contents={['Social Media Usage', 'hrs', 'socialMediaUsage']}
+          style={styles.box6}
+        />
+      </View>
     </View>
   );
 };
@@ -149,6 +153,14 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+  title: {
+    color: Colors.black,
+    fontSize: 20,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 20,
+    fontWeight: '600',
+  },
   checkInInfoInnerBox: {
     flexWrap: 'wrap',
     flexDirection: 'row',

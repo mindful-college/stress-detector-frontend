@@ -26,8 +26,8 @@ export type ChatReport = {
 export type UserInputReport = {
   study_hours: number | null;
   work_hours: number | null;
-  step_count: number | null;
-  sleep_hours: number | null;
-  heart_rate: number | null;
   social_media_usage: number | null;
+  sleep_hours?: number | null;
+  step_count?: number | null;
+  heart_rate?: number | null;
 };

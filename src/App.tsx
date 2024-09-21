@@ -12,7 +12,6 @@ import SignInNav from './coponents/SignInNav';
 import CheckInNav from './coponents/CheckInNav';
 import axios from 'axios';
 import { GET_USER_DATA_AVERAGE_URL, PERMISSION_URL } from './utils/api';
-import UserDataModal from './coponents/UserDataModal';
 import moment from 'moment';
 
 const Stack = createNativeStackNavigator();
@@ -46,7 +45,7 @@ export default function App() {
         Authorization: `Bearer ${accessToken}`,
       };
       const res = await axios.get(GET_USER_DATA_AVERAGE_URL, { headers });
-      if (res.status === 200) {
+      if (res.status === 200 && res.data) {
         dispatch({ type: 'SET_AVERAGE_REPORT_DATA', payload: res.data });
       }
     } catch (error) {
@@ -115,7 +114,6 @@ export default function App() {
           </NavigationContainer>
         </QueryClientProvider>
         <Toast />
-        <UserDataModal />
       </SafeAreaView>
     </UserContext.Provider>
   );

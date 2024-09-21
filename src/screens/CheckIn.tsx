@@ -31,17 +31,12 @@ import { REPORT_URL } from '../utils/api';
 import Toast from 'react-native-toast-message';
 import { useUserContext } from '../context/UserContext';
 import LoadingIndicator from '../coponents/LoadingIndicator';
-import { Picker } from '@react-native-picker/picker';
 
 const DEFAULT_REPORT = {
   text: [],
   voice: [],
   stress_level: null,
 };
-
-const HOUR_RANGE = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-];
 
 export default function CheckIn() {
   const { state, dispatch } = useUserContext();
@@ -52,11 +47,7 @@ export default function CheckIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [isReportSubmitted, setIsReportSubmitted] = useState(false);
   const [report, setReport] = useState<ChatReport>(DEFAULT_REPORT);
-  const [studyHours, setStudyHours] = useState(null);
-  const [workHours, setWorkHours] = useState(null);
-  const [socialMediaHours, setSocialMediaHours] = useState(null);
   const [stressLevel, setStressLevel] = useState<null | number>(null);
-  const [hourPicker, setHourPicker] = useState<null | string>(null);
 
   const { height, width } = Dimensions.get('window');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -209,9 +200,6 @@ export default function CheckIn() {
               style={(styles.icon, { marginLeft: 10, width: 24, height: 24 })}
               source={require('../images/send-empty.png')}
             />
-            // <TouchableOpacity style={styles.icon} onPress={() => setIsVoiceClicked(true)}>
-            //   <Image style={{ width: 20, height: 24 }} source={require('../images/voice.png')} />
-            // </TouchableOpacity>
           )}
           <AudioRecording
             handleAudio={handleAudio}
@@ -228,88 +216,9 @@ export default function CheckIn() {
         transparent={true}>
         <View style={[styles.modalContainer, { width: width }]}>
           <View>
-            <View>
-              <Text style={{ fontSize: 20, marginBottom: 20 }}>How many hours</Text>
-            </View>
-            <View style={styles.hourContainer}>
-              <Text>did you study today?</Text>
-              <TouchableOpacity onPress={() => setHourPicker('studyHour')}>
-                <Text style={styles.hourButton}>
-                  {studyHours === null ? 'Click' : `${studyHours} H`}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {hourPicker === 'studyHour' && (
-              <Picker
-                selectedValue={studyHours}
-                onValueChange={(itemValue) => {
-                  setStudyHours(itemValue);
-                  setHourPicker(null);
-                }}>
-                {HOUR_RANGE.map((hour) => (
-                  <Picker.Item
-                    key={'studyHourPicker' + hour}
-                    label={hour === 0 || hour === 1 ? `${hour} hour` : `${hour} hours`}
-                    value={hour}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
-          <View>
-            <View style={styles.hourContainer}>
-              <Text>did you work today?</Text>
-              <TouchableOpacity onPress={() => setHourPicker('workHour')}>
-                <Text style={styles.hourButton}>
-                  {workHours === null ? 'Click' : `${workHours} H`}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {hourPicker === 'workHour' && (
-              <Picker
-                selectedValue={workHours}
-                onValueChange={(itemValue) => {
-                  setWorkHours(itemValue);
-                  setHourPicker(null);
-                }}>
-                {HOUR_RANGE.map((hour) => (
-                  <Picker.Item
-                    key={'workHourPicker' + hour}
-                    label={hour === 0 || hour === 1 ? `${hour} hours` : `${hour} hours`}
-                    value={hour}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
-          <View>
-            <View style={styles.hourContainer}>
-              <Text>did you use social media today?</Text>
-              <TouchableOpacity onPress={() => setHourPicker('socialMediaHour')}>
-                <Text style={styles.hourButton}>
-                  {socialMediaHours === null ? 'Click' : `${socialMediaHours} H`}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {hourPicker === 'socialMediaHour' && (
-              <Picker
-                selectedValue={socialMediaHours}
-                onValueChange={(itemValue) => {
-                  setSocialMediaHours(itemValue);
-                  setHourPicker(null);
-                }}>
-                {HOUR_RANGE.map((hour) => (
-                  <Picker.Item
-                    key={'socialMediaHourPicker' + hour}
-                    label={hour === 0 || hour === 1 ? `${hour} hours` : `${hour} hours`}
-                    value={hour}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
-          <View>
-            <Text style={{ fontSize: 20, marginTop: 20 }}>Please select your stress level</Text>
+            <Text style={{ fontSize: 20, marginTop: 20 }}>
+              Please select your self-examined stress level
+            </Text>
             <Text style={{ fontSize: 12, color: '#444444', marginBottom: 12 }}>
               This will help us to examine your stress level
             </Text>
@@ -378,12 +287,7 @@ export default function CheckIn() {
               backgroundColor={Colors.primary}
               title="Submit"
               onPress={sendReport}
-              disabled={
-                stressLevel === null ||
-                studyHours === null ||
-                workHours === null ||
-                socialMediaHours === null
-              }
+              disabled={stressLevel === null}
               style={{ flexGrow: 1 }}
             />
           </View>
@@ -424,7 +328,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     display: 'flex',
     gap: 10,
-    height: '90%',
+    height: '50%',
     borderColor: Colors.primary,
     borderWidth: 2,
     bottom: 0,

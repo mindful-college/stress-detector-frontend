@@ -11,41 +11,22 @@ import axios from 'axios';
 import { GET_REPORT_DATA_URL, GET_CHECKIN_DATA_URL } from '../utils/api';
 import { useUserContext } from '../context/UserContext';
 import FaceSvg from '../coponents/FaceSvg';
-import CheckInSummary from '../coponents/CheckInSummary';
 import CheckInInfo from '../coponents/CheckInInfo';
 import LoadingIndicator from '../coponents/LoadingIndicator';
 import CustomButton from '../coponents/CustomButton';
+import UserDataModal from '../coponents/UserDataModal';
 
 export default function Report() {
   const scrollViewRef = useRef<ScrollView>(null);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [hasCheckInData, setHasCheckInData] = useState(false);
-  const [hasReportData, setHasReportData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const now = new Date();
   const { state, dispatch } = useUserContext();
 
   const userToken = state.user?.access_token;
-  const [reportData, setReportData] = useState({
-    email: '',
-    date: new Date(),
-    summary: { text: [], voice: [] },
-    stress_level: 0,
-    self_stress_level: 0,
-  });
-
-  const [checkInInfo, setCheckInInfo] = useState({
-    date: new Date(),
-    email: '',
-    heart_rate: 0,
-    sleep_hours: 0,
-    social_media_usage: 0,
-    step_count: 0,
-    stress_level: 0,
-    study_hours: 0,
-    work_hours: 0,
-  });
+  const [reportData, setReportData] = useState(null);
+  const [checkInInfo, setCheckInInfo] = useState(null);
 
   const resetScrollViewPosition = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -53,7 +34,6 @@ export default function Report() {
 
   useFocusEffect(
     React.useCallback(() => {
-      //
       const dateString = selectedDate.format(); // Convert moment object to string (ISO 8601 format)
       setIsLoading(true);
       const fetchData = async () => {
@@ -77,8 +57,13 @@ export default function Report() {
           ]);
           setReportData(currentReportData.data);
           setCheckInInfo(currentCheckinData.data);
-          setHasReportData(!currentReportData.data.message);
-          setHasCheckInData(!currentCheckinData.data.message);
+          if (
+            currentReportData.data !== null &&
+            currentCheckinData.data === null &&
+            now.getHours() >= 21
+          ) {
+            goToSelfCheckIn();
+          }
         } catch (error) {
           console.error('Error fetching data', error);
         } finally {
@@ -102,7 +87,7 @@ export default function Report() {
 
   // todo
   const canShowCheckInModal = () => {
-    return now.getHours() >= 21 && !hasReportData;
+    return now.getHours() >= 21 && reportData !== null && checkInInfo === null;
   };
 
   const goToSelfCheckIn = () => {
@@ -150,17 +135,14 @@ export default function Report() {
       </Modal>
 
       <ScrollView ref={scrollViewRef}>
-        {hasReportData ? (
-          now.getHours() >= 12 || now.getDate().toString() !== selectedDate.format('D') ? (
+        {reportData !== null ? ( // now.getHours() >= 21
+          now.getHours() >= 21 || now.getDate().toString() !== selectedDate.format('D') ? (
             <>
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
               </View>
-              {/* <View style={styles.checkInSummaryContainer}>
-                <CheckInSummary reportData={reportData} />
-              </View> */}
               <View style={styles.checkInInfoContainer}>
-                {hasCheckInData ? (
+                {checkInInfo ? (
                   <CheckInInfo checkInInfo={checkInInfo} />
                 ) : (
                   <View style={{ marginLeft: 30 }}>
@@ -192,6 +174,7 @@ export default function Report() {
           </>
         )}
       </ScrollView>
+      <UserDataModal setCheckInInfo={setCheckInInfo} />
     </View>
   );
 }

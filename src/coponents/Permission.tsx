@@ -16,7 +16,7 @@ export default function Permission() {
     'Sleep Hours',
     'Heart Rate',
     // 'Social Media Usage',
-    'Notification',
+    // 'Notification',
   ];
 
   return (

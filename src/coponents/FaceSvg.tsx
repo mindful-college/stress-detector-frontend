@@ -100,13 +100,13 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
       {stressLevelMap[predictedStressLevel] && (
         <View>
           <View style={styles.stressLevelWrapper}>
-            <Text style={styles.stressLevelText}>Self reported stress Level is </Text>
+            <Text style={styles.stressLevelText}>Self reported stress level is </Text>
             <Text style={getColor(stressLevelMap[selfStressLevel])}>
               {stressLevelMap[selfStressLevel]}
             </Text>
           </View>
           <View style={styles.stressLevelWrapper}>
-            <Text style={styles.stressLevelText}>Predicted stress Level is </Text>
+            <Text style={styles.stressLevelText}>Predicted stress level is </Text>
             <Text style={getColor(stressLevelMap[predictedStressLevel])}>
               {stressLevelMap[predictedStressLevel]}
             </Text>

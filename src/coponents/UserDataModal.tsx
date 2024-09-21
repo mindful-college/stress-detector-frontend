@@ -11,7 +11,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import CustomButton from './CustomButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const UserDataModal = () => {
+const UserDataModal = ({ setCheckInInfo }: { setCheckInInfo: any }) => {
   const { state, dispatch } = useUserContext();
   const [studyHours, setStudyHours] = useState<null | number>(null);
   const [workHours, setWorkHours] = useState<null | number>(null);
@@ -66,6 +66,7 @@ const UserDataModal = () => {
       if (status === 200) {
         const today = new Date();
         AsyncStorage.setItem('lastDailyCheckInDate', today.toISOString());
+        setCheckInInfo(finalReport);
         dispatch({ type: 'UPDATE_POINTS', payload: (state.user?.points ?? 0) + 100 });
         dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: false });
         setStudyHours(0);
