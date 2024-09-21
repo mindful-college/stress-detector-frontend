@@ -16,6 +16,8 @@ import LoadingIndicator from '../coponents/LoadingIndicator';
 import CustomButton from '../coponents/CustomButton';
 import UserDataModal from '../coponents/UserDataModal';
 
+const REPORT_OPEN_HOUR = 21;
+
 export default function Report() {
   const scrollViewRef = useRef<ScrollView>(null);
   const [selectedDate, setSelectedDate] = useState<any>(null);
@@ -62,7 +64,7 @@ export default function Report() {
       if (
         currentReportData.data !== null &&
         currentCheckinData.data === null &&
-        now.getHours() >= 13
+        now.getHours() >= REPORT_OPEN_HOUR
       ) {
         goToSelfCheckIn();
       }
@@ -99,7 +101,7 @@ export default function Report() {
 
   // todo
   const canShowCheckInModal = () => {
-    return now.getHours() >= 13 && reportData !== null && checkInInfo === null;
+    return now.getHours() >= REPORT_OPEN_HOUR && reportData !== null && checkInInfo === null;
   };
 
   return (
@@ -144,7 +146,8 @@ export default function Report() {
 
       <ScrollView ref={scrollViewRef}>
         {reportData !== null ? (
-          now.getHours() >= 13 || now.getDate().toString() !== selectedDate.format('D') ? (
+          now.getHours() >= REPORT_OPEN_HOUR ||
+          now.getDate().toString() !== selectedDate.format('D') ? (
             <>
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
