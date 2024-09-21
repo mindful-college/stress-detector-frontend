@@ -1,58 +1,81 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { Text, View, Dimensions, ScrollView, StyleSheet } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import Swiper from 'react-native-swiper';
+import { Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
 import { Colors } from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
-import { ANALYSIS_WEEKLY, ANALYSIS_MONTHLY } from '../utils/api';
+import { ANAYLYSIS_URL } from '../utils/api';
 import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import { moderateScale, verticalScale } from '../themes/metrics';
-import Chart from '../coponents/Chart';
+import moment from 'moment-timezone';
+
 export default function Analysis() {
-  const [weeklyData, setWeeklyData] = useState({
-    days: [['']],
-    stress_level: [[0]],
-    heart_rate: [[0]],
-    sleep_hours: [[0]],
-    social_media_usage: [[0]],
-    step_count: [[0]],
-    study_hours: [[0]],
-    work_hours: [[0]],
-  });
-  // const [monthlyData, setMonthlyData] = useState({});
-  const [monthlyData, setMonthlyData] = useState({
-    months: [['']],
-    stress_level: [[0]],
-    heart_rate: [[0]],
-    sleep_hours: [[0]],
-    social_media_usage: [[0]],
-    step_count: [[0]],
-    study_hours: [[0]],
-    work_hours: [[0]],
-  });
-  const { state, dispatch } = useUserContext();
-  const [maxCount, setMaxCount] = useState(9999);
-  const [value, setValue] = useState('weekly');
-  const [heartRatePerm, setHeartRatePerm] = useState(false);
-  const [stepCountPerm, setStepCountPerm] = useState(false);
-  const [sleepHoursPerm, setSleepHoursPerm] = useState(false);
-  const [socialMediaPerm, setSocialMediaPerm] = useState(false);
-  const [dayCount, setDayCount] = useState(0);
-  const [monthCount, setMonthCount] = useState(0);
+  const { state } = useUserContext();
+  const [selectedDate, setSelectedDate] = useState('3-weeks');
+  const [selectedChartLabel, setSelectedChartLabel] = useState('stress_level');
+  const [stressLevelChart, setStressLevelChart] = useState([]);
+  const [reportChart, setReportChart] = useState([]);
+  const [processedChart, setProcessedChart] = useState({ labels: [], datasets: [{ data: [] }] });
 
-  useEffect(() => {
-    // Check the specific permission, adjust according to your state structure
-    const heart_permission = state.permission?.heartRate || false;
-    const step_permission = state.permission?.stepCounts || false;
-    const sleep_permission = state.permission?.sleepHours || false;
-    const social_permission = state.permission?.socialMediaUsage || false;
+  const heartRatePermission = state.permission?.heartRate || false;
+  const stepCountPermission = state.permission?.stepCounts || false;
+  const sleepHoursPermission = state.permission?.sleepHours || false;
 
-    setHeartRatePerm(heart_permission);
-    setSleepHoursPerm(sleep_permission);
-    setSocialMediaPerm(social_permission);
-    setStepCountPerm(step_permission);
-  }, [state.permission]);
+  type DropdownItem = {
+    label: string;
+    value: string;
+  };
+
+  const charItem = [
+    {
+      label: 'Stree Level',
+      value: 'stress_level',
+    },
+    // {
+    //   label: 'Correlation',
+    //   value: 'correlation',
+    // },
+    {
+      label: 'Hours you studied',
+      value: 'study_hours',
+    },
+    {
+      label: 'Hours you worked',
+      value: 'work_hours',
+    },
+    {
+      label: 'sleep Hours',
+      value: 'sleep_hours',
+    },
+    {
+      label: 'Step Counts',
+      value: 'step_count',
+    },
+    {
+      label: 'Heart Rate',
+      value: 'heart_rate',
+    },
+    {
+      label: 'Social Media Usage',
+      value: 'social_media_usage',
+    },
+  ];
+
+  const dateItems = [
+    {
+      label: '~1W',
+      value: 'week',
+    },
+    {
+      label: '~2W',
+      value: '2-weeks',
+    },
+    {
+      label: '~3W',
+      value: '3-weeks',
+    },
+  ];
 
   useEffect(() => {
     const headers = {
@@ -60,28 +83,13 @@ export default function Analysis() {
       Authorization: `Bearer ${state.user?.access_token}`,
     };
 
-    const getWeeklyData = async () => {
+    const getAnalysisData = async () => {
       try {
-        const res = await axios.get(ANALYSIS_WEEKLY, { headers });
-
+        const res = await axios.get(ANAYLYSIS_URL, { headers });
         if (res.status === 200) {
-          setWeeklyData(res.data);
-          setMaxCount(res.data['stress_level'].length);
-          setDayCount(res.data.days_count);
-        }
-      } catch (error) {
-        // Handle errors if the request fails
-        console.error(error);
-      }
-    };
-    const getMonthlyData = async () => {
-      try {
-        const res = await axios.get(ANALYSIS_MONTHLY, { headers });
-
-        if (res.status === 200) {
-          // console.log(res.data)
-          setMonthlyData(res.data);
-          setMonthCount(res.data.month_count);
+          setStressLevelChart(res.data.stress_level);
+          setReportChart(res.data.report);
+          makeChartData(res.data.stress_level);
         }
       } catch (error) {
         // Handle errors if the request fails
@@ -89,340 +97,165 @@ export default function Analysis() {
       }
     };
 
-    // Call the account function here to trigger the API request
-    getWeeklyData();
-    getMonthlyData();
+    getAnalysisData();
   }, [state.user?.access_token]);
 
-  const items = [
-    {
-      value: 'weekly',
-    },
-    {
-      value: 'monthly',
-    },
-  ];
+  useEffect(() => {
+    if (selectedChartLabel === 'stress_level') {
+      makeChartData(stressLevelChart);
+    } else {
+      makeChartData(reportChart);
+    }
+  }, [selectedChartLabel, selectedDate]);
 
-  type DropdownItem = {
-    value: string;
+  const makeChartData = (unprocessedData) => {
+    const processedData = unprocessedData?.filter((item) => {
+      const today = moment().startOf('day');
+      let daysAgo = 0;
+      if (selectedDate === 'week') {
+        daysAgo = 7;
+      }
+      if (selectedDate === '2-weeks') {
+        daysAgo = 14;
+      }
+      if (selectedDate === '3-weeks') {
+        daysAgo = 21;
+      }
+      const startDate = moment().subtract(daysAgo, 'days').startOf('day');
+      return moment(item._id).isBetween(startDate, today, null, '[]');
+    });
+    const data = {
+      labels: processedData?.map((item) => item._id.slice(5)),
+      datasets: [{ data: processedData?.map((item) => item[selectedChartLabel]?.toFixed(1) ?? 0) }],
+    };
+    setProcessedChart(data);
   };
 
   const renderItem = (item: DropdownItem) => {
-    // item.value === 'weekly'? :setMaxCount(monthlyData['months'].length-1)
+    if (item.value === 'sleep-hours' && !sleepHoursPermission) {
+      return;
+    }
+    if (item.value === 'step-counts' && !stepCountPermission) {
+      return;
+    }
+    if (item.value === 'heart-rate' && !heartRatePermission) {
+      return;
+    }
+
     return (
       <View style={styles.item}>
-        <Text style={styles.textItem}>{item.value}</Text>
+        <Text style={styles.textItem}>{item.label}</Text>
       </View>
     );
   };
 
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.itemContainer}>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          iconStyle={styles.iconStyle}
-          data={items}
-          labelField="value"
-          valueField="value"
-          placeholder={value}
-          value={value}
-          onChange={(item) => {
-            setValue(item.value);
-          }}
-          renderItem={renderItem}
-        />
+  const getBarWidth = () => {
+    if (selectedDate === 'week') {
+      return 1.0;
+    }
+    if (selectedDate === '2-weeks') {
+      return 0.5;
+    }
+    if (selectedDate === '3-weeks') {
+      return 0.1;
+    }
+  };
+  const chartConfig = {
+    backgroundGradientFrom: '#Ffffff',
+    backgroundGradientTo: '#ffffff',
+    barPercentage: getBarWidth(),
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: () => `rgba(1, 122, 205, 1)`,
+    labelColor: () => `rgba(0, 0, 0, 1)`,
 
-        <View
-          style={{
-            height: Dimensions.get('window').height / 2,
-            width: Dimensions.get('window').width,
-          }}>
-          <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-            {weeklyData && value && value === 'weekly' ? (
-              dayCount && dayCount >= 3 ? (
-                weeklyData['stress_level'].map((item, i) => {
-                  console.log(maxCount);
-                  return (
-                    <Chart
-                      key={`${value}stress${i}`}
-                      min={0}
-                      max={5}
-                      chartData={weeklyData['stress_level'][i]}
-                      chartLabel={weeklyData['days'][i]}
-                      chartTitle="Stress Level"
-                    />
-                  );
-                })
-              ) : (
-                <Text style={styles.noReportText}>There is no enough data for charts</Text>
-              )
-            ) : monthCount && monthCount >= 2 ? (
-              monthlyData['stress_level'].map((item, i) => {
-                return (
-                  <Chart
-                    key={`${value}stress${i}`}
-                    min={0}
-                    max={5}
-                    chartData={monthlyData['stress_level'][i]}
-                    chartLabel={monthlyData['months'][i]}
-                    chartTitle="Stress Level"
-                  />
-                );
-              })
-            ) : (
-              <Text style={styles.noReportText}>There is no enough data for charts</Text>
-            )}
-          </Swiper>
-        </View>
-        <View style={{ height: Dimensions.get('window').height / 2 }}>
-          <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-            {weeklyData && value && value === 'weekly' ? (
-              dayCount && dayCount >= 3 ? (
-                weeklyData['study_hours'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}study${i}`}
-                      min={0}
-                      max={8}
-                      chartData={weeklyData['study_hours'][i]}
-                      chartLabel={weeklyData['days'][i]}
-                      chartTitle="Study Hours"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )
-            ) : monthCount && monthCount >= 2 ? (
-              monthlyData['study_hours'].map((item, i) => {
-                return (
-                  <Chart
-                    key={`${value}study${i}`}
-                    min={0}
-                    max={8}
-                    chartData={monthlyData['study_hours'][i]}
-                    chartLabel={monthlyData['months'][i]}
-                    chartTitle="Study Hours"
-                  />
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </Swiper>
-        </View>
-        <View style={{ height: Dimensions.get('window').height / 2 }}>
-          <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-            {weeklyData && value && value === 'weekly' ? (
-              dayCount && dayCount >= 3 ? (
-                weeklyData['work_hours'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}work${i}`}
-                      min={0}
-                      max={8}
-                      chartData={weeklyData['work_hours'][i]}
-                      chartLabel={weeklyData['days'][i]}
-                      chartTitle="Work Hours"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )
-            ) : monthCount && monthCount >= 2 ? (
-              monthlyData['work_hours'].map((item, i) => {
-                return (
-                  <Chart
-                    key={`${value}work${i}`}
-                    min={0}
-                    max={8}
-                    chartData={monthlyData['work_hours'][i]}
-                    chartLabel={monthlyData['months'][i]}
-                    chartTitle="Work Hours"
-                  />
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </Swiper>
-        </View>
-        {socialMediaPerm && (
-          <View style={{ height: Dimensions.get('window').height / 2 }}>
-            <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-              {weeklyData && value && value === 'weekly' ? (
-                dayCount && dayCount >= 3 ? (
-                  weeklyData['social_media_usage'].map((item, i) => {
-                    return (
-                      <Chart
-                        key={`${value}media${i}`}
-                        min={0}
-                        max={6}
-                        chartData={weeklyData['social_media_usage'][i]}
-                        chartLabel={weeklyData['days'][i]}
-                        chartTitle="Social Media Usage"
-                      />
-                    );
-                  })
-                ) : (
-                  <></>
-                )
-              ) : monthCount && monthCount >= 2 ? (
-                monthlyData['social_media_usage'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}media${i}`}
-                      min={0}
-                      max={6}
-                      chartData={monthlyData['social_media_usage'][i]}
-                      chartLabel={monthlyData['months'][i]}
-                      chartTitle="Social Media Usage"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )}
-            </Swiper>
+    style: {
+      borderRadius: 16,
+      fontFamily: 'Bogle-Regular',
+    },
+    propsForBackgroundLines: {
+      strokeWidth: 1,
+      stroke: '#efefef',
+      strokeDasharray: '0',
+    },
+    propsForLabels: {
+      fontFamily: 'Bogle-Regular',
+    },
+  };
+
+  const screenWidth = Dimensions.get('window').width;
+
+  return stressLevelChart.length >= 1 ? (
+    <View style={styles.itemContainer}>
+      <Dropdown
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        iconStyle={styles.iconStyle}
+        data={charItem}
+        labelField="label"
+        valueField="value"
+        value={selectedChartLabel}
+        onChange={(item) => {
+          setSelectedChartLabel(item.value);
+        }}
+        renderItem={renderItem}
+      />
+      <View style={styles.menuWrapper}>
+        {dateItems.map((item, idx) => {
+          return (
+            <TouchableOpacity
+              key={`${item}-${idx}`}
+              onPress={() => setSelectedDate(item.value)}
+              style={item.value === selectedDate ? styles.selctedMenuItem : styles.menuItem}>
+              <Text style={{ textAlign: 'center' }}>{item.label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <View style={styles.chartWrapper}>
+        {selectedChartLabel === 'correlation' ? (
+          <View>
+            <Text style={{ fontSize: 60, marginBottom: 20 }}>LineChart</Text>
+            <View>
+              <Text>Hours You Studied</Text>
+              <Text>Hours You Worked</Text>
+              <Text>Sleep Hours</Text>
+              <Text>Step Counts</Text>
+              <Text>Heart Rate</Text>
+            </View>
           </View>
-        )}
-        {sleepHoursPerm && (
-          <View style={{ height: Dimensions.get('window').height / 2 }}>
-            <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-              {weeklyData && value && value === 'weekly' ? (
-                dayCount && dayCount >= 3 ? (
-                  weeklyData['sleep_hours'].map((item, i) => {
-                    return (
-                      <Chart
-                        key={`${value}sleep${i}`}
-                        min={4}
-                        max={8}
-                        chartData={weeklyData['sleep_hours'][i]}
-                        chartLabel={weeklyData['days'][i]}
-                        chartTitle="Sleep Hours"
-                      />
-                    );
-                  })
-                ) : (
-                  <></>
-                )
-              ) : monthCount && monthCount >= 2 ? (
-                monthlyData['sleep_hours'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}sleep${i}`}
-                      min={4}
-                      max={8}
-                      chartData={monthlyData['sleep_hours'][i]}
-                      chartLabel={monthlyData['months'][i]}
-                      chartTitle="Sleep Hours"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )}
-            </Swiper>
-          </View>
-        )}
-        {stepCountPerm && (
-          <View style={{ height: Dimensions.get('window').height / 2 }}>
-            <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-              {weeklyData && value && value === 'weekly' ? (
-                dayCount && dayCount >= 3 ? (
-                  weeklyData['step_count'].map((item, i) => {
-                    return (
-                      <Chart
-                        key={`${value}step${i}`}
-                        min={0}
-                        max={8000}
-                        chartData={weeklyData['step_count'][i]}
-                        chartLabel={weeklyData['days'][i]}
-                        chartTitle="Step Count"
-                      />
-                    );
-                  })
-                ) : (
-                  <></>
-                )
-              ) : monthCount && monthCount >= 2 ? (
-                monthlyData['step_count'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}step${i}`}
-                      min={0}
-                      max={8000}
-                      chartData={monthlyData['step_count'][i]}
-                      chartLabel={monthlyData['months'][i]}
-                      chartTitle="Step Count"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )}
-            </Swiper>
-          </View>
-        )}
-        {heartRatePerm && (
-          <View style={{ height: Dimensions.get('window').height / 2 }}>
-            <Swiper loop={false} index={maxCount} showsPagination={false} showsButtons={false}>
-              {weeklyData && value === 'weekly' ? (
-                dayCount && dayCount >= 3 ? (
-                  weeklyData['heart_rate'].map((item, i) => {
-                    return (
-                      <Chart
-                        key={`${value}heart${i}`}
-                        min={60}
-                        max={140}
-                        chartData={weeklyData['heart_rate'][i]}
-                        chartLabel={weeklyData['days'][i]}
-                        chartTitle="Heart Rate"
-                      />
-                    );
-                  })
-                ) : (
-                  <></>
-                )
-              ) : monthCount && monthCount >= 2 ? (
-                monthlyData['heart_rate'].map((item, i) => {
-                  return (
-                    <Chart
-                      key={`${value}heart${i}`}
-                      min={60}
-                      max={140}
-                      chartData={monthlyData['heart_rate'][i]}
-                      chartLabel={monthlyData['months'][i]}
-                      chartTitle="Heart Rate"
-                    />
-                  );
-                })
-              ) : (
-                <></>
-              )}
-            </Swiper>
-          </View>
+        ) : (
+          <BarChart
+            // style={styles.chart}
+            showBarTops={false}
+            showValuesOnTopOfBars={true}
+            withInnerLines={true}
+            segments={0}
+            data={processedChart}
+            width={screenWidth - 15}
+            height={400}
+            yAxisLabel=""
+            yAxisSuffix=""
+            chartConfig={chartConfig}
+            verticalLabelRotation={0}
+            fromZero={true}
+          />
         )}
       </View>
-    </ScrollView>
+    </View>
+  ) : (
+    <View style={styles.noChartWrapper}>
+      <Text style={styles.noReportText}>There is no enough data for Analysis.</Text>
+      <Text style={styles.noReportText}>You will be able to see the charts soon!</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-  },
   itemContainer: {
-    // paddingHorizontal: 5,
+    backgroundColor: Colors.white,
     flex: 1,
     alignItems: 'center',
-    backgroundColor: Colors.white,
-    // justifyContent: 'center',
   },
   text: {
     fontSize: 12,
@@ -431,12 +264,11 @@ const styles = StyleSheet.create({
     marginTop: 13,
     marginHorizontal: 15,
     height: 40,
-    width: 120,
-    backgroundColor: Colors.secondary,
+    width: 200,
     borderRadius: 15,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: Colors.lightGrey,
+    borderColor: Colors.primary,
     elevation: 2,
   },
   item: {
@@ -459,16 +291,38 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
-  title: {
-    fontSize: 15,
-    color: Colors.black,
-    textAlign: 'center',
-    paddingBottom: 10,
-    marginHorizontal: '5%',
-  },
   noReportText: {
-    marginTop: verticalScale(100),
+    marginTop: verticalScale(10),
     textAlign: 'center',
     fontSize: moderateScale(20),
+  },
+  noChartWrapper: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chartWrapper: {
+    width: Dimensions.get('window').width,
+  },
+  menuWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 20,
+    marginBottom: 40,
+  },
+  selctedMenuItem: {
+    width: 80,
+    backgroundColor: Colors.secondary,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.lightGrey,
+  },
+  menuItem: {
+    width: 80,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.lightGrey,
   },
 });

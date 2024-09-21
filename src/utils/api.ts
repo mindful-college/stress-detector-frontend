@@ -17,3 +17,4 @@ export const GET_REPORT_DATA_URL = `${DEFAULT_URL}/report/stresslvl`;
 export const GET_CHECKIN_DATA_URL = `${DEFAULT_URL}/report/checkin`;
 export const GET_USER_DATA_AVERAGE_URL = `${DEFAULT_URL}/v1/average`;
 export const REPORT_URL = `${DEFAULT_URL}/v1/report`;
+export const ANAYLYSIS_URL = `${DEFAULT_URL}/v1/analyses`;

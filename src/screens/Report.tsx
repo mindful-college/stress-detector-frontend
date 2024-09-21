@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Text, View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../utils/colors';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,12 +18,11 @@ import UserDataModal from '../coponents/UserDataModal';
 
 export default function Report() {
   const scrollViewRef = useRef<ScrollView>(null);
-  const [selectedDate, setSelectedDate] = useState(moment());
+  const [selectedDate, setSelectedDate] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const now = new Date();
   const { state, dispatch } = useUserContext();
-
+  const now = useMemo(() => new Date(), []);
   const userToken = state.user?.access_token;
   const [reportData, setReportData] = useState(null);
   const [checkInInfo, setCheckInInfo] = useState(null);
@@ -32,48 +31,61 @@ export default function Report() {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
 
+  const goToSelfCheckIn = useCallback(() => {
+    dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: true });
+  }, [dispatch]);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const reportResponse = await axios.get(
+        `${GET_REPORT_DATA_URL}?date_str=${selectedDate.format()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+      const checkinResponse = await axios.get(
+        `${GET_CHECKIN_DATA_URL}?date_str=${selectedDate.format()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+      const [currentReportData, currentCheckinData] = await Promise.all([
+        reportResponse,
+        checkinResponse,
+      ]);
+      setReportData(currentReportData.data);
+      setCheckInInfo(currentCheckinData.data);
+      if (
+        currentReportData.data !== null &&
+        currentCheckinData.data === null &&
+        now.getHours() >= 13
+      ) {
+        goToSelfCheckIn();
+      }
+    } catch (error) {
+      console.error('Error fetching data', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userToken, goToSelfCheckIn, selectedDate, now]);
+
+  useEffect(() => {
+    if (selectedDate === null) {
+      return;
+    }
+    setIsLoading(true);
+    fetchData();
+    resetScrollViewPosition();
+  }, [selectedDate, fetchData]);
+
   useFocusEffect(
     React.useCallback(() => {
-      const dateString = selectedDate.format(); // Convert moment object to string (ISO 8601 format)
-      setIsLoading(true);
-      const fetchData = async () => {
-        try {
-          const reportResponse = await axios.get(`${GET_REPORT_DATA_URL}?date_str=${dateString}`, {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          });
-          const checkinResponse = await axios.get(
-            `${GET_CHECKIN_DATA_URL}?date_str=${dateString}`,
-            {
-              headers: {
-                Authorization: `Bearer ${userToken}`,
-              },
-            },
-          );
-          const [currentReportData, currentCheckinData] = await Promise.all([
-            reportResponse,
-            checkinResponse,
-          ]);
-          setReportData(currentReportData.data);
-          setCheckInInfo(currentCheckinData.data);
-          if (
-            currentReportData.data !== null &&
-            currentCheckinData.data === null &&
-            now.getHours() >= 21
-          ) {
-            goToSelfCheckIn();
-          }
-        } catch (error) {
-          console.error('Error fetching data', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchData();
-      resetScrollViewPosition();
-    }, [selectedDate, userToken]),
+      setSelectedDate(moment());
+    }, []),
   );
 
   const datesBlacklistFunc = (date: moment.Moment) => {
@@ -87,11 +99,7 @@ export default function Report() {
 
   // todo
   const canShowCheckInModal = () => {
-    return now.getHours() >= 21 && reportData !== null && checkInInfo === null;
-  };
-
-  const goToSelfCheckIn = () => {
-    dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: true });
+    return now.getHours() >= 13 && reportData !== null && checkInInfo === null;
   };
 
   return (
@@ -126,7 +134,7 @@ export default function Report() {
             maxDate={moment().format('YYYY-MM-DD')}
             theme={{
               textMonthFontWeight: '600',
-              textMonthFontSize: 15,
+              textMonthFontSize: 13,
             }}
             style={styles.calendarInModal}
             onDayPress={(day) => handleDateSelection(moment(day.dateString))}
@@ -135,8 +143,8 @@ export default function Report() {
       </Modal>
 
       <ScrollView ref={scrollViewRef}>
-        {reportData !== null ? ( // now.getHours() >= 21
-          now.getHours() >= 21 || now.getDate().toString() !== selectedDate.format('D') ? (
+        {reportData !== null ? (
+          now.getHours() >= 13 || now.getDate().toString() !== selectedDate.format('D') ? (
             <>
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
@@ -194,7 +202,7 @@ const styles = StyleSheet.create({
   },
   calendarHeader: {
     color: 'black',
-    fontSize: moderateScale(15),
+    fontSize: moderateScale(13),
     fontWeight: '500',
     textTransform: 'uppercase',
   },
