@@ -115,7 +115,7 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
           style={styles.box2}
         />
         <CheckInBox
-          checkInInfo={checkInInfo?.sleep_hours}
+          checkInInfo={checkInInfo?.sleep_hours.toFixed(2)}
           calculateMarginOfError={calculateMarginOfError}
           icon={<SleepHours width={horizontalScale(17)} height={verticalScale(17)} />}
           contents={['Sleep Hours', 'hrs', 'sleepHours']}

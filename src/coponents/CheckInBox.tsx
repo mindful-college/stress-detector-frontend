@@ -4,7 +4,7 @@ import { Colors } from '../utils/colors';
 import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
 type CheckInInfoProps = {
-  checkInInfo: number;
+  checkInInfo: number | string;
   contents: string[];
   calculateMarginOfError: (type: string) => JSX.Element;
   icon: JSX.Element;
