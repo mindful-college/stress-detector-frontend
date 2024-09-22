@@ -9,6 +9,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import { moderateScale, verticalScale } from '../themes/metrics';
 import moment from 'moment-timezone';
+import { useFocusEffect } from '@react-navigation/native';
+
+const MIN_REPORT_CNT = 3;
 
 export default function Analysis() {
   const { state } = useUserContext();
@@ -77,7 +80,10 @@ export default function Analysis() {
     },
   ];
 
-  useEffect(() => {
+  useFocusEffect(() => {
+    if (!state.user?.access_token) {
+      return;
+    }
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${state.user?.access_token}`,
@@ -98,7 +104,7 @@ export default function Analysis() {
     };
 
     getAnalysisData();
-  }, [state.user?.access_token]);
+  });
 
   useEffect(() => {
     if (selectedChartLabel === 'stress_level') {
@@ -184,7 +190,7 @@ export default function Analysis() {
 
   const screenWidth = Dimensions.get('window').width;
 
-  return stressLevelChart.length >= 1 ? (
+  return stressLevelChart.length >= MIN_REPORT_CNT ? (
     <View style={styles.itemContainer}>
       <Dropdown
         style={styles.dropdown}

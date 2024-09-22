@@ -49,6 +49,8 @@ const UserDataModal = ({ setCheckInInfo }: { setCheckInInfo: any }) => {
     const stepCount = state.permission?.stepCounts ? await getStepCount() : null;
     const sleepHours = state.permission?.sleepHours ? await getSleepHours() : null;
     const heartRate = state.permission?.sleepHours ? await getHeartRate() : null;
+    const date = new Date();
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
     const finalReport: UserInputReport = {
       study_hours: studyHours,
       work_hours: workHours,
@@ -56,6 +58,7 @@ const UserDataModal = ({ setCheckInInfo }: { setCheckInInfo: any }) => {
       sleep_hours: sleepHours as number | null,
       heart_rate: heartRate as number | null,
       social_media_usage: socialMediaUsage,
+      date: localDate,
     };
     try {
       const headers = {

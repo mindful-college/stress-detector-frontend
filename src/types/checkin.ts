@@ -21,6 +21,7 @@ export type ChatReport = {
   text: string[];
   voice: string[];
   stress_level: number | null;
+  date?: string;
 };
 
 export type UserInputReport = {
@@ -30,4 +31,5 @@ export type UserInputReport = {
   sleep_hours?: number | null;
   step_count?: number | null;
   heart_rate?: number | null;
+  date?: string;
 };

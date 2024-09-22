@@ -114,9 +114,12 @@ export default function CheckIn() {
   };
 
   const sendReport = async () => {
+    const date = new Date();
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
     const finalReport: ChatReport = {
       ...report,
       stress_level: stressLevel,
+      date: localDate,
     };
     try {
       setIsReportSubmitted(true);
