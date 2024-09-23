@@ -80,7 +80,7 @@ export default function Analysis() {
     },
   ];
 
-  useFocusEffect(() => {
+  useEffect(() => {
     if (!state.user?.access_token) {
       return;
     }
@@ -104,7 +104,7 @@ export default function Analysis() {
     };
 
     getAnalysisData();
-  });
+  }, []);
 
   useEffect(() => {
     if (selectedChartLabel === 'stress_level') {
@@ -190,7 +190,7 @@ export default function Analysis() {
 
   const screenWidth = Dimensions.get('window').width;
 
-  return stressLevelChart.length >= MIN_REPORT_CNT ? (
+  return reportChart.length >= MIN_REPORT_CNT ? (
     <View style={styles.itemContainer}>
       <Dropdown
         style={styles.dropdown}

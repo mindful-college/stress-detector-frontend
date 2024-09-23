@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Text, View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../utils/colors';
 import { useFocusEffect } from '@react-navigation/native';
@@ -24,7 +24,8 @@ export default function Report() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { state, dispatch } = useUserContext();
-  const now = useMemo(() => new Date(), []);
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // const now = new Date();
   const userToken = state.user?.access_token;
   const [reportData, setReportData] = useState(null);
   const [checkInInfo, setCheckInInfo] = useState(null);
@@ -64,7 +65,7 @@ export default function Report() {
       if (
         currentReportData.data !== null &&
         currentCheckinData.data === null &&
-        now.getHours() >= REPORT_OPEN_HOUR
+        new Date().getHours() >= REPORT_OPEN_HOUR
       ) {
         goToSelfCheckIn();
       }
@@ -73,7 +74,7 @@ export default function Report() {
     } finally {
       setIsLoading(false);
     }
-  }, [userToken, goToSelfCheckIn, selectedDate, now]);
+  }, [userToken, goToSelfCheckIn, selectedDate]);
 
   useEffect(() => {
     if (selectedDate === null) {
@@ -86,6 +87,7 @@ export default function Report() {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log(new Date());
       setSelectedDate(moment());
     }, []),
   );
@@ -101,7 +103,7 @@ export default function Report() {
 
   // todo
   const canShowCheckInModal = () => {
-    return now.getHours() >= REPORT_OPEN_HOUR && reportData !== null && checkInInfo === null;
+    return new Date().getHours() >= REPORT_OPEN_HOUR && reportData !== null && checkInInfo === null;
   };
 
   return (
@@ -146,8 +148,8 @@ export default function Report() {
 
       <ScrollView ref={scrollViewRef}>
         {reportData !== null ? (
-          now.getHours() >= REPORT_OPEN_HOUR ||
-          now.getDate().toString() !== selectedDate.format('D') ? (
+          new Date().getHours() >= REPORT_OPEN_HOUR ||
+          new Date().getDate().toString() !== selectedDate.format('D') ? (
             <>
               <View style={styles.stressLevelSvgContainer}>
                 <FaceSvg reportData={reportData} />
