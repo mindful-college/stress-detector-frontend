@@ -130,11 +130,11 @@ export default function Signin({ navigation }) {
             )}
             <View style={styles.linkWrapper}>
               <CustomLink handleNavigate={goToSignUp} color={Colors.primary} text="Sign Up" />
-              <CustomLink
+              {/* <CustomLink
                 handleNavigate={goToSignUp}
                 color={Colors.primary}
                 text="Reset Password"
-              />
+              /> */}
             </View>
           </KeyboardAvoidingView>
         </View>

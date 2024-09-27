@@ -1,69 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, Dimensions, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Colors } from '../utils/colors';
 import { useUserContext } from '../context/UserContext';
 import { ANAYLYSIS_URL } from '../utils/api';
-import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import { moderateScale, verticalScale } from '../themes/metrics';
 import moment from 'moment-timezone';
-import { useFocusEffect } from '@react-navigation/native';
 
 const MIN_REPORT_CNT = 3;
 
 export default function Analysis() {
   const { state } = useUserContext();
-  const [selectedDate, setSelectedDate] = useState('3-weeks');
-  const [selectedChartLabel, setSelectedChartLabel] = useState('stress_level');
+  const [selectedDate, setSelectedDate] = useState('week');
   const [stressLevelChart, setStressLevelChart] = useState([]);
   const [reportChart, setReportChart] = useState([]);
-  const [processedChart, setProcessedChart] = useState({ labels: [], datasets: [{ data: [] }] });
 
   const heartRatePermission = state.permission?.heartRate || false;
   const stepCountPermission = state.permission?.stepCounts || false;
   const sleepHoursPermission = state.permission?.sleepHours || false;
-
-  type DropdownItem = {
-    label: string;
-    value: string;
-  };
-
-  const charItem = [
-    {
-      label: 'Stree Level',
-      value: 'stress_level',
-    },
-    // {
-    //   label: 'Correlation',
-    //   value: 'correlation',
-    // },
-    {
-      label: 'Hours you studied',
-      value: 'study_hours',
-    },
-    {
-      label: 'Hours you worked',
-      value: 'work_hours',
-    },
-    {
-      label: 'sleep Hours',
-      value: 'sleep_hours',
-    },
-    {
-      label: 'Step Counts',
-      value: 'step_count',
-    },
-    {
-      label: 'Heart Rate',
-      value: 'heart_rate',
-    },
-    {
-      label: 'Social Media Usage',
-      value: 'social_media_usage',
-    },
-  ];
 
   const dateItems = [
     {
@@ -93,9 +49,9 @@ export default function Analysis() {
       try {
         const res = await axios.get(ANAYLYSIS_URL, { headers });
         if (res.status === 200) {
+          console.log(res.data);
           setStressLevelChart(res.data.stress_level);
           setReportChart(res.data.report);
-          makeChartData(res.data.stress_level);
         }
       } catch (error) {
         // Handle errors if the request fails
@@ -106,15 +62,7 @@ export default function Analysis() {
     getAnalysisData();
   }, []);
 
-  useEffect(() => {
-    if (selectedChartLabel === 'stress_level') {
-      makeChartData(stressLevelChart);
-    } else {
-      makeChartData(reportChart);
-    }
-  }, [selectedChartLabel, selectedDate]);
-
-  const makeChartData = (unprocessedData) => {
+  const makeChartData = (unprocessedData, label) => {
     const processedData = unprocessedData?.filter((item) => {
       const today = moment().startOf('day');
       let daysAgo = 0;
@@ -132,54 +80,36 @@ export default function Analysis() {
     });
     const data = {
       labels: processedData?.map((item) => item._id.slice(5)),
-      datasets: [{ data: processedData?.map((item) => item[selectedChartLabel]?.toFixed(1) ?? 0) }],
+      datasets: [{ data: processedData?.map((item) => item[label]?.toFixed(1) ?? 0) }],
     };
-    setProcessedChart(data);
-  };
-
-  const renderItem = (item: DropdownItem) => {
-    if (item.value === 'sleep-hours' && !sleepHoursPermission) {
-      return;
-    }
-    if (item.value === 'step-counts' && !stepCountPermission) {
-      return;
-    }
-    if (item.value === 'heart-rate' && !heartRatePermission) {
-      return;
-    }
-
-    return (
-      <View style={styles.item}>
-        <Text style={styles.textItem}>{item.label}</Text>
-      </View>
-    );
+    return data;
   };
 
   const getBarWidth = () => {
     if (selectedDate === 'week') {
-      return 1.0;
+      return 0.8;
     }
     if (selectedDate === '2-weeks') {
-      return 0.5;
+      return 0.4;
     }
     if (selectedDate === '3-weeks') {
       return 0.1;
     }
   };
   const chartConfig = {
-    backgroundGradientFrom: '#Ffffff',
+    backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     barPercentage: getBarWidth(),
     decimalPlaces: 0, // optional, defaults to 2dp
-    color: () => `rgba(1, 122, 205, 1)`,
+    color: () => `rgba(26, 167, 236, 1)`,
     labelColor: () => `rgba(0, 0, 0, 1)`,
-
+    strokeWidth: 2,
     style: {
       borderRadius: 16,
       fontFamily: 'Bogle-Regular',
     },
     propsForBackgroundLines: {
-      strokeWidth: 1,
+      strokeWidth: 1.5,
       stroke: '#efefef',
       strokeDasharray: '0',
     },
@@ -190,22 +120,8 @@ export default function Analysis() {
 
   const screenWidth = Dimensions.get('window').width;
 
-  return reportChart.length >= MIN_REPORT_CNT ? (
+  return stressLevelChart.length >= MIN_REPORT_CNT ? (
     <View style={styles.itemContainer}>
-      <Dropdown
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        iconStyle={styles.iconStyle}
-        data={charItem}
-        labelField="label"
-        valueField="value"
-        value={selectedChartLabel}
-        onChange={(item) => {
-          setSelectedChartLabel(item.value);
-        }}
-        renderItem={renderItem}
-      />
       <View style={styles.menuWrapper}>
         {dateItems.map((item, idx) => {
           return (
@@ -218,36 +134,157 @@ export default function Analysis() {
           );
         })}
       </View>
-      <View style={styles.chartWrapper}>
-        {selectedChartLabel === 'correlation' ? (
-          <View>
-            <Text style={{ fontSize: 60, marginBottom: 20 }}>LineChart</Text>
-            <View>
-              <Text>Hours You Studied</Text>
-              <Text>Hours You Worked</Text>
-              <Text>Sleep Hours</Text>
-              <Text>Step Counts</Text>
-              <Text>Heart Rate</Text>
-            </View>
+      <View style={{ marginBottom: 20, width: screenWidth }}>
+        <View style={{ marginLeft: 10 }}>
+          <Text style={{ fontSize: 16, color: Colors.black }}>Stress Level</Text>
+        </View>
+        {/* <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          horizontal={true}
+          contentOffset={{ x: 10000, y: 0 }} // i needed the scrolling to start from the end not the start
+          showsHorizontalScrollIndicator={false} // to hide scroll bar
+        > */}
+        <BarChart
+          style={styles.chart}
+          showBarTops={true}
+          showValuesOnTopOfBars={true}
+          withInnerLines={true}
+          segments={3}
+          data={makeChartData(stressLevelChart, 'stress_level')}
+          width={screenWidth}
+          height={100}
+          yAxisLabel=""
+          yAxisSuffix=""
+          chartConfig={chartConfig}
+          fromZero={true}
+        />
+        {/* </ScrollView> */}
+      </View>
+      <ScrollView
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ width: screenWidth }}>
+        <View style={{ marginBottom: 20 }}>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 16, color: Colors.black }}>Hours you studied</Text>
           </View>
-        ) : (
           <BarChart
-            // style={styles.chart}
-            showBarTops={false}
+            style={styles.chart}
+            showBarTops={true}
             showValuesOnTopOfBars={true}
             withInnerLines={true}
-            segments={0}
-            data={processedChart}
-            width={screenWidth - 15}
-            height={400}
+            segments={3}
+            data={makeChartData(reportChart, 'study_hours')}
+            width={screenWidth}
+            height={100}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
-            verticalLabelRotation={0}
             fromZero={true}
           />
+        </View>
+        <View style={{ marginBottom: 20 }}>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 16, color: Colors.black }}>Hours you worked</Text>
+          </View>
+          <BarChart
+            style={styles.chart}
+            showBarTops={true}
+            showValuesOnTopOfBars={true}
+            withInnerLines={true}
+            segments={3}
+            data={makeChartData(reportChart, 'work_hours')}
+            width={screenWidth}
+            height={100}
+            yAxisLabel=""
+            yAxisSuffix=""
+            chartConfig={chartConfig}
+            fromZero={true}
+          />
+        </View>
+        {sleepHoursPermission && (
+          <View style={{ marginBottom: 20 }}>
+            <View style={{ marginLeft: 10 }}>
+              <Text style={{ fontSize: 16, color: Colors.black }}>Sleep Hours</Text>
+            </View>
+            <BarChart
+              style={styles.chart}
+              showBarTops={true}
+              showValuesOnTopOfBars={true}
+              withInnerLines={true}
+              segments={3}
+              data={makeChartData(reportChart, 'sleep_hours')}
+              width={screenWidth}
+              height={100}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={chartConfig}
+              fromZero={true}
+            />
+          </View>
         )}
-      </View>
+        {stepCountPermission && (
+          <View style={{ marginBottom: 20 }}>
+            <View style={{ marginLeft: 10 }}>
+              <Text style={{ fontSize: 16, color: Colors.black }}>Step Counts</Text>
+            </View>
+            <BarChart
+              style={styles.chart}
+              showBarTops={true}
+              showValuesOnTopOfBars={true}
+              withInnerLines={true}
+              segments={3}
+              data={makeChartData(reportChart, 'step_count')}
+              width={screenWidth}
+              height={100}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={chartConfig}
+              fromZero={true}
+            />
+          </View>
+        )}
+        <View style={{ marginBottom: 20 }}>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 16, color: Colors.black }}>Social Media Usage</Text>
+          </View>
+          <BarChart
+            style={styles.chart}
+            showBarTops={true}
+            showValuesOnTopOfBars={true}
+            withInnerLines={true}
+            segments={3}
+            data={makeChartData(reportChart, 'social_media_usage')}
+            width={screenWidth}
+            height={100}
+            yAxisLabel=""
+            yAxisSuffix=""
+            chartConfig={chartConfig}
+            fromZero={true}
+          />
+        </View>
+        {heartRatePermission && (
+          <View style={{ marginBottom: 20 }}>
+            <View style={{ marginLeft: 10 }}>
+              <Text style={{ fontSize: 16, color: Colors.black }}>Heart Rate</Text>
+            </View>
+            <BarChart
+              style={styles.chart}
+              showBarTops={true}
+              showValuesOnTopOfBars={true}
+              withInnerLines={true}
+              segments={3}
+              data={makeChartData(reportChart, 'heart_rate')}
+              width={screenWidth}
+              height={100}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={chartConfig}
+              fromZero={true}
+            />
+          </View>
+        )}
+      </ScrollView>
     </View>
   ) : (
     <View style={styles.noChartWrapper}>
@@ -265,17 +302,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 12,
-  },
-  dropdown: {
-    marginTop: 13,
-    marginHorizontal: 15,
-    height: 40,
-    width: 200,
-    borderRadius: 15,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    elevation: 2,
   },
   item: {
     padding: 12,
@@ -315,8 +341,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: 20,
-    marginBottom: 40,
+    marginTop: 10,
+    marginBottom: 20,
   },
   selctedMenuItem: {
     width: 80,
@@ -330,5 +356,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: Colors.lightGrey,
+  },
+  chart: {
+    paddingRight: 10,
   },
 });

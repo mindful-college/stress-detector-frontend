@@ -8,7 +8,6 @@ type CheckInInfoProps = {
   contents: string[];
   calculateMarginOfError: (type: string) => JSX.Element;
   icon: JSX.Element;
-  style: object;
 };
 
 const CheckInBox: React.FC<CheckInInfoProps> = ({
@@ -16,10 +15,9 @@ const CheckInBox: React.FC<CheckInInfoProps> = ({
   calculateMarginOfError,
   icon,
   contents,
-  style,
 }) => {
   return (
-    <View style={style}>
+    <View style={styles.container}>
       <View style={styles.boxUpperSection}>
         {icon}
         <View>
@@ -44,10 +42,13 @@ const CheckInBox: React.FC<CheckInInfoProps> = ({
 
 export default CheckInBox;
 
-// const windowWidth = Dimensions.get('window').width;
-// const windowHeight = Dimensions.get('window').height;
-
 const styles = StyleSheet.create({
+  container: {
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
   // box inside
   boxUpperSection: {
     display: 'flex',

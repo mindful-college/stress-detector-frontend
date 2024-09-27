@@ -8,7 +8,7 @@ import AppleHealthKit, { HealthValue } from 'react-native-health';
 export const QUESTIONS = {
   init: '',
   greeting:
-    "Hello! How's your day going? If you could share a few details about your day more than 5 sentences, it can be better assess your stress level!",
+    'Hello! How was your day? Please share the details of your day to help predict your stress level',
   followup:
     'Thanks for sharing! You can tell us more about your day :) Please type "done" when you want to close the conversation',
   closing:

@@ -172,13 +172,11 @@ export default function ToggleButton({ item }: toggleButtonProps) {
   useEffect(() => {
     //To set initial data
     checkNotificationPermission();
-    console.log('hhi');
   }, [permission]);
 
   useEffect(() => {
     //To handle permission after mobile setting changed
     const listener = AppState.addEventListener('change', checkNotificationPermission);
-    console.log('hello');
     return () => {
       listener.remove();
     };
@@ -186,7 +184,6 @@ export default function ToggleButton({ item }: toggleButtonProps) {
 
   //To handle switch toggle button
   const toggleSwitch = async () => {
-    console.log('????');
     if (!permission) {
       //error toast message
       Toast.show({

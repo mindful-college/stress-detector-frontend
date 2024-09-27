@@ -5,7 +5,7 @@ import { useUserContext } from '../context/UserContext';
 import { getStepCount, getSleepHours, getHeartRate } from '../utils/checkin';
 import { UserInputReport } from '../types/checkin';
 import axios from 'axios';
-import { CHECK_IN_URL } from '../utils/api';
+import { CHECK_IN_URL, GET_USER_DATA_AVERAGE_URL } from '../utils/api';
 import Toast from 'react-native-toast-message';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomButton from './CustomButton';
@@ -45,6 +45,22 @@ const UserDataModal = ({ setCheckInInfo }: { setCheckInInfo: any }) => {
     { label: '24 hours', value: 24 },
   ];
 
+  const getReportAverage = async () => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${state.user?.access_token}`,
+      };
+      const res = await axios.get(GET_USER_DATA_AVERAGE_URL, { headers });
+      if (res.status === 200 && res.data) {
+        dispatch({ type: 'SET_AVERAGE_REPORT_DATA', payload: res.data });
+      }
+    } catch (error) {
+      // Handle errors if the request fails
+      console.error(error);
+    }
+  };
+
   const onSubmitDailyCheckIn = async () => {
     const stepCount = state.permission?.stepCounts ? await getStepCount() : null;
     const sleepHours = state.permission?.sleepHours ? await getSleepHours() : null;
@@ -67,6 +83,7 @@ const UserDataModal = ({ setCheckInInfo }: { setCheckInInfo: any }) => {
       };
       const { status } = await axios.post(CHECK_IN_URL, finalReport, { headers });
       if (status === 200) {
+        await getReportAverage();
         const today = new Date();
         AsyncStorage.setItem('lastDailyCheckInDate', today.toISOString());
         setCheckInInfo(finalReport);

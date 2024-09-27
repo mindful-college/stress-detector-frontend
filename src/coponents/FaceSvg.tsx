@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import React from 'react';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Colors } from '../utils/colors';
 import { horizontalScale, moderateScale, verticalScale } from '../themes/metrics';
 
@@ -98,29 +98,43 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
     <>
       <View style={styles.facesvg}>{handleFaceSVG(predictedStressLevel)}</View>
       {stressLevelMap[predictedStressLevel] && (
-        <View>
+        <View style={{ width: Dimensions.get('window').width, paddingHorizontal: 20 }}>
           <View style={styles.stressLevelWrapper}>
-            <Text style={styles.stressLevelText}>Self reported stress level is </Text>
-            <Text style={getColor(stressLevelMap[selfStressLevel])}>
-              {stressLevelMap[selfStressLevel]}
-            </Text>
+            <View style={styles.row}>
+              <View style={styles.leftCol}>
+                <Text>Self-reported stress</Text>
+              </View>
+              <View style={styles.rightCol}>
+                <Text style={styles.textBold}>Predicted stress</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.leftCol}>
+                <Text style={getColor(stressLevelMap[selfStressLevel])}>
+                  {stressLevelMap[selfStressLevel]}
+                </Text>
+              </View>
+              <View style={styles.rightCol}>
+                <Text style={[getColor(stressLevelMap[predictedStressLevel]), styles.textBold]}>
+                  {stressLevelMap[predictedStressLevel]}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.stressLevelWrapper}>
-            <Text style={styles.stressLevelText}>Predicted stress level is </Text>
-            <Text style={getColor(stressLevelMap[predictedStressLevel])}>
-              {stressLevelMap[predictedStressLevel]}
-            </Text>
-          </View>
+
           <View style={styles.reasonWrapper}>
             {/* <Text>Prediction Reason</Text> */}
             <Text style={styles.stressLevelText}>
-              We found "{''}
+              * GPT-3.5 predicted the stress level based on your diary data
+            </Text>
+            <Text style={styles.stressLevelText}>
+              * It found "{''}
               {reportData.summary?.text?.map((item, idx) => (
                 <Text key={idx} style={styles.keyWords}>
                   {idx !== reportData.summary?.text?.length - 1 ? `${item}, ` : item}
                 </Text>
               ))}
-              " keywords from diary.
+              " keywords
             </Text>
           </View>
         </View>
@@ -142,49 +156,66 @@ const styles = StyleSheet.create({
   },
   veryLow: {
     color: 'limegreen',
-    fontWeight: '600',
     fontSize: moderateScale(20),
+    paddingBottom: 10,
   },
   low: {
     color: '#ffbf00',
-    fontWeight: '600',
     fontSize: moderateScale(20),
+    paddingBottom: 10,
   },
   moderate: {
     color: 'darkorange',
-    fontWeight: '600',
     fontSize: moderateScale(20),
+    paddingBottom: 10,
   },
   high: {
     color: 'coral',
-    fontWeight: '600',
     fontSize: moderateScale(20),
+    paddingBottom: 10,
   },
   veryHigh: {
     color: 'crimson',
-    fontWeight: '600',
     fontSize: moderateScale(20),
+    paddingBottom: 10,
   },
   default: {
     color: Colors.black,
-    fontWeight: '600',
     fontSize: moderateScale(18),
   },
   stressLevelWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    margin: 4,
-    alignItems: 'center',
-    // justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.grey,
+    borderRadius: 8,
   },
   keyWords: {
     color: Colors.primary,
     fontWeight: '600',
-    fontSize: moderateScale(20),
   },
   reasonWrapper: {
     display: 'flex',
     flexDirection: 'column',
-    margin: 4,
+    margin: 8,
+    marginBottom: 0,
+    gap: 2,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  leftCol: {
+    borderRightWidth: 1,
+    borderColor: Colors.grey,
+    padding: 10,
+    width: '50%',
+    paddingBottom: 0,
+  },
+  rightCol: {
+    padding: 10,
+    width: '50%',
+    paddingBottom: 0,
+  },
+  textBold: {
+    fontWeight: '600',
   },
 });
