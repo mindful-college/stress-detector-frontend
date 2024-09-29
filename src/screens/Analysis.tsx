@@ -8,6 +8,7 @@ import { ANAYLYSIS_URL } from '../utils/api';
 import axios from 'axios';
 import { moderateScale, verticalScale } from '../themes/metrics';
 import moment from 'moment-timezone';
+import LoadingIndicator from '../coponents/LoadingIndicator';
 
 const MIN_REPORT_CNT = 3;
 
@@ -16,6 +17,7 @@ export default function Analysis() {
   const [selectedDate, setSelectedDate] = useState('week');
   const [stressLevelChart, setStressLevelChart] = useState([]);
   const [reportChart, setReportChart] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const heartRatePermission = state.permission?.heartRate || false;
   const stepCountPermission = state.permission?.stepCounts || false;
@@ -46,16 +48,30 @@ export default function Analysis() {
     };
 
     const getAnalysisData = async () => {
+      setIsLoading(true);
       try {
         const res = await axios.get(ANAYLYSIS_URL, { headers });
         if (res.status === 200) {
-          console.log(res.data);
-          setStressLevelChart(res.data.stress_level);
-          setReportChart(res.data.report);
+          const stressLevelChart = res.data.stress_level;
+          const reportChart = res.data.report;
+          const dateSet = new Set();
+          for (const report of reportChart) {
+            dateSet.add(report._id);
+          }
+          const proecessedStressLevels = [] as any;
+          for (const item of stressLevelChart) {
+            if (dateSet.has(item._id)) {
+              proecessedStressLevels.push(item);
+            }
+          }
+          setStressLevelChart(proecessedStressLevels);
+          setReportChart(reportChart);
         }
       } catch (error) {
         // Handle errors if the request fails
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -78,9 +94,19 @@ export default function Analysis() {
       const startDate = moment().subtract(daysAgo, 'days').startOf('day');
       return moment(item._id).isBetween(startDate, today, null, '[]');
     });
+
     const data = {
       labels: processedData?.map((item) => item._id.slice(5)),
-      datasets: [{ data: processedData?.map((item) => item[label]?.toFixed(1) ?? 0) }],
+      datasets: [
+        {
+          data: processedData?.map(
+            (item) =>
+              (label === 'stress_level' || label === 'sleep_hours'
+                ? item[label]?.toFixed(1)
+                : item[label]?.toFixed()) ?? 0,
+          ),
+        },
+      ],
     };
     return data;
   };
@@ -102,7 +128,7 @@ export default function Analysis() {
     barPercentage: getBarWidth(),
     decimalPlaces: 0, // optional, defaults to 2dp
     color: () => `rgba(26, 167, 236, 1)`,
-    labelColor: () => `rgba(0, 0, 0, 1)`,
+    labelColor: () => Colors.black,
     strokeWidth: 2,
     style: {
       borderRadius: 16,
@@ -119,6 +145,10 @@ export default function Analysis() {
   };
 
   const screenWidth = Dimensions.get('window').width;
+
+  if (isLoading) {
+    return <LoadingIndicator isLoading={isLoading} color={Colors.primary} isReportPage={true} />;
+  }
 
   return stressLevelChart.length >= MIN_REPORT_CNT ? (
     <View style={styles.itemContainer}>
@@ -358,6 +388,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGrey,
   },
   chart: {
-    paddingRight: 10,
+    marginLeft: -20,
   },
 });
