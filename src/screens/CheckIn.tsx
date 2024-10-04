@@ -220,10 +220,10 @@ export default function CheckIn() {
         <View style={[styles.modalContainer, { width: width }]}>
           <View>
             <Text style={{ fontSize: 20, marginTop: 20 }}>
-              Please select your self-examined stress level
+              Please select your self-reported stress level
             </Text>
             <Text style={{ fontSize: 12, color: '#444444', marginBottom: 12 }}>
-              This will help us to examine your stress level
+              This will help us to predict your stress level
             </Text>
           </View>
           <View style={styles.stressIconWrapper}>

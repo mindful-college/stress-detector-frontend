@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   boxUpperSection: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: verticalScale(25),
+    marginTop: verticalScale(14),
   },
   upperSectionText: {
     fontSize: moderateScale(13),
@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   boxLowerSection: {
-    marginTop: verticalScale(17),
+    marginTop: verticalScale(12),
     marginLeft: horizontalScale(5),
   },
   lowerText: {
     fontSize: moderateScale(20),
-    marginBottom: verticalScale(25),
+    marginBottom: verticalScale(14),
   },
   bottomSectionBox: {
     display: 'flex',

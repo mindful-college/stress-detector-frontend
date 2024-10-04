@@ -10,9 +10,9 @@ export const QUESTIONS = {
   greeting:
     'Hello! How was your day? Please share the details of your day to help predict your stress level',
   followup:
-    'Thanks for sharing! You can tell us more about your day :) Please type "done" when you want to close the conversation',
+    'Thanks for sharing! Feel free to tell me more :) Please type "done" when you want to close the conversation',
   closing:
-    'Thanks a lot for your check-in! See you next time! If you want to start again, please type "restart"',
+    'Thanks for your check-in! See you next time! If you want to start again, please type "restart"',
   restart: 'Reset previous conversations... Please share your day again :)',
   stressLevel: '',
   // text: "I'm curious about what's on your mind! If you'd rather not share, just type 'skip'.",

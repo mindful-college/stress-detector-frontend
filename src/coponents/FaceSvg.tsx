@@ -147,7 +147,7 @@ export default FaceSvg;
 
 const styles = StyleSheet.create({
   facesvg: {
-    marginBottom: verticalScale(40),
+    marginBottom: verticalScale(24),
   },
   stressLevelText: {
     fontSize: moderateScale(15),
