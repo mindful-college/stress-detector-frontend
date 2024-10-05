@@ -96,9 +96,10 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
 
   return (
     <>
-      <View style={styles.facesvg}>{handleFaceSVG(predictedStressLevel)}</View>
+      {/* <View style={styles.facesvg}>{handleFaceSVG(predictedStressLevel)}</View> */}
       {stressLevelMap[predictedStressLevel] && (
-        <View style={{ width: Dimensions.get('window').width, paddingHorizontal: 20 }}>
+        <View
+          style={{ width: Dimensions.get('window').width, paddingHorizontal: 20, marginTop: 10 }}>
           <View style={styles.stressLevelWrapper}>
             <View style={styles.row}>
               <View style={styles.leftCol}>
@@ -128,13 +129,12 @@ const FaceSvg: React.FC<FaceSvgProps> = ({ reportData }) => {
               * GPT-3.5 predicted the stress level based on your diary data
             </Text>
             <Text style={styles.stressLevelText}>
-              * It found "{''}
+              * Keywords used for prediction: {''}
               {reportData.summary?.text?.map((item, idx) => (
                 <Text key={idx} style={styles.keyWords}>
                   {idx !== reportData.summary?.text?.length - 1 ? `${item}, ` : item}
                 </Text>
               ))}
-              " keywords
             </Text>
           </View>
         </View>

@@ -94,9 +94,7 @@ const CheckInInfo: React.FC<CheckInInfoProps> = ({ checkInInfo }) => {
   return (
     <View>
       <Text style={styles.title}>END OF DAY CHECK-IN</Text>
-      <Text style={styles.info}>
-        * High/low is based on comparisons to your personal data average
-      </Text>
+      <Text style={styles.info}>* High/Low is based on your personal average</Text>
       <View style={styles.checkInInfoInnerBox}>
         <CheckInBox
           checkInInfo={checkInInfo?.study_hours}

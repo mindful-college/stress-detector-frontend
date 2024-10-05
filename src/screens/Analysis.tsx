@@ -9,6 +9,7 @@ import axios from 'axios';
 import { moderateScale, verticalScale } from '../themes/metrics';
 import moment from 'moment-timezone';
 import LoadingIndicator from '../coponents/LoadingIndicator';
+import { stressLevelMap } from '../utils/common';
 
 const MIN_REPORT_CNT = 3;
 
@@ -95,7 +96,7 @@ export default function Analysis() {
       return moment(item._id).isBetween(startDate, today, null, '[]');
     });
 
-    const data = {
+    return {
       labels: processedData?.map((item) => item._id.slice(5)),
       datasets: [
         {
@@ -108,7 +109,6 @@ export default function Analysis() {
         },
       ],
     };
-    return data;
   };
 
   const getBarWidth = () => {
@@ -144,6 +144,16 @@ export default function Analysis() {
     },
   };
 
+  const getStressLable = (value) => {
+    const predictedStressLevel = Math.round(value);
+    return stressLevelMap[predictedStressLevel];
+  };
+
+  const stressLevelChartConfig = {
+    ...chartConfig,
+    formatTopBarValue: (value) => getStressLable(value),
+  };
+
   const screenWidth = Dimensions.get('window').width;
 
   if (isLoading) {
@@ -166,7 +176,9 @@ export default function Analysis() {
       </View>
       <View style={{ marginBottom: 20, width: screenWidth }}>
         <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 16, color: Colors.black }}>Stress Level</Text>
+          <Text style={{ fontSize: 16, color: Colors.black }}>
+            Stress Level (1 - Very Low / 5 - Very High)
+          </Text>
         </View>
         {/* <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
@@ -185,7 +197,7 @@ export default function Analysis() {
           height={100}
           yAxisLabel=""
           yAxisSuffix=""
-          chartConfig={chartConfig}
+          chartConfig={stressLevelChartConfig}
           fromZero={true}
         />
         {/* </ScrollView> */}
@@ -196,7 +208,9 @@ export default function Analysis() {
         contentContainerStyle={{ width: screenWidth }}>
         <View style={{ marginBottom: 20 }}>
           <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 16, color: Colors.black }}>Hours you studied</Text>
+            <Text style={{ fontSize: 16, color: Colors.black }}>
+              Hours you studied (Unit : Hour)
+            </Text>
           </View>
           <BarChart
             style={styles.chart}
@@ -215,7 +229,9 @@ export default function Analysis() {
         </View>
         <View style={{ marginBottom: 20 }}>
           <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 16, color: Colors.black }}>Hours you worked</Text>
+            <Text style={{ fontSize: 16, color: Colors.black }}>
+              Hours you worked (Unit : Hour)
+            </Text>
           </View>
           <BarChart
             style={styles.chart}
@@ -235,7 +251,7 @@ export default function Analysis() {
         {sleepHoursPermission && (
           <View style={{ marginBottom: 20 }}>
             <View style={{ marginLeft: 10 }}>
-              <Text style={{ fontSize: 16, color: Colors.black }}>Sleep Hours</Text>
+              <Text style={{ fontSize: 16, color: Colors.black }}>Sleep Hours (Unit : Hour)</Text>
             </View>
             <BarChart
               style={styles.chart}
@@ -256,7 +272,7 @@ export default function Analysis() {
         {stepCountPermission && (
           <View style={{ marginBottom: 20 }}>
             <View style={{ marginLeft: 10 }}>
-              <Text style={{ fontSize: 16, color: Colors.black }}>Step Counts</Text>
+              <Text style={{ fontSize: 16, color: Colors.black }}>Step Counts (Unit : Steps)</Text>
             </View>
             <BarChart
               style={styles.chart}
@@ -276,7 +292,9 @@ export default function Analysis() {
         )}
         <View style={{ marginBottom: 20 }}>
           <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 16, color: Colors.black }}>Social Media Usage</Text>
+            <Text style={{ fontSize: 16, color: Colors.black }}>
+              Social Media Usage (Unit : Hour)
+            </Text>
           </View>
           <BarChart
             style={styles.chart}
@@ -296,7 +314,9 @@ export default function Analysis() {
         {heartRatePermission && (
           <View style={{ marginBottom: 20 }}>
             <View style={{ marginLeft: 10 }}>
-              <Text style={{ fontSize: 16, color: Colors.black }}>Heart Rate</Text>
+              <Text style={{ fontSize: 16, color: Colors.black }}>
+                Heart Rate (Unit : Beats Per Minute)
+              </Text>
             </View>
             <BarChart
               style={styles.chart}
