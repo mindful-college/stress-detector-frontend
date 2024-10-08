@@ -83,7 +83,7 @@ export default function App() {
             parsedCheckInDate.date() !== today.date()
           ) {
             await getReportAverage(state.user?.access_token);
-            dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: true });
+            // dispatch({ type: 'UPDATE_DAILY_CHECKIN_MODAL', payload: true });
           }
         }
       }
